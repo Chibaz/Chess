@@ -10,18 +10,24 @@ namespace Chess
     {
         protected string name { get; set; }
         protected Boolean owner { get; set; }
-        protected Boolean moveAbs { get; set; }
-        protected int[,] moves { get; set; }
+        protected int[,] moveAbs { get; set; } //Used for pieces with absolute movement lengths
+        protected String[] moveVar { get; set; } //Used for pieces with variable movement lengths
         protected int[,] specials { get; set; }
 
+        /*
         public List<int[]> generateMoves(int[] position)
         {
             List<int[]> realMoves = new List<int[]>();
-            foreach(int[] move in moves){
+            if(moveVar.Equals(null))
+            foreach(int[] move in moveVar){
                 realMoves.Add(new int[] {position[0]+move[0], position[1]+move[1]});
+            }
+            else{
+
             }
             return realMoves;
         }
+        */
     }
 
     class Pawn : Piece
@@ -30,15 +36,14 @@ namespace Chess
         {
             name = "pawn";
             this.owner = owner;
-            moveAbs = true;
             if (owner)
             {
-                moves = new int[,] { { 1, 0 } };
+                moveAbs = new int[,] { { 1, 0 } };
                 specials = new int[,] { { 1, -1 }, {-1, 1} };
             }
             else
             {
-                moves = new int[,] { { -1, 0 } };
+                moveAbs = new int[,] { { -1, 0 } };
                 specials = new int[,] { { -1, -1 }, { -1, 1 } };
             }
         }
@@ -49,11 +54,8 @@ namespace Chess
         public Rook(Boolean owner){
             name = "rook";
             this.owner = owner;
-            moveAbs = false;
-            moves = new int[,] { {1, 0}, {2, 0}, {3, 0}, {4, 0}, {5, 0}, {6, 0}, {7, 0},
-                                 {-1, 0}, {-2, 0}, {-3, 0}, {-4, 0}, {-5, 0}, {-6, 0}, {-7, 0},
-                                 {0, 1}, {0, 2}, {0, 3}, {0, 4}, {0, 5}, {0, 6}, {0, 7},
-                                 {0, -1}, {0, -2}, {0, -3}, {0, -4}, {0, -5}, {0, -6}, {0, -7} };
+            //moveAbs = false;
+            moveVar = new String[] { "horizontal", "vertical" };
         }
     }
 
@@ -63,8 +65,7 @@ namespace Chess
         {
             name = "knight";
             this.owner = owner;
-            moveAbs = true;
-            moves = new int[,] { {2, 1}, {2, -1}, {-2, 1}, {-2, -1}, {1, 2}, {1, -2}, {-1, 2}, {-1, -2} };
+            moveAbs = new int[,] { {2, 1}, {2, -1}, {-2, 1}, {-2, -1}, {1, 2}, {1, -2}, {-1, 2}, {-1, -2} };
         }
     }
 
@@ -74,11 +75,8 @@ namespace Chess
         {
             name = "bishop";
             this.owner = owner;
-            moveAbs = false;
-            moves = new int[,] { {1, 1}, {2, 2}, {3, 3}, {4, 4}, {5, 5}, {6, 6}, {7, 7},
-                                 {-1, -1}, {-2, -2}, {-3, -3}, {-4, -4}, {-5, -5}, {-6, -6}, {-7, -7},
-                                 {7, 0}, {6, 1}, {5, 2}, {4, 3}, {3, 4}, {2, 5}, {1, 6}, {0, 7},
-                                 {-7, 0}, {-6, -1}, {-5, -2}, {-4, -3}, {-3, -4}, {-2, -5}, {-1, -6}, {-0, -7} };
+            //moveAbs = false;
+            moveVar = new String[] { "diagonal" };
         }
     }
     class King : Piece
@@ -87,8 +85,7 @@ namespace Chess
         {
             name = "king";
             this.owner = owner;
-            moveAbs = true;
-            moves = new int[,] { {1, 0}, {-1, 0}, {0, 1}, {0, -1} };                 
+            moveAbs = new int[,] { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 }, { 1, 1 }, { 1, -1 }, { -1, 1 }, { -1, -1 } };                 
         }
     }
 
@@ -98,8 +95,8 @@ namespace Chess
         {
             name = "queen";
             this.owner = owner;
-            moveAbs = true;
-            moves = new int[,] { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } };
+            //moveAbs = true;
+            moveVar = new String[] { "horizontal", "vertical", "diagonal" };
         }
     }
 }

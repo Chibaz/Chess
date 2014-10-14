@@ -20,9 +20,20 @@ namespace Chess
     /// </summary>
     public partial class MainWindow : Window
     {
+        Board game;
+
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        public void DrawBoard()
+        {
+            UIElementCollection tiles = grid.Children;
+            foreach (UIElement t in tiles)
+            {
+                //Tile tile = t.
+            }
         }
     }
 }
