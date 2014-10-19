@@ -6,10 +6,17 @@ using System.Threading.Tasks;
 
 namespace Chess
 {
-    abstract class Piece
+    public abstract class Piece
     {
-        protected string name { get; set; }
-        protected Boolean owner { get; set; }
+        protected string name;
+        public string Name{
+            get { return name; }
+        }
+        protected Boolean owner;
+        public Boolean Owner
+        {
+            get { return owner; } 
+        }
         protected int[,] moveAbs { get; set; } //Used for pieces with absolute movement lengths
         protected String[] moveVar { get; set; } //Used for pieces with variable movement lengths
         protected int[,] specials { get; set; }
@@ -30,7 +37,7 @@ namespace Chess
         */
     }
 
-    class Pawn : Piece
+    public class Pawn : Piece
     {
         public Pawn(Boolean owner)
         {
@@ -49,7 +56,7 @@ namespace Chess
         }
     }
 
-    class Rook : Piece
+    public class Rook : Piece
     {
         public Rook(Boolean owner){
             name = "rook";
@@ -59,7 +66,7 @@ namespace Chess
         }
     }
 
-    class Knight : Piece
+    public class Knight : Piece
     {
         public Knight(Boolean owner)
         {
@@ -69,7 +76,7 @@ namespace Chess
         }
     }
 
-    class Bishop : Piece
+    public class Bishop : Piece
     {
         public Bishop(Boolean owner)
         {
@@ -79,7 +86,7 @@ namespace Chess
             moveVar = new String[] { "diagonal" };
         }
     }
-    class King : Piece
+    public class King : Piece
     {
         public King(Boolean owner)
         {
@@ -89,7 +96,7 @@ namespace Chess
         }
     }
 
-    class Queen : Piece
+    public class Queen : Piece
     {
         public Queen(Boolean owner)
         {
