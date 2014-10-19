@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Media.Effects;
 
 namespace Chess
 {
@@ -121,11 +122,23 @@ namespace Chess
             Console.WriteLine("selected: " + y + ":" + x);
             if (!moving)
             {
+                /*Border b = new Border();
+                b.Child = s;*/
+                UIElement uie = s;
+                uie.Effect = 
+                new BlurEffect
+                {
+                    //GlowColor = new Color {A = 255, R = 255, G = 255, B = 0},
+                    //GlowSize = 320,
+                };
                 game.MovePieceA(y-1, x-1);
             }
             else
             {
-                game.MovePieceB(y - 1, x - 1);
+                int[] org = game.MovePieceB(y - 1, x - 1);
+                TextBlock o = (TextBlock)this.FindName("c" + org[0] + "" + org[1]);
+                UIElement uie = s;
+                uie.Effect = null;
                 DrawBoard();
             }
         }

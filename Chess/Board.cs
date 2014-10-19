@@ -43,7 +43,7 @@ namespace Chess
             }
         }
 
-        public void MovePieceB(int y, int x)
+        public int[] MovePieceB(int y, int x)
         {
             Tile t = tiles[y, x];
             if (t.Owner == null)
@@ -52,6 +52,7 @@ namespace Chess
                 tiles[tY, tX].Owner = null;
                 window.moving = false;
             }
+            return new int[] { tY, tX };
         }
 
         public Piece GetStartPiece(Tile tile)
