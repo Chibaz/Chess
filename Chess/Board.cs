@@ -31,6 +31,7 @@ namespace Chess
             this.window = window;
         }
 
+        //Sets the coordinates from which a piece will move
         public void MovePieceA(int y, int x)
         {
             Tile t = tiles[y, x];
@@ -43,6 +44,7 @@ namespace Chess
             }
         }
 
+        //Moves a specified piece to a different location
         public int[] MovePieceB(int y, int x)
         {
             Tile t = tiles[y, x];
@@ -55,6 +57,7 @@ namespace Chess
             return new int[] { tY, tX };
         }
 
+        //Used for getting which piece will be at the a specified tile at the start of a game
         public Piece GetStartPiece(Tile tile)
         {
             int h = tile.Y;
@@ -117,11 +120,21 @@ namespace Chess
             return piece;
         }
 
+        public Tile[] GetLegalMovements(Tile t)
+        {
+            Piece piece = t.Owner;
+            if (piece.Movement)
+            {
+                if(piece.)
+            }
+            return null;
+        }
+
         public Tile[,] GetTiles()
         {
             return tiles;
         }
-    }
+    }  
 
     public class Tile
     {

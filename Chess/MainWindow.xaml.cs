@@ -32,6 +32,7 @@ namespace Chess
             DrawBoard();
         }
 
+        //Goes through the tiles in the board and puts the pieces in the correct places
         public void DrawBoard()
         {
             Tile[,] tiles = game.GetTiles();
@@ -52,6 +53,7 @@ namespace Chess
             }
         }
 
+        //Gets the unicode string used for symbolizing any specific piece
         public String GetUnicode(Tile tile, Brush color)
         {
             Piece piece = tile.Owner;

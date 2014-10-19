@@ -17,6 +17,11 @@ namespace Chess
         {
             get { return owner; } 
         }
+        protected Boolean movement;
+        public Boolean Movement
+        {
+            get { return movement; }
+        }
         protected int[,] moveAbs { get; set; } //Used for pieces with absolute movement lengths
         protected String[] moveVar { get; set; } //Used for pieces with variable movement lengths
         protected int[,] specials { get; set; }
@@ -43,6 +48,7 @@ namespace Chess
         {
             name = "pawn";
             this.owner = owner;
+            movement = false;
             if (owner)
             {
                 moveAbs = new int[,] { { 1, 0 } };
@@ -61,8 +67,9 @@ namespace Chess
         public Rook(Boolean owner){
             name = "rook";
             this.owner = owner;
+            movement = true;
             //moveAbs = false;
-            moveVar = new String[] { "horizontal", "vertical" };
+            moveVar = new String[] { "straight" };
         }
     }
 
@@ -72,6 +79,7 @@ namespace Chess
         {
             name = "knight";
             this.owner = owner;
+            movement = false;
             moveAbs = new int[,] { {2, 1}, {2, -1}, {-2, 1}, {-2, -1}, {1, 2}, {1, -2}, {-1, 2}, {-1, -2} };
         }
     }
@@ -82,6 +90,7 @@ namespace Chess
         {
             name = "bishop";
             this.owner = owner;
+            movement = true;
             //moveAbs = false;
             moveVar = new String[] { "diagonal" };
         }
@@ -92,6 +101,7 @@ namespace Chess
         {
             name = "king";
             this.owner = owner;
+            movement = false;
             moveAbs = new int[,] { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 }, { 1, 1 }, { 1, -1 }, { -1, 1 }, { -1, -1 } };                 
         }
     }
@@ -102,8 +112,9 @@ namespace Chess
         {
             name = "queen";
             this.owner = owner;
+            movement = true;
             //moveAbs = true;
-            moveVar = new String[] { "horizontal", "vertical", "diagonal" };
+            moveVar = new String[] { "straight", "diagonal" };
         }
     }
 }
