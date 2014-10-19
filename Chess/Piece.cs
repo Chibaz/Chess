@@ -22,8 +22,11 @@ namespace Chess
         {
             get { return movement; }
         }
-        protected int[,] moveAbs { get; set; } //Used for pieces with absolute movement lengths
-        protected String[] moveVar { get; set; } //Used for pieces with variable movement lengths
+        protected String[] move;
+        public String[] Move
+        { 
+            get { return move; }
+        }
         protected int[,] specials { get; set; }
 
         /*
@@ -51,12 +54,12 @@ namespace Chess
             movement = false;
             if (owner)
             {
-                moveAbs = new int[,] { { 1, 0 } };
+                move = new String[] { "1,0" };
                 specials = new int[,] { { 1, -1 }, {-1, 1} };
             }
             else
             {
-                moveAbs = new int[,] { { -1, 0 } };
+                move = new String[] { "-1,0" };
                 specials = new int[,] { { -1, -1 }, { -1, 1 } };
             }
         }
@@ -69,7 +72,7 @@ namespace Chess
             this.owner = owner;
             movement = true;
             //moveAbs = false;
-            moveVar = new String[] { "straight" };
+            move = new String[] { "straight" };
         }
     }
 
@@ -80,7 +83,7 @@ namespace Chess
             name = "knight";
             this.owner = owner;
             movement = false;
-            moveAbs = new int[,] { {2, 1}, {2, -1}, {-2, 1}, {-2, -1}, {1, 2}, {1, -2}, {-1, 2}, {-1, -2} };
+            move = new String[] { "2,1", "2,-1", "-2,1", "-2,-1", "1,2", "1,-2", "-1,2", "-1,-2" };
         }
     }
 
@@ -92,7 +95,7 @@ namespace Chess
             this.owner = owner;
             movement = true;
             //moveAbs = false;
-            moveVar = new String[] { "diagonal" };
+            move = new String[] { "diagonal" };
         }
     }
     public class King : Piece
@@ -102,7 +105,7 @@ namespace Chess
             name = "king";
             this.owner = owner;
             movement = false;
-            moveAbs = new int[,] { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 }, { 1, 1 }, { 1, -1 }, { -1, 1 }, { -1, -1 } };                 
+            move = new String[] { "1,0", "-1,0", "0,1", "0,-1", "1,1", "1,-1", "-1,1", "-1,-1" };                 
         }
     }
 
@@ -114,7 +117,7 @@ namespace Chess
             this.owner = owner;
             movement = true;
             //moveAbs = true;
-            moveVar = new String[] { "straight", "diagonal" };
+            move = new String[] { "straight", "diagonal" };
         }
     }
 }
