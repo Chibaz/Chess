@@ -24,6 +24,7 @@ namespace Chess
         private Board game;
         private int moveX, moveY;
         public Boolean moving;
+        private Move nextMove;
 
         public MainWindow()
         {
@@ -124,24 +125,25 @@ namespace Chess
             Console.WriteLine("selected: " + y + ":" + x);
             if (!moving)
             {
-                /*Border b = new Border();
-                b.Child = s;*/
                 UIElement uie = s;
-                uie.Effect = 
-                new BlurEffect
+                uie.Effect = new BlurEffect
                 {
                     //GlowColor = new Color {A = 255, R = 255, G = 255, B = 0},
                     //GlowSize = 320,
                 };
-                game.MovePieceA(y-1, x-1);
+                nextMove = new Move(game.GetSpecificTile(y, x));
+                //game.MovePieceA(y-1, x-1);
             }
             else
             {
-                int[] org = game.MovePieceB(y - 1, x - 1);
-                TextBlock o = (TextBlock)this.FindName("c" + org[0] + "" + org[1]);
-                UIElement uie = s;
-                uie.Effect = null;
-                DrawBoard();
+                if (game.GetLegalMovements(nextMove.Org).Contains(game.GetSpecificTile(y, x)))
+                {
+                    int[] org = game.MovePieceB(y - 1, x - 1);
+                    TextBlock o = (TextBlock)this.FindName("c" + org[0] + "" + org[1]);
+                    UIElement uie = s;
+                    uie.Effect = null;
+                    DrawBoard();
+                }
             }
         }
     }

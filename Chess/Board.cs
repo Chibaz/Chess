@@ -42,7 +42,7 @@ namespace Chess
                 toMove = t.Owner;
                 window.moving = true;
             }
-            return GetLegalMovements(y, x);
+            return GetLegalMovements(t);
         }
 
         //Moves a specified piece to a different location
@@ -121,9 +121,8 @@ namespace Chess
             return piece;
         }
 
-        public List<Tile> GetLegalMovements(int originY, int originX)
+        public List<Tile> GetLegalMovements(Tile origin)
         {
-            Tile origin = tiles[originY, originX];
             List<Tile> moves = new List<Tile>();
             Piece piece = origin.Owner;
             if (piece != null && piece.Movement) //Movement is without range limit
@@ -179,6 +178,12 @@ namespace Chess
                             break;
                         }
                     }
+                    StringBuilder straightMoves = new StringBuilder();
+                    foreach (Tile t in moves)
+                    {
+                        straightMoves.Append(t.toString() + "\n");
+                    }
+                    Console.WriteLine(straightMoves.ToString());
                 }
                 if(piece.Move.Contains("diagonal")){
                     Console.WriteLine("diagonal movement");
@@ -230,6 +235,12 @@ namespace Chess
                             break;
                         }
                     }
+                    StringBuilder diagMoves = new StringBuilder();
+                    foreach (Tile t in moves)
+                    {
+                        diagMoves.Append(t.toString() + "\n");
+                    }
+                    Console.WriteLine(diagMoves.ToString());
                 }
             }
             else //Movement is an absolute distance
@@ -240,12 +251,18 @@ namespace Chess
                     moves.Add(t);
                 }
             }
+            
             return moves;
         }
 
         public Tile[,] GetTiles()
         {
             return tiles;
+        }
+
+        public Tile GetSpecificTile(int y, int x)
+        {
+            return tiles[y-1, x-1];
         }
     }  
 
@@ -262,6 +279,35 @@ namespace Chess
         {
             this.y = y;
             this.x = x;
+        }
+
+        public String toString()
+        {
+            String tile;
+            if (owner != null)
+            {
+                tile = "Tile at " + y + "," + x + " contains " + owner.Name;
+            }
+            else
+            {
+                tile = "Tile at " + y + "," + x + " is empty";
+            }
+            return tile;
+        }
+    }
+
+    public class Move
+    {
+        private Tile org;
+        public Tile Org { get { return org;} }
+        private Tile target;
+        private Boolean special;
+        private Piece mover;
+        private Piece kill;
+
+        public Move(Tile org)
+        {
+            this.org = org;
         }
     }
 }
