@@ -22,7 +22,6 @@ namespace Chess
     public partial class MainWindow : Window
     {
         private Board game;
-        private int moveX, moveY;
         public Boolean moving;
         private Move nextMove;
 
@@ -39,16 +38,14 @@ namespace Chess
             Tile[,] tiles = game.GetTiles();
             foreach (Tile t in tiles)
             {
+                String pos = "c" + t.Y + t.X;
+                TextBlock block = (TextBlock)this.FindName(pos);
                 if (t.Owner != null)
                 {
-                    String pos = "c" + t.Y + t.X;
-                    TextBlock block = (TextBlock)this.FindName(pos);
                     block.Text = GetUnicode(t, block.Background);
                 }
                 else
                 {
-                    String pos = "c" + t.Y + t.X;
-                    TextBlock block = (TextBlock)this.FindName(pos);
                     block.Text = "";
                 }
             }
@@ -123,7 +120,7 @@ namespace Chess
             int y = Int32.Parse(s.Name.Substring(1, 1));
             int x = Int32.Parse(s.Name.Substring(2, 1));
             Console.WriteLine("selected: " + y + ":" + x);
-            if (!moving)
+            if (nextMove != null)
             {
                 UIElement uie = s;
                 uie.Effect = new BlurEffect
@@ -138,11 +135,19 @@ namespace Chess
             {
                 if (game.GetLegalMovements(nextMove.Org).Contains(game.GetSpecificTile(y, x)))
                 {
-                    int[] org = game.MovePieceB(y - 1, x - 1);
-                    TextBlock o = (TextBlock)this.FindName("c" + org[0] + "" + org[1]);
+                    Console.WriteLine("move is legal");
+                    nextMove.Target = game.GetSpecificTile(y, x);
+                    //int[] org = game.MovePieceB(y - 1, x - 1);
+                    //TextBlock o = (TextBlock)this.FindName("c" + org[0] + "" + org[1]);
+                    nextMove.Execute();
                     UIElement uie = s;
                     uie.Effect = null;
                     DrawBoard();
+                    nextMove = null;
+                }
+                else
+                {
+                    Console.WriteLine("move is illegal");
                 }
             }
         }

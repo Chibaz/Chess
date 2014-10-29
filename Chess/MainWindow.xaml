@@ -2,45 +2,54 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MainWindow" Height="500" Width="500" WindowStyle="None" MaxWidth="500" MaxHeight="500" MinWidth="500" MinHeight="500">
-    <Grid x:Name="grid" MinWidth="50" MinHeight="50" Margin="2,2,10,10" >
+    <Grid x:Name="grid" MinWidth="50" MinHeight="50" Margin="2" >
         <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <Label Grid.Row="0" Grid.Column="1" Content="A" HorizontalAlignment="Center"/>
-        <Label Grid.Row="0" Grid.Column="2" Content="B" HorizontalAlignment="Center"/>
-        <Label Grid.Row="0" Grid.Column="3" Content="C" HorizontalAlignment="Center"/>
-        <Label Grid.Row="0" Grid.Column="4" Content="D" HorizontalAlignment="Center"/>
-        <Label Grid.Row="0" Grid.Column="5" Content="E" HorizontalAlignment="Center"/>
-        <Label Grid.Row="0" Grid.Column="6" Content="F" HorizontalAlignment="Center"/>
-        <Label Grid.Row="0" Grid.Column="7" Content="G" HorizontalAlignment="Center"/>
-        <Label Grid.Row="0" Grid.Column="8" Content="H" HorizontalAlignment="Center"/>
-        <Label Grid.Row="1" Grid.Column="0" Content="1" VerticalAlignment="Center"/>
-        <Label Grid.Row="2" Grid.Column="0" Content="2" VerticalAlignment="Center"/>
-        <Label Grid.Row="3" Grid.Column="0" Content="3" VerticalAlignment="Center"/>
-        <Label Grid.Row="4" Grid.Column="0" Content="4" VerticalAlignment="Center"/>
-        <Label Grid.Row="5" Grid.Column="0" Content="5" VerticalAlignment="Center"/>
-        <Label Grid.Row="6" Grid.Column="0" Content="6" VerticalAlignment="Center"/>
-        <Label Grid.Row="7" Grid.Column="0" Content="7" VerticalAlignment="Center"/>
-        <Label Grid.Row="8" Grid.Column="0" Content="8" VerticalAlignment="Center"/>
+        <Label Grid.Row="8" Grid.Column="0" Content="A" HorizontalAlignment="Center"/>
+        <Label Grid.Row="8" Grid.Column="1" Content="B" HorizontalAlignment="Center"/>
+        <Label Grid.Row="8" Grid.Column="2" Content="C" HorizontalAlignment="Center"/>
+        <Label Grid.Row="8" Grid.Column="3" Content="D" HorizontalAlignment="Center"/>
+        <Label Grid.Row="8" Grid.Column="4" Content="E" HorizontalAlignment="Center"/>
+        <Label Grid.Row="8" Grid.Column="5" Content="F" HorizontalAlignment="Center"/>
+        <Label Grid.Row="8" Grid.Column="6" Content="G" HorizontalAlignment="Center"/>
+        <Label Grid.Row="8" Grid.Column="7" Content="H" HorizontalAlignment="Center"/>
+        <Label Grid.Row="0" Grid.Column="8" Content="1" VerticalAlignment="Center"/>
+        <Label Grid.Row="1" Grid.Column="8" Content="2" VerticalAlignment="Center"/>
+        <Label Grid.Row="2" Grid.Column="8" Content="3" VerticalAlignment="Center"/>
+        <Label Grid.Row="3" Grid.Column="8" Content="4" VerticalAlignment="Center"/>
+        <Label Grid.Row="4" Grid.Column="8" Content="5" VerticalAlignment="Center"/>
+        <Label Grid.Row="5" Grid.Column="8" Content="6" VerticalAlignment="Center"/>
+        <Label Grid.Row="6" Grid.Column="8" Content="7" VerticalAlignment="Center"/>
+        <Label Grid.Row="7" Grid.Column="8" Content="8" VerticalAlignment="Center"/>
+        <TextBlock Grid.Row="0" Grid.Column="0" Name="c00" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="Black" Background="White" Width="58" MouseDown="MouseClick"/>
+        <TextBlock Grid.Row="0" Grid.Column="1" Name="c01" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="White" Background="Black" Width="58" MouseDown="MouseClick"/>
+        <TextBlock Grid.Row="0" Grid.Column="2" Name="c02" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="Black" Background="White" Width="58" MouseDown="MouseClick"/>
+        <TextBlock Grid.Row="0" Grid.Column="3" Name="c03" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="White" Background="Black" Width="58" MouseDown="MouseClick"/>
+        <TextBlock Grid.Row="0" Grid.Column="4" Name="c04" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="Black" Background="White" Width="58" MouseDown="MouseClick"/>
+        <TextBlock Grid.Row="0" Grid.Column="5" Name="c05" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="White" Background="Black" Width="58" MouseDown="MouseClick"/>
+        <TextBlock Grid.Row="0" Grid.Column="6" Name="c06" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="Black" Background="White" Width="58" MouseDown="MouseClick"/>
+        <TextBlock Grid.Row="0" Grid.Column="7" Name="c07" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="White" Background="Black" Width="58" MouseDown="MouseClick"/>
+        <TextBlock Grid.Row="1" Grid.Column="0" Name="c10" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="White" Background="Black" Width="58" MouseDown="MouseClick"/>
         <TextBlock Grid.Row="1" Grid.Column="1" Name="c11" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="Black" Background="White" Width="58" MouseDown="MouseClick"/>
         <TextBlock Grid.Row="1" Grid.Column="2" Name="c12" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="White" Background="Black" Width="58" MouseDown="MouseClick"/>
         <TextBlock Grid.Row="1" Grid.Column="3" Name="c13" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="Black" Background="White" Width="58" MouseDown="MouseClick"/>
@@ -48,7 +57,7 @@
         <TextBlock Grid.Row="1" Grid.Column="5" Name="c15" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="Black" Background="White" Width="58" MouseDown="MouseClick"/>
         <TextBlock Grid.Row="1" Grid.Column="6" Name="c16" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="White" Background="Black" Width="58" MouseDown="MouseClick"/>
         <TextBlock Grid.Row="1" Grid.Column="7" Name="c17" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="Black" Background="White" Width="58" MouseDown="MouseClick"/>
-        <TextBlock Grid.Row="1" Grid.Column="8" Name="c18" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="White" Background="Black" Width="58" MouseDown="MouseClick"/>
+        <TextBlock Grid.Row="2" Grid.Column="0" Name="c20" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="Black" Background="White" Width="58" MouseDown="MouseClick"/>
         <TextBlock Grid.Row="2" Grid.Column="1" Name="c21" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="White" Background="Black" Width="58" MouseDown="MouseClick"/>
         <TextBlock Grid.Row="2" Grid.Column="2" Name="c22" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="Black" Background="White" Width="58" MouseDown="MouseClick"/>
         <TextBlock Grid.Row="2" Grid.Column="3" Name="c23" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="White" Background="Black" Width="58" MouseDown="MouseClick"/>
@@ -56,7 +65,7 @@
         <TextBlock Grid.Row="2" Grid.Column="5" Name="c25" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="White" Background="Black" Width="58" MouseDown="MouseClick"/>
         <TextBlock Grid.Row="2" Grid.Column="6" Name="c26" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="Black" Background="White" Width="58" MouseDown="MouseClick"/>
         <TextBlock Grid.Row="2" Grid.Column="7" Name="c27" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="White" Background="Black" Width="58" MouseDown="MouseClick"/>
-        <TextBlock Grid.Row="2" Grid.Column="8" Name="c28" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="Black" Background="White" Width="58" MouseDown="MouseClick"/>
+        <TextBlock Grid.Row="3" Grid.Column="0" Name="c30" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="White" Background="Black" Width="58" MouseDown="MouseClick"/>
         <TextBlock Grid.Row="3" Grid.Column="1" Name="c31" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="Black" Background="White" Width="58" MouseDown="MouseClick"/>
         <TextBlock Grid.Row="3" Grid.Column="2" Name="c32" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="White" Background="Black" Width="58" MouseDown="MouseClick"/>
         <TextBlock Grid.Row="3" Grid.Column="3" Name="c33" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="Black" Background="White" Width="58" MouseDown="MouseClick"/>
@@ -64,7 +73,7 @@
         <TextBlock Grid.Row="3" Grid.Column="5" Name="c35" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="Black" Background="White" Width="58" MouseDown="MouseClick"/>
         <TextBlock Grid.Row="3" Grid.Column="6" Name="c36" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="White" Background="Black" Width="58" MouseDown="MouseClick"/>
         <TextBlock Grid.Row="3" Grid.Column="7" Name="c37" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="Black" Background="White" Width="58" MouseDown="MouseClick"/>
-        <TextBlock Grid.Row="3" Grid.Column="8" Name="c38" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="White" Background="Black" Width="58" MouseDown="MouseClick"/>
+        <TextBlock Grid.Row="4" Grid.Column="0" Name="c40" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="Black" Background="White" Width="58" MouseDown="MouseClick"/>
         <TextBlock Grid.Row="4" Grid.Column="1" Name="c41" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="White" Background="Black" Width="58" MouseDown="MouseClick"/>
         <TextBlock Grid.Row="4" Grid.Column="2" Name="c42" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="Black" Background="White" Width="58" MouseDown="MouseClick"/>
         <TextBlock Grid.Row="4" Grid.Column="3" Name="c43" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="White" Background="Black" Width="58" MouseDown="MouseClick"/>
@@ -72,7 +81,7 @@
         <TextBlock Grid.Row="4" Grid.Column="5" Name="c45" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="White" Background="Black" Width="58" MouseDown="MouseClick"/>
         <TextBlock Grid.Row="4" Grid.Column="6" Name="c46" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="Black" Background="White" Width="58" MouseDown="MouseClick"/>
         <TextBlock Grid.Row="4" Grid.Column="7" Name="c47" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="White" Background="Black" Width="58" MouseDown="MouseClick"/>
-        <TextBlock Grid.Row="4" Grid.Column="8" Name="c48" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="Black" Background="White" Width="58" MouseDown="MouseClick"/>
+        <TextBlock Grid.Row="5" Grid.Column="0" Name="c50" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="White" Background="Black" Width="58" MouseDown="MouseClick"/>
         <TextBlock Grid.Row="5" Grid.Column="1" Name="c51" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="Black" Background="White" Width="58" MouseDown="MouseClick"/>
         <TextBlock Grid.Row="5" Grid.Column="2" Name="c52" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="White" Background="Black" Width="58" MouseDown="MouseClick"/>
         <TextBlock Grid.Row="5" Grid.Column="3" Name="c53" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="Black" Background="White" Width="58" MouseDown="MouseClick"/>
@@ -80,7 +89,7 @@
         <TextBlock Grid.Row="5" Grid.Column="5" Name="c55" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="Black" Background="White" Width="58" MouseDown="MouseClick"/>
         <TextBlock Grid.Row="5" Grid.Column="6" Name="c56" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="White" Background="Black" Width="58" MouseDown="MouseClick"/>
         <TextBlock Grid.Row="5" Grid.Column="7" Name="c57" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="Black" Background="White" Width="58" MouseDown="MouseClick"/>
-        <TextBlock Grid.Row="5" Grid.Column="8" Name="c58" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="White" Background="Black" Width="58" MouseDown="MouseClick"/>
+        <TextBlock Grid.Row="6" Grid.Column="0" Name="c60" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="Black" Background="White" Width="58" MouseDown="MouseClick"/>
         <TextBlock Grid.Row="6" Grid.Column="1" Name="c61" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="White" Background="Black" Width="58" MouseDown="MouseClick"/>
         <TextBlock Grid.Row="6" Grid.Column="2" Name="c62" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="Black" Background="White" Width="58" MouseDown="MouseClick"/>
         <TextBlock Grid.Row="6" Grid.Column="3" Name="c63" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="White" Background="Black" Width="58" MouseDown="MouseClick"/>
@@ -88,7 +97,7 @@
         <TextBlock Grid.Row="6" Grid.Column="5" Name="c65" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="White" Background="Black" Width="58" MouseDown="MouseClick"/>
         <TextBlock Grid.Row="6" Grid.Column="6" Name="c66" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="Black" Background="White" Width="58" MouseDown="MouseClick"/>
         <TextBlock Grid.Row="6" Grid.Column="7" Name="c67" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="White" Background="Black" Width="58" MouseDown="MouseClick"/>
-        <TextBlock Grid.Row="6" Grid.Column="8" Name="c68" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="Black" Background="White" Width="58" MouseDown="MouseClick"/>
+        <TextBlock Grid.Row="7" Grid.Column="0" Name="c70" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="White" Background="Black" Width="58" MouseDown="MouseClick"/>
         <TextBlock Grid.Row="7" Grid.Column="1" Name="c71" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="Black" Background="White" Width="58" MouseDown="MouseClick"/>
         <TextBlock Grid.Row="7" Grid.Column="2" Name="c72" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="White" Background="Black" Width="58" MouseDown="MouseClick"/>
         <TextBlock Grid.Row="7" Grid.Column="3" Name="c73" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="Black" Background="White" Width="58" MouseDown="MouseClick"/>
@@ -96,14 +105,5 @@
         <TextBlock Grid.Row="7" Grid.Column="5" Name="c75" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="Black" Background="White" Width="58" MouseDown="MouseClick"/>
         <TextBlock Grid.Row="7" Grid.Column="6" Name="c76" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="White" Background="Black" Width="58" MouseDown="MouseClick"/>
         <TextBlock Grid.Row="7" Grid.Column="7" Name="c77" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="Black" Background="White" Width="58" MouseDown="MouseClick"/>
-        <TextBlock Grid.Row="7" Grid.Column="8" Name="c78" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="White" Background="Black" Width="58" MouseDown="MouseClick"/>
-        <TextBlock Grid.Row="8" Grid.Column="1" Name="c81" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="White" Background="Black" Width="58" MouseDown="MouseClick"/>
-        <TextBlock Grid.Row="8" Grid.Column="2" Name="c82" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="Black" Background="White" Width="58" MouseDown="MouseClick"/>
-        <TextBlock Grid.Row="8" Grid.Column="3" Name="c83" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="White" Background="Black" Width="58" MouseDown="MouseClick"/>
-        <TextBlock Grid.Row="8" Grid.Column="4" Name="c84" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="Black" Background="White" Width="58" MouseDown="MouseClick"/>
-        <TextBlock Grid.Row="8" Grid.Column="5" Name="c85" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="White" Background="Black" Width="58" MouseDown="MouseClick"/>
-        <TextBlock Grid.Row="8" Grid.Column="6" Name="c86" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="Black" Background="White" Width="58" MouseDown="MouseClick"/>
-        <TextBlock Grid.Row="8" Grid.Column="7" Name="c87" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="White" Background="Black" Width="58" MouseDown="MouseClick"/>
-        <TextBlock Grid.Row="8" Grid.Column="8" Name="c88" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="Black" Background="White" Width="58" MouseDown="MouseClick"/>
     </Grid>
 </Window>
