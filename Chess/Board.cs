@@ -9,6 +9,7 @@ namespace Chess
     public class Board
     {
         private Tile[,] tiles;
+        private List<Tile> legalMoves;
         private Piece toMove;
         private int tX, tY;
         private MainWindow window;
@@ -32,7 +33,7 @@ namespace Chess
         }
 
         //Sets the coordinates from which a piece will move
-        public List<Tile> MovePieceA(int y, int x)
+        public void MovePieceA(int y, int x)
         {
             Tile t = tiles[y, x];
             if (t.Owner != null)
@@ -42,7 +43,7 @@ namespace Chess
                 toMove = t.Owner;
                 window.moving = true;
             }
-            return GetLegalMovements(y, x);
+            legalMoves = GetLegalMovements(y, x);
         }
 
         //Moves a specified piece to a different location

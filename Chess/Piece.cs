@@ -29,20 +29,129 @@ namespace Chess
         }
         protected int[,] specials { get; set; }
 
-        /*
-        public List<int[]> generateMoves(int[] position)
+        public List<Tile> GetLegalMovements(int originY, int originX, Tile[,] tiles)
         {
-            List<int[]> realMoves = new List<int[]>();
-            if(moveVar.Equals(null))
-            foreach(int[] move in moveVar){
-                realMoves.Add(new int[] {position[0]+move[0], position[1]+move[1]});
+            Tile origin = tiles[originY, originX];
+            List<Tile> moves = new List<Tile>();
+            Piece piece = origin.Owner;
+            if (piece != null && piece.Movement) //Movement is without range limit
+            {
+                Console.WriteLine("relative movement");
+                if (piece.Move.Contains("straight"))
+                {
+                    Console.WriteLine("straight movement");
+                    for (int x = origin.X + 1; x < (8 - origin.X); x++)
+                    {
+                        Tile target = tiles[origin.Y, x];
+                        if (target.Owner == null)
+                        {
+                            moves.Add(target);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    for (int x = origin.X - 1; x >= 0; x--)
+                    {
+                        Tile target = tiles[origin.Y, x];
+                        if (target.Owner == null)
+                        {
+                            moves.Add(target);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    for (int y = origin.Y + 1; y < (8 - origin.Y); y++)
+                    {
+                        Tile target = tiles[y, origin.X];
+                        if (target.Owner == null)
+                        {
+                            moves.Add(target);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    for (int y = origin.Y - 1; y >= 0; y--)
+                    {
+                        Tile target = tiles[y, origin.X];
+                        if (target.Owner == null)
+                        {
+                            moves.Add(target);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+                if (piece.Move.Contains("diagonal"))
+                {
+                    Console.WriteLine("diagonal movement");
+                    for (int y = origin.Y + 1; y < (8 - origin.Y); y++)
+                    {
+                        Tile target = tiles[y, y];
+                        if (target.Owner == null)
+                        {
+                            moves.Add(target);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    for (int y = origin.Y - 1; y >= (8 - origin.Y); y--)
+                    {
+                        Tile target = tiles[y, y];
+                        if (target.Owner == null)
+                        {
+                            moves.Add(target);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    for (int x = origin.X + 1; x < (8 - origin.X); x++)
+                    {
+                        Tile target = tiles[x, x];
+                        if (target.Owner == null)
+                        {
+                            moves.Add(target);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    for (int x = origin.X + 1; x < (8 - origin.X); x--)
+                    {
+                        Tile target = tiles[x, x];
+                        if (target.Owner == null)
+                        {
+                            moves.Add(target);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
             }
-            else{
-
+            else //Movement is an absolute distance
+            {
+                Console.WriteLine("absolute movement");
+                foreach (Tile t in tiles)
+                {
+                    moves.Add(t);
+                }
             }
-            return realMoves;
+            return moves;
         }
-        */
     }
 
     public class Pawn : Piece
