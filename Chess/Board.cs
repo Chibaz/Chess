@@ -9,8 +9,6 @@ namespace Chess
     public class Board
     {
         private Tile[,] tiles;
-        private List<Tile> legalMoves;
-        private Piece toMove;
         private int tX, tY;
         private MainWindow window;
 
@@ -21,7 +19,7 @@ namespace Chess
             {
                 for (int w = 0; w < 8; w++)
                 {
-                    Tile tile = new Tile(h + 1, w + 1);
+                    Tile tile = new Tile(h, w);
                     if (h == 0 || h == 1 || h == 6 || h == 7)
                     {
                         tile.Owner = GetStartPiece(tile);
@@ -32,89 +30,62 @@ namespace Chess
             this.window = window;
         }
 
-        //Sets the coordinates from which a piece will move
-        public void MovePieceA(int y, int x)
-        {
-            Tile t = tiles[y, x];
-            if (t.Owner != null)
-            {
-                tY = y;
-                tX = x;
-                toMove = t.Owner;
-                window.moving = true;
-            }
-            legalMoves = GetLegalMovements(y, x);
-        }
-
-        //Moves a specified piece to a different location
-        public int[] MovePieceB(int y, int x)
-        {
-            Tile t = tiles[y, x];
-            if (t.Owner == null)
-            {
-                t.Owner = toMove;
-                tiles[tY, tX].Owner = null;
-                window.moving = false;
-            }
-            return new int[] { tY, tX };
-        }
-
         //Used for getting which piece will be at the a specified tile at the start of a game
         public Piece GetStartPiece(Tile tile)
         {
             int h = tile.Y;
             int w = tile.X;
             Piece piece = null;
-            if (h == 1)
+            if (h == 0)
             {
-                if (w == 1 || w == 8)
+                if (w == 0 || w == 7)
                 {
                     piece = new Rook(false);
                 }
-                else if (w == 2 || w == 7)
+                else if (w == 1 || w == 6)
                 {
                     piece = new Knight(false);
                 }
-                else if (w == 3 || w == 6)
+                else if (w == 2 || w == 5)
                 {
                     piece = new Bishop(false);
                 }
-                else if (w == 4)
+                else if (w == 3)
                 {
                     piece = new Queen(false);
                 }
-                else if (w == 5)
+                else if (w == 4)
                 {
                     piece = new King(false);
                 }
             }
-            else if (h == 2)
+            else if (h == 1)
             {
                 piece = new Pawn(false);
             }
-            else if (h == 7)
+            else if (h == 6)
             {
                 piece = new Pawn(true);
             }
-            else if (h == 8)
+            else if (h == 7)
             {
-                if (w == 1 || w == 8)
+                if (w == 0 || w == 7)
                 {
                     piece = new Rook(true);
                 }
-                else if (w == 2 || w == 7)
+                else if (w == 1 || w == 6)
                 {
                     piece = new Knight(true);
                 }
-                else if (w == 3 || w == 6)
+                else if (w == 2 || w == 5)
                 {
                     piece = new Bishop(true);
                 }
-                else if (w == 4)
+                else if (w == 3)
                 {
                     piece = new Queen(true);
                 }
-                else if (w == 5)
+                else if (w == 4)
                 {
                     piece = new King(true);
                 }
@@ -122,9 +93,8 @@ namespace Chess
             return piece;
         }
 
-        public List<Tile> GetLegalMovements(int originY, int originX)
+        public List<Tile> GetLegalMovements(Tile origin)
         {
-            Tile origin = tiles[originY, originX];
             List<Tile> moves = new List<Tile>();
             Piece piece = origin.Owner;
             if (piece != null && piece.Movement) //Movement is without range limit
@@ -132,8 +102,9 @@ namespace Chess
                 Console.WriteLine("relative movement");
                 if(piece.Move.Contains("straight")){
                     Console.WriteLine("straight movement");
-                    for (int x = origin.X+1; x < (8 - origin.X); x++)
+                    for (int x = origin.X + 1; x < 8; x++)
                     {
+                        Console.WriteLine("checking " + origin.Y + "," + x);
                         Tile target = tiles[origin.Y, x];
                         if (target.Owner == null)
                         {
@@ -144,8 +115,9 @@ namespace Chess
                             break;
                         }
                     }
-                    for (int x = origin.X - 1; x >= 0; x--)
+                    for (int x = origin.X - 1; x > 0; x--)
                     {
+                        Console.WriteLine("checking " + origin.Y + "," + x);
                         Tile target = tiles[origin.Y, x];
                         if (target.Owner == null)
                         {
@@ -156,8 +128,9 @@ namespace Chess
                             break;
                         }
                     }
-                    for (int y = origin.Y + 1; y < (8 - origin.Y); y++)
+                    for (int y = origin.Y + 1; y < 8; y++)
                     {
+                        Console.WriteLine("checking " + y + "," + origin.X);
                         Tile target = tiles[y, origin.X];
                         if (target.Owner == null)
                         {
@@ -168,8 +141,9 @@ namespace Chess
                             break;
                         }
                     }
-                    for (int y = origin.Y - 1; y >= 0; y--)
+                    for (int y = origin.Y - 1; y > 0; y--)
                     {
+                        Console.WriteLine("checking " + y + "," + origin.X);
                         Tile target = tiles[y, origin.X];
                         if (target.Owner == null)
                         {
@@ -182,53 +156,40 @@ namespace Chess
                     }
                 }
                 if(piece.Move.Contains("diagonal")){
-                    Console.WriteLine("diagonal movement");
-                    for (int y = origin.Y + 1; y < (8 - origin.Y); y++)
-                    {
-                        Tile target = tiles[y, y];
-                        if (target.Owner == null)
-                        {
-                            moves.Add(target);
+                    int xL, xR;
+                    xL = xR = origin.X;
+                    Boolean leftUnbroken, rightUnbroken;
+                    leftUnbroken = rightUnbroken = true;
+                    for(int y = origin.Y + 1; y < 8; y++){ //Lower diagonals
+                        xL--;
+                        xR++;
+                        if(xL > 0 && tiles[y, xL].Owner == null && leftUnbroken){
+                            moves.Add(tiles[y, xL]);
+                        }else{
+                            leftUnbroken = false;
                         }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                    for (int y = origin.Y - 1; y >= (8 - origin.Y); y--)
-                    {
-                        Tile target = tiles[y, y];
-                        if (target.Owner == null)
-                        {
-                            moves.Add(target);
-                        }
-                        else
-                        {
-                            break;
+                        if(xR < 8 && tiles[y, xR].Owner == null && rightUnbroken){
+                            moves.Add(tiles[y, xR]);
+                        }else{
+                            rightUnbroken = false;
                         }
                     }
-                    for (int x = origin.X + 1; x < (8 - origin.X); x++)
-                    {
-                        Tile target = tiles[x, x];
-                        if (target.Owner == null)
+                    xL = xR = origin.X;
+                    leftUnbroken = rightUnbroken = true;
+                    for(int y = origin.Y - 1; y >= 0; y--){ //Upper diagonals
+                        xL--;
+                        xR++;
+                        if (xL > 0 && tiles[y, xL].Owner == null && leftUnbroken)
                         {
-                            moves.Add(target);
+                            moves.Add(tiles[y, xL]);
+                        }else{
+                            leftUnbroken = false;
                         }
-                        else
+                        if (xR < 8 && tiles[y, xR].Owner == null && rightUnbroken)
                         {
-                            break;
-                        }
-                    }
-                    for (int x = origin.X + 1; x < (8 - origin.X); x--)
-                    {
-                        Tile target = tiles[x, x];
-                        if (target.Owner == null)
-                        {
-                            moves.Add(target);
-                        }
-                        else
-                        {
-                            break;
+                            moves.Add(tiles[y, xR]);
+                        }else{
+                            rightUnbroken = false;
                         }
                     }
                 }
@@ -241,12 +202,22 @@ namespace Chess
                     moves.Add(t);
                 }
             }
+            Console.WriteLine("legal moves for " + origin.toString());
+            foreach (Tile t in moves)
+            {
+                Console.WriteLine(t.toString());
+            }
             return moves;
         }
 
         public Tile[,] GetTiles()
         {
             return tiles;
+        }
+
+        public Tile GetSpecificTile(int y, int x)
+        {
+            return tiles[y, x];
         }
     }  
 
@@ -263,6 +234,43 @@ namespace Chess
         {
             this.y = y;
             this.x = x;
+        }
+
+        public String toString()
+        {
+            String tile;
+            if (owner != null)
+            {
+                tile = "Tile at " + y + "," + x + " contains " + owner.Name;
+            }
+            else
+            {
+                tile = "Tile at " + y + "," + x + " is empty";
+            }
+            return tile;
+        }
+    }
+
+    public class Move
+    {
+        private Tile org;
+        public Tile Org { get { return org;} }
+        private Tile target;
+        public Tile Target { get { return target; } set { target = value; } }
+        private Boolean special;
+        private Piece mover;
+        private Piece kill;
+
+        public Move(Tile org)
+        {
+            this.org = org;
+            mover = org.Owner;
+        }
+
+        public void Execute()
+        {
+            org.Owner = null;
+            target.Owner = mover;
         }
     }
 }
