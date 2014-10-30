@@ -92,7 +92,17 @@ namespace Chess
             }
             return piece;
         }
-
+        public void PrintBoard()
+        {
+            var rowCount = tiles.GetLength(0);
+            var colCount = tiles.GetLength(1);
+            for (int row = 0; row < rowCount; row++)
+            {
+                for (int col = 0; col < colCount; col++)
+                    Console.Write(String.Format("{0}\t", tiles[row, col]));
+                Console.WriteLine();
+            }
+        }
         public List<Tile> GetLegalMovements(Tile origin)
         {
             List<Tile> moves = new List<Tile>();
@@ -207,6 +217,7 @@ namespace Chess
             {
                 Console.WriteLine(t.toString());
             }
+            PrintBoard();
             return moves;
         }
 

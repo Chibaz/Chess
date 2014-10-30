@@ -32,6 +32,10 @@ namespace Chess
             DrawBoard();
         }
 
+        public void NewGame()
+        {
+
+        }
         //Goes through the tiles in the board and puts the pieces in the correct places
         public void DrawBoard()
         {
