@@ -159,5 +159,16 @@ namespace Chess
                 }
             }
         }
+
+        private void MenuItem_NewGame(object sender, RoutedEventArgs e)
+        {
+            game.resetGame(true);
+            DrawBoard(); //skal have lavet så blurred brikker ikke er blurred mere...
+        }
+
+        private void MenuItem_ExitGame(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
     }
 }

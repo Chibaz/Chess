@@ -14,12 +14,12 @@ namespace Chess
         public Board(MainWindow window)
         {
             tiles = new Tile[8, 8];
-            resetGame();
+            resetGame(true);
             this.window = window;
         }
 
         //Used for resetting the pieces on the board
-        public void resetGame()
+        public void resetGame(Boolean color)
         {
             for (int h = 0; h < 8; h++)
             {
@@ -28,7 +28,7 @@ namespace Chess
                     Tile tile = new Tile(h, w);
                     if (h == 0 || h == 1 || h == 6 || h == 7)
                     {
-                        tile.Owner = GetStartPiece(tile, true);
+                        tile.Owner = GetStartPiece(tile, color);
                     }
                     tiles[h, w] = tile;
                 }
@@ -36,7 +36,7 @@ namespace Chess
         }
 
 
-        //Used for getting which piece will be at the a specified tile at the start of a game
+        //Used for getting which piece will be at the a specified tile and color at the start of a game
         public Piece GetStartPiece(Tile tile, Boolean color)
         {
             int h = tile.Y;
