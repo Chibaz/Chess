@@ -12,10 +12,10 @@ namespace Chess
         public string Name{
             get { return name; }
         }
-        protected Boolean owner;
-        public Boolean Owner
+        protected Boolean color;
+        public Boolean Color
         {
-            get { return owner; } 
+            get { return color; } 
         }
         protected Boolean movement;
         public Boolean Movement
@@ -156,12 +156,12 @@ namespace Chess
 
     public class Pawn : Piece
     {
-        public Pawn(Boolean owner)
+        public Pawn(Boolean owner, Boolean startDir)
         {
             name = "pawn";
-            this.owner = owner;
+            this.color = owner;
             movement = false;
-            if (owner)
+            if (!startDir)
             {
                 move = new String[] { "1,0" };
                 specials = new int[,] { { 1, -1 }, {-1, 1} };
@@ -178,7 +178,7 @@ namespace Chess
     {
         public Rook(Boolean owner){
             name = "rook";
-            this.owner = owner;
+            this.color = owner;
             movement = true;
             //moveAbs = false;
             move = new String[] { "straight" };
@@ -190,7 +190,7 @@ namespace Chess
         public Knight(Boolean owner)
         {
             name = "knight";
-            this.owner = owner;
+            this.color = owner;
             movement = false;
             move = new String[] { "2,1", "2,-1", "-2,1", "-2,-1", "1,2", "1,-2", "-1,2", "-1,-2" };
         }
@@ -201,7 +201,7 @@ namespace Chess
         public Bishop(Boolean owner)
         {
             name = "bishop";
-            this.owner = owner;
+            this.color = owner;
             movement = true;
             //moveAbs = false;
             move = new String[] { "diagonal" };
@@ -212,7 +212,7 @@ namespace Chess
         public King(Boolean owner)
         {
             name = "king";
-            this.owner = owner;
+            this.color = owner;
             movement = false;
             move = new String[] { "1,0", "-1,0", "0,1", "0,-1", "1,1", "1,-1", "-1,1", "-1,-1" };                 
         }
@@ -223,7 +223,7 @@ namespace Chess
         public Queen(Boolean owner)
         {
             name = "queen";
-            this.owner = owner;
+            this.color = owner;
             movement = true;
             //moveAbs = true;
             move = new String[] { "straight", "diagonal" };
