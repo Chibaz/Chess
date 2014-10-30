@@ -156,12 +156,12 @@ namespace Chess
 
     public class Pawn : Piece
     {
-        public Pawn(Boolean owner)
+        public Pawn(Boolean owner, Boolean startDir)
         {
             name = "pawn";
             this.color = owner;
             movement = false;
-            if (!owner)
+            if (!startDir)
             {
                 move = new String[] { "1,0" };
                 specials = new int[,] { { 1, -1 }, {-1, 1} };
