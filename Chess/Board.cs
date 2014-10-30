@@ -24,7 +24,7 @@ namespace Chess
                     {
                         tile.Owner = GetStartPiece(tile);
                     }
-                    tiles[h, w] = tile;
+                    tiles[h, w] = tile; //hej
                 }
             }
             this.window = window;
