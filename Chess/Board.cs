@@ -187,7 +187,7 @@ namespace Chess
             xL = xR = origin.X;
             Boolean leftUnbroken, rightUnbroken;
             leftUnbroken = rightUnbroken = true;
-            Move newMove;
+            Move newMove = null;
             for (int y = origin.Y + 1; y < 8; y++)
             { //Lower diagonals
                 xL--;
@@ -198,43 +198,50 @@ namespace Chess
                     newMove.Target = tiles[y, xL];
                     diagonalMoves.Add(newMove);
                 }
-                else if (leftUnbroken)
+                else if (xL > 0 && tiles[y, xL].Owner != null && leftUnbroken)
                 {
-                    //Check for kill move
+                    newMove = CheckForKill(newMove);
                     leftUnbroken = false;
                 }
                 if (xR < 8 && tiles[y, xR].Owner == null && rightUnbroken)
                 {
-                    //diagonalMoves.Add(tiles[y, xR]);
+                    newMove = new Move(origin);
+                    newMove.Target = tiles[y, xR];
+                    diagonalMoves.Add(newMove);
                 }
-                else if (rightUnbroken)
+                else if (xR < 8 && tiles[y, xR].Owner == null && rightUnbroken)
                 {
-                    //Check for kill move
+                    newMove = CheckForKill(newMove);
                     rightUnbroken = false;
                 }
             }
             xL = xR = origin.X;
             leftUnbroken = rightUnbroken = true;
+            newMove = null;
             for (int y = origin.Y - 1; y >= 0; y--)
             { //Upper diagonals
                 xL--;
                 xR++;
                 if (xL > 0 && tiles[y, xL].Owner == null && leftUnbroken)
                 {
-                    //diagonalMoves.Add(tiles[y, xL]);
+                    newMove = new Move(origin);
+                    newMove.Target = tiles[y, xL];
+                    diagonalMoves.Add(newMove);
                 }
-                else if (leftUnbroken)
+                else if (xL > 0 && tiles[y, xL].Owner != null && leftUnbroken)
                 {
-                    //Check for kill move
+                    CheckForKill(newMove);
                     leftUnbroken = false;
                 }
                 if (xR < 8 && tiles[y, xR].Owner == null && rightUnbroken)
                 {
-                    //diagonalMoves.Add(tiles[y, xR]);
+                    newMove = new Move(origin);
+                    newMove.Target = tiles[y, xR];
+                    diagonalMoves.Add(newMove);
                 }
-                else if (rightUnbroken)
+                else if (xR < 8 && tiles[y, xR].Owner != null && rightUnbroken)
                 {
-                    //Check for kill move
+                    CheckForKill(newMove);
                     rightUnbroken = false;
                 }
             }
