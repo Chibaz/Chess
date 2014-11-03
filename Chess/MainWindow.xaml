@@ -7,7 +7,7 @@
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_Spil" >
                 <MenuItem Header="_New Game" Click="MenuItem_NewGame"/>
-                <MenuItem Header="_Skift retning" />
+                <MenuItem Header="_Skift retning" Click="MenuItem_Change_Direction" />
                 <MenuItem Header="_Exit" Click="MenuItem_ExitGame"/>
             </MenuItem>
             <MenuItem Header="_AI-indstillinger">

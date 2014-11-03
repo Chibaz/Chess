@@ -22,8 +22,9 @@ namespace Chess
     public partial class MainWindow : Window
     {
         private Board game;
-        public Boolean moving;
+        private Boolean moving = true;
         private Move nextMove;
+        
 
         public MainWindow()
         {
@@ -162,13 +163,27 @@ namespace Chess
 
         private void MenuItem_NewGame(object sender, RoutedEventArgs e)
         {
-            game.resetGame(true);
+            game.resetGame(moving);
             DrawBoard(); //skal have lavet så blurred brikker ikke er blurred mere...
         }
 
         private void MenuItem_ExitGame(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();
+        }
+
+        private void MenuItem_Change_Direction(object sender, RoutedEventArgs e)
+        {
+            if (moving)
+            {
+                moving = false;
+            }
+            else
+            {
+                moving = true;
+            }
+            game.resetGame(moving);
+            DrawBoard();
         }
     }
 }
