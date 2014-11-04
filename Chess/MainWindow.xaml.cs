@@ -29,14 +29,15 @@ namespace Chess
         {
             InitializeComponent();
             game = new Board(this);
+            game.resetGame(-1);
             DrawBoard();
         }
 
         //Goes through the tiles in the board and puts the pieces in the correct places
         public void DrawBoard()
         {
-            Tile[,] tiles = game.GetTiles();
-            foreach (Tile t in tiles)
+            int[,] tiles = game.GetTiles();
+            foreach (int p in tiles)
             {
                 String pos = "c" + t.Y + t.X;
                 TextBlock block = (TextBlock)this.FindName(pos);
@@ -52,14 +53,13 @@ namespace Chess
         }
 
         //Gets the unicode string used for symbolizing any specific piece
-        public String GetUnicode(Tile tile, Brush color)
+        public String GetUnicode(int piece, Brush color)
         {
-            Piece piece = tile.Owner;
             String c = new BrushConverter().ConvertToString(color);
             String uni = null;
             if ((c.Equals("#FFFFFFFF") && piece.Color) || (c.Equals("#FF000000") && !piece.Color))
             {
-                if (piece.Name == "pawn")
+                if (piece == 1)
                 {
                     uni = "\u2659";
                 }

@@ -6,95 +6,73 @@ using System.Threading.Tasks;
 
 namespace Chess
 {
+    /*
+     * Board is based on a 2-dimensional array of ints, pieces are defined as:
+     * 1 - Pawn
+     * 2 - Rook
+     * 3 - Knight
+     * 4 - Bishop
+     * 5 - Queen
+     * 6 - King
+     */
     public class Board
     {
-        private Tile[,] tiles;
+        private int[,] tiles;
         private MainWindow window;
 
         public Board(MainWindow window)
         {
-            tiles = new Tile[8, 8];
-            resetGame();
+            tiles = new int[8, 8];
             this.window = window;
         }
 
         //Used for resetting the pieces on the board
-        public void resetGame()
+        public void resetGame(int color)
         {
             for (int h = 0; h < 8; h++)
             {
                 for (int w = 0; w < 8; w++)
                 {
-                    Tile tile = new Tile(h, w);
-                    if (h == 0 || h == 1 || h == 6 || h == 7)
-                    {
-                        tile.Owner = GetStartPiece(tile, false);
-                    }
-                    tiles[h, w] = tile;
+                    tiles[h, w] = GetStartPiece(h, w, -1);
                 }
             }
         }
 
 
         //Used for getting which piece will be at the a specified tile at the start of a game
-        public Piece GetStartPiece(Tile tile, Boolean color)
+        public int GetStartPiece(int h, int w, int color)
         {
-            int h = tile.Y;
-            int w = tile.X;
-            Piece piece = null;
-            if (h == 0)
+            int piece = 0;
+            if (h == 1 || h == 6)
             {
-                if (w == 0 || w == 7)
-                {
-                    piece = new Rook(!color);
-                }
-                else if (w == 1 || w == 6)
-                {
-                    piece = new Knight(!color);
-                }
-                else if (w == 2 || w == 5)
-                {
-                    piece = new Bishop(!color);
-                }
-                else if (w == 3)
-                {
-                    piece = new Queen(!color);
-                }
-                else if (w == 4)
-                {
-                    piece = new King(!color);
-                }
+                piece = 1;
+            }else if (w == 0 || w == 7)
+            {
+                piece = 2;
             }
-            else if (h == 1)
+            else if (w == 1 || w == 6)
             {
-                piece = new Pawn(!color, false);
+                piece = 3;
             }
-            else if (h == 6)
+            else if (w == 2 || w == 5)
             {
-                piece = new Pawn(color, true);
+                piece = 4;
             }
-            else if (h == 7)
+            else if (w == 3)
             {
-                if (w == 0 || w == 7)
-                {
-                    piece = new Rook(color);
-                }
-                else if (w == 1 || w == 6)
-                {
-                    piece = new Knight(color);
-                }
-                else if (w == 2 || w == 5)
-                {
-                    piece = new Bishop(color);
-                }
-                else if (w == 3)
-                {
-                    piece = new Queen(color);
-                }
-                else if (w == 4)
-                {
-                    piece = new King(color);
-                }
+                piece = 5;
+            }
+            else if (w == 4)
+            {
+                piece = 6;
+            }
+            if (h == 0 || h == 1)
+            {
+                piece *= color;
+            }
+            else if (h == 7 || h == 6)
+            {
+                piece *= -color;
             }
             return piece;
         }
@@ -325,7 +303,7 @@ namespace Chess
                 {
                     diagonalMoves.Add(tiles[y, xL]);
                 }
-                else if(leftUnbroken)
+                else if (leftUnbroken)
                 {
                     //Check for kill move
                     leftUnbroken = false;
@@ -334,7 +312,7 @@ namespace Chess
                 {
                     diagonalMoves.Add(tiles[y, xR]);
                 }
-                else if(rightUnbroken)
+                else if (rightUnbroken)
                 {
                     //Check for kill move
                     rightUnbroken = false;
@@ -350,7 +328,7 @@ namespace Chess
                 {
                     diagonalMoves.Add(tiles[y, xL]);
                 }
-                else if(leftUnbroken)
+                else if (leftUnbroken)
                 {
                     //Check for kill move
                     leftUnbroken = false;
@@ -359,7 +337,7 @@ namespace Chess
                 {
                     diagonalMoves.Add(tiles[y, xR]);
                 }
-                else if(rightUnbroken)
+                else if (rightUnbroken)
                 {
                     //Check for kill move
                     rightUnbroken = false;
@@ -397,12 +375,12 @@ namespace Chess
             return move;
         }
 
-        public Tile[,] GetTiles()
+        public int[,] GetTiles()
         {
             return tiles;
         }
 
-        public Tile GetSpecificTile(int y, int x)
+        public int GetSpecificTile(int y, int x)
         {
             return tiles[y, x];
         }
@@ -463,7 +441,7 @@ namespace Chess
             }
             target.Owner = org.Owner;
             org.Owner = null;
-            
+
         }
     }
 }
