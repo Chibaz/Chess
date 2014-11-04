@@ -28,7 +28,7 @@ namespace Chess
                     Tile tile = new Tile(h, w);
                     if (h == 0 || h == 1 || h == 6 || h == 7)
                     {
-                        tile.Owner = GetStartPiece(tile, true);
+                        tile.Owner = GetStartPiece(tile, false);
                     }
                     tiles[h, w] = tile;
                 }
@@ -46,54 +46,54 @@ namespace Chess
             {
                 if (w == 0 || w == 7)
                 {
-                    piece = new Rook(false);
+                    piece = new Rook(!color);
                 }
                 else if (w == 1 || w == 6)
                 {
-                    piece = new Knight(false);
+                    piece = new Knight(!color);
                 }
                 else if (w == 2 || w == 5)
                 {
-                    piece = new Bishop(false);
+                    piece = new Bishop(!color);
                 }
                 else if (w == 3)
                 {
-                    piece = new Queen(false);
+                    piece = new Queen(!color);
                 }
                 else if (w == 4)
                 {
-                    piece = new King(false);
+                    piece = new King(!color);
                 }
             }
             else if (h == 1)
             {
-                piece = new Pawn(false);
+                piece = new Pawn(!color, false);
             }
             else if (h == 6)
             {
-                piece = new Pawn(true);
+                piece = new Pawn(color, true);
             }
             else if (h == 7)
             {
                 if (w == 0 || w == 7)
                 {
-                    piece = new Rook(true);
+                    piece = new Rook(color);
                 }
                 else if (w == 1 || w == 6)
                 {
-                    piece = new Knight(true);
+                    piece = new Knight(color);
                 }
                 else if (w == 2 || w == 5)
                 {
-                    piece = new Bishop(true);
+                    piece = new Bishop(color);
                 }
                 else if (w == 3)
                 {
-                    piece = new Queen(true);
+                    piece = new Queen(color);
                 }
                 else if (w == 4)
                 {
-                    piece = new King(true);
+                    piece = new King(color);
                 }
             }
             return piece;
@@ -136,7 +136,7 @@ namespace Chess
                 }
                 else
                 {
-                    CheckForKill(newMove);
+                    newMove = CheckForKill(newMove);
                     break;
                 }
                 straightMoves.Add(newMove);
@@ -150,7 +150,7 @@ namespace Chess
                 }
                 else
                 {
-                    CheckForKill(newMove);
+                    newMove = CheckForKill(newMove);
                     break;
                 }
                 straightMoves.Add(newMove);
@@ -164,7 +164,7 @@ namespace Chess
                 }
                 else
                 {
-                    CheckForKill(newMove);
+                    newMove = CheckForKill(newMove);
                     break;
                 }
                 straightMoves.Add(newMove);
@@ -178,7 +178,7 @@ namespace Chess
                 }
                 else
                 {
-                    CheckForKill(newMove);
+                    newMove = CheckForKill(newMove);
                     break;
                 }
                 straightMoves.Add(newMove);
