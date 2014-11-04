@@ -17,13 +17,25 @@ namespace Chess
      */
     public class Board
     {
+        
         private int[,] tiles;
         private MainWindow window;
+        private static Board board;
+        public static Board Board
+        {
+            get
+            {
+                if (board == null)
+                {
+                    board = new Board();
+                }
+                return board;
+            }
+        }
 
-        public Board(MainWindow window)
+        public Board()
         {
             tiles = new int[8, 8];
-            this.window = window;
         }
 
         //Used for resetting the pieces on the board
@@ -43,6 +55,7 @@ namespace Chess
         public int GetStartPiece(int h, int w, int color)
         {
             int piece = 0;
+
             if (h == 1 || h == 6)
             {
                 piece = 1;
@@ -66,6 +79,7 @@ namespace Chess
             {
                 piece = 6;
             }
+
             if (h == 0 || h == 1)
             {
                 piece *= color;
@@ -73,10 +87,12 @@ namespace Chess
             else if (h == 7 || h == 6)
             {
                 piece *= -color;
+            }else{
+                piece = 0;
             }
             return piece;
         }
-
+        /*
         public List<Tile> GetLegalMovements(Tile origin)
         {
             List<Move> movesb = new List<Move>();
@@ -100,7 +116,7 @@ namespace Chess
             }
             return moves;
         }
-
+        
         public List<Move> GetStraightMove(Move original)
         {
             Tile origin = original.Org;
@@ -374,7 +390,7 @@ namespace Chess
             }
             return move;
         }
-
+        */
         public int[,] GetTiles()
         {
             return tiles;
@@ -383,65 +399,67 @@ namespace Chess
         public int GetSpecificTile(int y, int x)
         {
             return tiles[y, x];
-        }
+        } 
     }
-
-    public class Tile
-    {
-        protected int y;
-        public int Y { get { return y; } }
-        protected int x;
-        public int X { get { return x; } }
-        protected Piece owner;
-        public Piece Owner { get { return owner; } set { owner = value; } }
-
-        public Tile(int y, int x)
+        public class Tile
         {
-            this.y = y;
-            this.x = x;
-        }
+            protected int y;
+            public int Y { get { return y; } }
+            protected int x;
+            public int X { get { return x; } }
+            protected Piece owner;
+            public Piece Owner { get { return owner; } set { owner = value; } }
 
-        public String toString()
-        {
-            String tile;
-            if (owner != null)
+            public Tile(int y, int x)
             {
-                tile = "Tile at " + y + "," + x + " contains " + owner.Name;
+                this.y = y;
+                this.x = x;
             }
-            else
+
+            public String toString()
             {
-                tile = "Tile at " + y + "," + x + " is empty";
+                String tile;
+                if (owner != null)
+                {
+                    tile = "Tile at " + y + "," + x + " contains " + owner.Name;
+                }
+                else
+                {
+                    tile = "Tile at " + y + "," + x + " is empty";
+                }
+                return tile;
             }
-            return tile;
-        }
-    }
-
-    public class Move
-    {
-        private Tile org;
-        public Tile Org { get { return org; } }
-        private Tile target;
-        public Tile Target { get { return target; } set { target = value; } }
-        private Boolean special;
-        public Boolean Special { get { return special; } }
-        public Piece Mover { get { return org.Owner; } }
-        private Tile killPos;
-        public Tile Kill { get { return killPos; } set { killPos = value; } }
-
-        public Move(Tile org)
-        {
-            this.org = org;
         }
 
-        public void Execute()
+        public class Move
         {
-            if (killPos != null)
+            private int[] org;
+            public int[] Org { get { return org; } }
+            private int[] target;
+            public int[] Target { get { return target; } set { target = value; } }
+            private Boolean special;
+            public Boolean Special { get { return special; } }
+            private int toMove;
+            public int ToMove { get { return toMove; } }
+            private int[] toKill;
+            public int[] ToKill { get { return toKill; } set { toKill = value; } }
+
+            public Move(int[] org)
             {
-                killPos.Owner = null;
+                this.org = org;
             }
-            target.Owner = org.Owner;
-            org.Owner = null;
 
+            public void Execute()
+            {
+                
+                if(toKill != null){
+                    
+                    //[toKill[0], toKill[1]] = 0;
+                }
+                //target.Owner = org.Owner;
+                //org.Owner = null;
+
+            }
         }
-    }
+    
 }

@@ -22,13 +22,12 @@ namespace Chess
     public partial class MainWindow : Window
     {
         private Board game;
-        public Boolean moving;
         private Move nextMove;
 
         public MainWindow()
         {
             InitializeComponent();
-            game = new Board(this);
+            game = new Board();
             game.resetGame(-1);
             DrawBoard();
         }
@@ -37,17 +36,21 @@ namespace Chess
         public void DrawBoard()
         {
             int[,] tiles = game.GetTiles();
-            foreach (int p in tiles)
+            for (int h = 0; h < 8; h++)
             {
-                String pos = "c" + t.Y + t.X;
-                TextBlock block = (TextBlock)this.FindName(pos);
-                if (t.Owner != null)
+                for (int w = 0; w < 8; w++)
                 {
-                    block.Text = GetUnicode(t, block.Background);
-                }
-                else
-                {
-                    block.Text = "";
+                    int piece = tiles[h, w];
+                    String pos = "c" + h + w;
+                    TextBlock block = (TextBlock)this.FindName(pos);
+                    if (piece != 0)
+                    {
+                        block.Text = GetUnicode(piece, block.Background);
+                    }
+                    else
+                    {
+                        block.Text = "";
+                    }
                 }
             }
         }
@@ -57,56 +60,57 @@ namespace Chess
         {
             String c = new BrushConverter().ConvertToString(color);
             String uni = null;
-            if ((c.Equals("#FFFFFFFF") && piece.Color) || (c.Equals("#FF000000") && !piece.Color))
+            int absPiece = Math.Abs(piece);
+            if ((c.Equals("#FFFFFFFF") && piece > 0) || (c.Equals("#FF000000") && piece < 0))
             {
-                if (piece == 1)
+                if (absPiece == 1)
                 {
                     uni = "\u2659";
                 }
-                else if (piece.Name == "knight")
+                else if (absPiece == 3)
                 {
                     uni = "\u2658";
                 }
-                else if (piece.Name == "bishop")
+                else if (absPiece == 4)
                 {
                     uni = "\u2657";
                 }
-                else if (piece.Name == "rook")
+                else if (absPiece == 2)
                 {
                     uni = "\u2656";
                 }
-                else if (piece.Name == "queen")
+                else if (absPiece == 5)
                 {
                     uni = "\u2655";
                 }
-                else if (piece.Name == "king")
+                else if (absPiece == 6)
                 {
                     uni = "\u2654";
                 }
             }
-            else if ((c.Equals("#FF000000") && piece.Color) || (c.Equals("#FFFFFFFF") && !piece.Color))
+            else if ((c.Equals("#FF000000") && piece > 0) || (c.Equals("#FFFFFFFF") && piece < 0))
             {
-                if (piece.Name == "pawn")
+                if (absPiece == 1)
                 {
                     uni = "\u265F";
                 }
-                else if (piece.Name == "knight")
+                else if (absPiece == 3)
                 {
                     uni = "\u265E";
                 }
-                else if (piece.Name == "bishop")
+                else if (absPiece == 4)
                 {
                     uni = "\u265D";
                 }
-                else if (piece.Name == "rook")
+                else if (absPiece == 2)
                 {
                     uni = "\u265C";
                 }
-                else if (piece.Name == "queen")
+                else if (absPiece == 5)
                 {
                     uni = "\u265B";
                 }
-                else if (piece.Name == "king")
+                else if (absPiece == 6)
                 {
                     uni = "\u265A";
                 }
@@ -120,8 +124,8 @@ namespace Chess
             int y = Int32.Parse(s.Name.Substring(1, 1));
             int x = Int32.Parse(s.Name.Substring(2, 1));
             Console.WriteLine("selected: " + y + ":" + x);
-            Tile clicked = game.GetSpecificTile(y, x);
-            if (nextMove == null && clicked.Owner != null)
+            int[] clicked = new int[] { y, x };//game.GetSpecificTile(y, x);
+            if (nextMove == null && game.GetSpecificTile(clicked[0], clicked[1]) != 0)
             {
                 UIElement uie = s;
                 uie.Effect = new BlurEffect
@@ -141,6 +145,7 @@ namespace Chess
             }
             else if (nextMove != null)
             {
+                /*
                 if (game.GetLegalMovements(nextMove.Org).Contains(clicked))
                 {
                     Console.WriteLine("move is legal");
@@ -156,7 +161,7 @@ namespace Chess
                 else
                 {
                     Console.WriteLine("move is illegal");
-                }
+                }*/
             }
         }
     }
