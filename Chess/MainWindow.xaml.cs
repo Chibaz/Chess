@@ -27,15 +27,15 @@ namespace Chess
         public MainWindow()
         {
             InitializeComponent();
-            game = new Board();
-            game.resetGame(-1);
+            game = Board.Game;
+            game.ResetGame(-1);
             DrawBoard();
         }
 
         //Goes through the tiles in the board and puts the pieces in the correct places
         public void DrawBoard()
         {
-            int[,] tiles = game.GetTiles();
+            int[,] tiles = game.Tiles;
             for (int h = 0; h < 8; h++)
             {
                 for (int w = 0; w < 8; w++)
@@ -123,9 +123,9 @@ namespace Chess
             TextBlock s = (TextBlock)sender;
             int y = Int32.Parse(s.Name.Substring(1, 1));
             int x = Int32.Parse(s.Name.Substring(2, 1));
-            Console.WriteLine("selected: " + y + ":" + x);
+            Console.WriteLine("Selected: " + y + ":" + x);
             int[] clicked = new int[] { y, x };//game.GetSpecificTile(y, x);
-            if (nextMove == null && game.GetSpecificTile(clicked[0], clicked[1]) != 0)
+            if (nextMove == null && game.GetSpecificTile(clicked) != 0)
             {
                 UIElement uie = s;
                 uie.Effect = new BlurEffect
@@ -134,10 +134,30 @@ namespace Chess
                     //GlowSize = 320,
                 };
                 nextMove = new Move(clicked);
-                //game.MovePieceA(y-1, x-1);
-                Console.WriteLine("move started");
+                nextMove.ToMove = game.GetSpecificTile(clicked);
+                
+                
+                foreach (Move m in game.GetLegalMovements(clicked))
+                {
+                    Console.WriteLine(m.Target[0] + "," + m.Target[1]);
+                    if (m.ToKill != null)
+                    {
+                        Console.WriteLine("kill is " + m.ToKill[0] + "," + m.ToKill[1]);
+                    }
+                    /*
+                    uie = (UIElement)FindName("c" + m.Target[0] + m.Target[1]);
+
+                    uie.Effect = new DropShadowEffect
+                    {
+                        Color = new Color { A = 255, R = 0, G = 0, B = 255 },
+                        Direction = 320,
+                        ShadowDepth = 0,
+                        Opacity = 1
+                    };
+                    */
+                }
             }
-            else if (nextMove != null && clicked == nextMove.Org)
+            else if (nextMove != null && (clicked[0] == nextMove.Origin[0] && clicked[1] == nextMove.Origin[1]))
             {
                 nextMove = null;
                 UIElement uie = s;
@@ -145,6 +165,12 @@ namespace Chess
             }
             else if (nextMove != null)
             {
+                nextMove.Target = clicked;
+                nextMove.Execute();
+                UIElement uie = s;
+                uie.Effect = null;
+                nextMove = null;
+                DrawBoard();
                 /*
                 if (game.GetLegalMovements(nextMove.Org).Contains(clicked))
                 {
