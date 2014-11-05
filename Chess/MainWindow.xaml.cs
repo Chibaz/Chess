@@ -17,19 +17,20 @@ using System.Windows.Media.Effects;
 namespace Chess
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for GUI.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class GUI : Window
     {
         private Board game;
         private SimpleMove nextMove;
-        public static int color = 1;
 
-        public MainWindow()
+        public GUI()
         {
             InitializeComponent();
             game = Board.Game;
-            game.ResetGame(color);
+            game.ResetGame();
+            Logic l = new Logic();
+            l.GetBestMove();
             DrawBoard();
         }
 
@@ -167,8 +168,12 @@ namespace Chess
             {
                 nextMove.Target = clicked;
                 nextMove.Execute();
-                UIElement uie = s;
+
+                UIElement uie = (UIElement)FindName("c" + nextMove.Origin[0] + nextMove.Origin[1]);
                 uie.Effect = null;
+                uie = s;
+                uie.Effect = null;
+
                 nextMove = null;
                 DrawBoard();
                 /*
@@ -193,14 +198,14 @@ namespace Chess
 
         private void MenuItem_NewGame(object sender, RoutedEventArgs e)
         {
-            game.ResetGame(color);
+            game.ResetGame();
             DrawBoard(); //skal have lavet så blurred brikker ikke er blurred mere...
         }
 
         private void MenuItem_Switch(object sender, RoutedEventArgs e)
         {
-            color = color * -1;
-            game.ResetGame(color);
+            Board.color *= -1;
+            game.ResetGame();
             DrawBoard();
         }
 

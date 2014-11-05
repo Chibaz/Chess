@@ -9,28 +9,41 @@ namespace Chess
 
     public class Logic
     {
+        private Move next;
+        private int depth = 3;
+        private int count;
 
-        /*
-        public int doAlphaBeta(Board temp, int rDepth, int alpha, int beta, int rPlayer)
+        public void GetBestMove()
         {
-            //List<Board> childs = temp.getChilds(rPlayer);
-            if (!childs.Any() || rDepth == 0)
+            Board orgBoard = Board.Game.CloneBoard();
+            count = 0;
+            doAlphaBeta(orgBoard, depth, Int32.MinValue, Int32.MaxValue, Board.color);
+        }
+        
+        public int doAlphaBeta(Board lastBoard, int rDepth, int alpha, int beta, int rPlayer)
+        {
+            List<SimpleMove> newMoves = lastBoard.GetAllMovesForPlayer();
+            
+            Console.WriteLine("number of moves from last board: " + newMoves.Count);
+            if (!newMoves.Any() || rDepth == 0)
             {
-                int e = evaluate(temp);
-                return e;
+                //int e = evaluate(temp);
+                //return e;
             }
             if (rPlayer == 1) //Maximizing
             {
                 //Get all possible moves from current state
-                foreach (Board child in childs)
+                foreach (Move move in newMoves)
                 {
-                    int v = doAlphaBeta(child, rDepth - 1, alpha, beta, -1); //Recursive call on possible methods
+                    Board newBoard = lastBoard.CloneBoard();
+                    move.ExecuteOnBoard(newBoard);
+                    int v = doAlphaBeta(newBoard, rDepth - 1, alpha, beta, rPlayer*-1); //Recursive call on possible methods
                     if (v > alpha)
                     {
                         alpha = v;
                         if (rDepth == depth)
                         {
-                            next = new Board(child.cloneBoard());
+                            next = move;
                         }
                     }
                     if (alpha >= beta) //Stop if alpha is equal to or higher than beta, and prune the remainder
@@ -42,18 +55,20 @@ namespace Chess
             }
             else //Minimizing
             {
-                foreach (Board child in childs)
+                foreach (Move move in newMoves)
                 {
-                    int v = doAlphaBeta(child, rDepth - 1, alpha, beta, 1); //Recursive call on possible methods
+                    Board newBoard = lastBoard.CloneBoard();
+                    move.ExecuteOnBoard(newBoard);
+                    int v = doAlphaBeta(newBoard, rDepth - 1, alpha, beta, rPlayer*-1); //Recursive call on possible methods
                     if (v < beta)
                     {
-                        beta = v;
+                        alpha = v;
                         if (rDepth == depth)
                         {
-                            next = new Board(child.cloneBoard());
+                            next = move;
                         }
                     }
-                    if (alpha >= beta)
+                    if (alpha >= beta) //Stop if alpha is equal to or higher than beta, and prune the remainder
                     {
                         break;
                     }
@@ -62,6 +77,219 @@ namespace Chess
             }
         }
 
+        private static int whitescore, blackscore;
+        private static int[,] pawnTable =
+        {
+            {50, 50, 50, 50, 50, 50, 50, 50},
+            {10, 10, 20, 30, 30, 20, 10, 10},
+            {5, 5, 10, 27, 27, 10, 5, 5},
+            {0, 0, 0, 25, 25, 0, 0, 0},
+            {5, -5, -10, 0, 0, -10, -5, 5},
+            {5, 10, 10, -25, -25, 10, 10, 5},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0}
+        };
+
+        private static int[,] knightTable =
+        {
+            {-50, -40, -20, -30, -30, -20, -40, -50},
+            {-40, -20, 0, 5, 5, 0, -20, -40}, 
+            {-30, 5, 10, 15, 15, 10, 5, -30},
+            {-30, 0, 15, 20, 20, 15, 0, -30}, 
+            {-30, 5, 15, 20, 20, 15, 5, -30}, 
+            {-30, 0, 10, 15, 15, 10, 0, -30},
+            {-40, -20, 0, 0, 0, 0, -20, -40},
+            {-50, -40, -30, -30, -30, -30, -40, -50}
+        };
+
+        private static int[,] bishopTable =
+        {
+            {-20, -10, -10, -10, -10, -10, -10, -20},
+            {-10, 5, 0, 0, 0, 0, 5, -10}, 
+            {-10, 10, 10, 10, 10, 10, 10, -10},
+            {-10, 0, 10, 10, 10, 10, 0, -10}, 
+            {-10, 5, 5, 10, 10, 5, 5, -10}, 
+            {-10, 0, 5, 10, 10, 5, 0, -10},
+            {-10, 0, 0, 0, 0, 0, 0, -10}, 
+            {-20, -10, -10, -10, -10, -10, -10, -20}
+        };
+
+        private static int[,] rookTable =
+        {
+            {0, 0, 0, 5, 5, 0, 0, 0},
+            {-5, 0, 0, 0, 0, 0, 0, -5}, 
+            {-5, 0, 0, 0, 0, 0, 0, -5}, 
+            {-5, 0, 0, 0, 0, 0, 0, -5},
+            {-5, 0, 0, 0, 0, 0, 0, -5},
+            {-5, 0, 0, 0, 0, 0, 0, -5},
+            {5, 10, 10, 10, 10, 10, 10, 5},
+            {0, 0, 0, 0, 0, 0, 0, 0}
+        };
+
+        private static int[,] queenTable =
+        {
+            {-20, -10, -10, -5, -5, -10, -10, -20}, 
+            {-10, 0, 5, 0, 0, 0, 0, -10}, 
+            {-10, 5, 5, 5, 5, 5, 0, -10},
+            {0, 0, 5, 5, 5, 5, 0, -5}, 
+            {-5, 0, 5, 5, 5, 5, 0, -5}, 
+            {-10, 0, 5, 5, 5, 5, 0, -10},
+            {-10, 0, 0, 0, 0, 0, 0, -10},
+            {-20, -10, -10, -5, -5, -10, -10, -20}
+        };
+
+        private static int[,] kingTable =
+        {
+            {20, 30, 10, 0, 0, 10, 30, 20}, 
+            {20, 20, 0, 0, 0, 0, 20, 20}, 
+            {-10, -20, -20, -20, -20, -20, -20, -10},
+            {-20, -30, -30, -40, -40, -30, -30, -20},
+            {-30, -40, -40, -50, -50, -40, -40, -30},
+            {-30, -40, -40, -50, -50, -40, -40, -30}, 
+            {-30, -40, -40, -50, -50, -40, -40, -30},
+            {-30, -40, -40, -50, -50, -40, -40, -30}
+        };
+
+
+
+
+
+        private static int[,] blackPawnTable =
+        {
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {5, 10, 10, -25, -25, 10, 10, 5},
+            {5, -5, -10, 0, 0, -10, -5, 5},
+            {0, 0, 0, 25, 25, 0, 0, 0},
+            {5, 5, 10, 27, 27, 10, 5, 5},
+            {10, 10, 20, 30, 30, 20, 10, 10},
+            {50, 50, 50, 50, 50, 50, 50, 50}
+        };
+
+        private static int[,] blackKnightTable =
+        {
+            {-50, -40, -30, -30, -30, -30, -40, -50},
+            {-40, -20, 0, 0, 0, 0, -20, -40},
+            {-30, 0, 10, 15, 15, 10, 0, -30},
+            {-30, 5, 15, 20, 20, 15, 5, -30}, 
+            {-30, 0, 15, 20, 20, 15, 0, -30},
+            {-30, 5, 10, 15, 15, 10, 5, -30},
+            {-40, -20, 0, 5, 5, 0, -20, -40},
+            {-50, -40, -20, -30, -30, -20, -40, -50}
+
+        };
+
+        private static int[,] blackBishopTable =
+        {
+            {-20, -10, -10, -10, -10, -10, -10, -20},
+            {-10, 0, 0, 0, 0, 0, 0, -10}, 
+            {-10, 0, 5, 10, 10, 5, 0, -10},
+            {-10, 5, 5, 10, 10, 5, 5, -10}, 
+            {-10, 0, 10, 10, 10, 10, 0, -10}, 
+            {-10, 10, 10, 10, 10, 10, 10, -10},
+            {-10, 5, 0, 0, 0, 0, 5, -10}, 
+            {-20, -10, -10, -10, -10, -10, -10, -20}
+        };
+
+        private static int[,] blackRookTable =
+        {
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {5, 10, 10, 10, 10, 10, 10, 5},
+            {-5, 0, 0, 0, 0, 0, 0, -5},
+            {-5, 0, 0, 0, 0, 0, 0, -5},
+            {-5, 0, 0, 0, 0, 0, 0, -5},
+            {-5, 0, 0, 0, 0, 0, 0, -5}, 
+            {-5, 0, 0, 0, 0, 0, 0, -5}, 
+            {0, 0, 0, 5, 5, 0, 0, 0}
+        };
+
+        private static int[,] blackQueenTable =
+        {
+            {-20, -10, -10, -5, -5, -10, -10, -20},
+            {-10, 0, 0, 0, 0, 0, 0, -10},
+            {-10, 0, 5, 5, 5, 5, 0, -10},
+            {-5, 0, 5, 5, 5, 5, 0, -5}, 
+            {0, 0, 5, 5, 5, 5, 0, -5}, 
+            {-10, 5, 5, 5, 5, 5, 0, -10},
+            {-10, 0, 5, 0, 0, 0, 0, -10}, 
+            {-20, -10, -10, -5, -5, -10, -10, -20}
+
+        };
+
+        private static int[,] blackKingTable =
+        {
+            {-30, -40, -40, -50, -50, -40, -40, -30},
+            {-30, -40, -40, -50, -50, -40, -40, -30},
+            {-30, -40, -40, -50, -50, -40, -40, -30}, 
+            {-30, -40, -40, -50, -50, -40, -40, -30},
+            {-20, -30, -30, -40, -40, -30, -30, -20},
+            {-10, -20, -20, -20, -20, -20, -20, -10},
+            {20, 20, 0, 0, 0, 0, 20, 20}, 
+            {20, 30, 10, 0, 0, 10, 30, 20}
+        };
+
+        public int evaluate(Board board)
+        {
+            
+            for (int row = 0; row < board.Tiles.GetLength(0); row++)
+            {
+                for(int col =0; col<board.Tiles.GetLength(0); col++) {
+                    if (Board.Game.Tiles[row, col] == 1)
+                    {
+                        whitescore += pawnTable[row,col];}
+                    else if (Board.Game.Tiles[row, col] == -1)
+                    {
+                        blackscore -= blackPawnTable[row, col];
+                        }
+                    else if (Board.Game.Tiles[row, col] == 2)
+                    {
+                        whitescore += rookTable[row,col];
+                        }
+                    else if (Board.Game.Tiles[row, col] == -2)
+                    {
+                        blackscore -= blackRookTable[row, col];
+                        }
+                    else if (Board.Game.Tiles[row, col] == 3)
+                    {
+                        whitescore += knightTable[row,col];
+                        }
+                    else if (Board.Game.Tiles[row, col] == -3)
+                    {
+                        blackscore -= blackKnightTable[row, col];
+                        }
+                    else if (Board.Game.Tiles[row, col] == 4)
+                    {
+                        whitescore += bishopTable[row,col];
+                        }
+                    else if (Board.Game.Tiles[row, col] == -4)
+                    {
+                        blackscore -= blackBishopTable[row, col];
+                        }
+                    else if (Board.Game.Tiles[row, col] == 5)
+                    {
+                        whitescore += queenTable[row,col];
+                        }
+                    else if (Board.Game.Tiles[row, col] == -5)
+                    {
+                        blackscore -= blackQueenTable[row, col];
+                        }
+                    else if (Board.Game.Tiles[row, col] == 6)
+                    {
+                        whitescore += kingTable[row,col];
+                        }
+                    else if (Board.Game.Tiles[row, col] == -6)
+                    {
+                        blackscore -= blackKingTable[row, col];
+                        }
+                }
+            }
+            count++;
+            Console.WriteLine("Iteration " + count + " White Score: " + whitescore + "\nBlack Score: " + blackscore);
+            return whitescore - blackscore;
+        }
+        
+    }
+        /*
         public int evaluate(Board b)
         {
             count++;
@@ -158,5 +386,5 @@ namespace Chess
             return score;
         }*/
     }
-}
+
 

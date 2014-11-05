@@ -30,6 +30,7 @@ namespace Chess
                 tiles = value;
             }
         }
+        public static int color = 1;
         private static Board board;
         public static Board Game
         {
@@ -49,23 +50,24 @@ namespace Chess
         }
 
         //Used for resetting the pieces on the board
-        public void ResetGame(int color)
+        public void ResetGame()
         {
             for (int h = 0; h < 8; h++)
             {
                 for (int w = 0; w < 8; w++)
                 {
-                    tiles[h, w] = GetStartPiece(h, w, color);
+                    tiles[h, w] = GetStartPiece(h, w);
                 }
             }
         }
 
 
         //Used for getting which piece will be at the a specified tile at the start of a game
-        public int GetStartPiece(int h, int w, int color)
+        public int GetStartPiece(int h, int w)
         {
             int piece = 0;
 
+            //Gets which piece is supposed to be at what position
             if (h == 1 || h == 6)
             {
                 piece = 1;
@@ -91,10 +93,10 @@ namespace Chess
                 piece = 6;
             }
 
+            //Sets the correct color of the pieces
             if (h == 0 || h == 1)
             {
                 piece = piece * -color;
-                Console.WriteLine("top piece is " + piece);
             }
             else if (h == 7 || h == 6)
             {
@@ -105,6 +107,23 @@ namespace Chess
                 piece = 0;
             }
             return piece;
+        }
+
+        public List<SimpleMove> GetAllMovesForPlayer()
+        {
+            List<SimpleMove> allMoves= new List<SimpleMove>();
+            for (int h = 0; h < 8; h++)
+            {
+                for (int w = 0; w < 8; w++)
+                {
+                    if (tiles[h, w] != 0)
+                    {
+                        allMoves.AddRange(GetLegalMovements(new int[] { h, w }));
+                    }
+                }
+            }
+            Console.WriteLine("number of moves for board is :" + allMoves.Count);
+            return allMoves;
         }
 
         public List<SimpleMove> GetLegalMovements(int[] origin)
@@ -286,11 +305,11 @@ namespace Chess
             String[] moves = null;
             int piece = GetSpecificTile(origin);
             List<SimpleMove> absMoves = new List<SimpleMove>();
-            if (piece * MainWindow.color == -1)
+            if (piece * color == -1)
             {
                 moves = new String[] { "1,0" };
             }
-            else if (piece * MainWindow.color == 1)
+            else if (piece * color == 1)
             {
                 moves = new String[] { "-1,0" };
             }
@@ -339,15 +358,24 @@ namespace Chess
             return tiles[tile[0], tile[1]];
         }
 
-        public int[,] CloneBoard()
+        public Board CloneBoard()
         {
-            int[,] newBoard = board.tiles;
+            Board newBoard = new Board();
+            for (int h = 0; h < 8; h++)
+            {
+                for (int w = 0; w < 8; w++)
+                {
+                    newBoard.Tiles[h, w] = this.tiles[h, w];
+                }
+            }
             return newBoard;
         }
     }
+
     interface Move
     {
         void Execute();
+        void ExecuteOnBoard(Board temp);
     }
 
     public class SimpleMove : Move
@@ -377,6 +405,17 @@ namespace Chess
             tiles[target[0], target[1]] = toMove;
             tiles[origin[0], origin[1]] = 0;
         }
+
+        public void ExecuteOnBoard(Board temp)
+        {
+            int[,] tiles = temp.Tiles;
+            if (toKill != null)
+            {
+                tiles[toKill[0], toKill[1]] = 0;
+            }
+            tiles[target[0], target[1]] = toMove;
+            tiles[origin[0], origin[1]] = 0;
+        }
     }
 
     public class EnPassante : Move
@@ -394,6 +433,10 @@ namespace Chess
         }
 
         public void Execute()
+        {
+
+        }
+        public void ExecuteOnBoard(Board temp)
         {
 
         }
@@ -417,6 +460,10 @@ namespace Chess
         {
 
         }
+        public void ExecuteOnBoard(Board temp)
+        {
+
+        }
     }
 
     public class Promotion : Move
@@ -434,6 +481,10 @@ namespace Chess
         }
 
         public void Execute()
+        {
+
+        }
+        public void ExecuteOnBoard(Board temp)
         {
 
         }
