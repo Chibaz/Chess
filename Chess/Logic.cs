@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Chess
 {
-    
+
     public class Logic
     {
 
-
+        /*
         public int doAlphaBeta(Board temp, int rDepth, int alpha, int beta, int rPlayer)
         {
             //List<Board> childs = temp.getChilds(rPlayer);
@@ -22,7 +22,7 @@ namespace Chess
             if (rPlayer == 1) //Maximizing
             {
                 //Get all possible moves from current state
-                foreach (Board child in childs) 
+                foreach (Board child in childs)
                 {
                     int v = doAlphaBeta(child, rDepth - 1, alpha, beta, -1); //Recursive call on possible methods
                     if (v > alpha)
@@ -156,7 +156,7 @@ namespace Chess
                 }
             }
             return score;
-        }
-    }
+        }*/
     }
 }
+
