@@ -141,9 +141,8 @@ namespace Chess
             }
             else if (nextMove != null)
             {
-                if (game.GetLegalMovements(nextMove.Org).Contains(clicked))
-                {
-                    Console.WriteLine("move is legal");
+                //if (game.GetLegalMovement(nextMove).Contains())
+              
                     nextMove.Target = clicked;
                     //int[] org = game.MovePieceB(y - 1, x - 1);
                     //TextBlock o = (TextBlock)this.FindName("c" + org[0] + "" + org[1]);
@@ -160,4 +159,3 @@ namespace Chess
             }
         }
     }
-}

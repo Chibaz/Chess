@@ -123,6 +123,29 @@ namespace Chess
             return moves;
         }
 
+        public List<Move> GetLegalMovement(Move original)
+        {
+            Tile origin = original.Org;
+            List<Move> moves = new List<Move>();
+            if (origin.Owner.Movement) //Movement is without range limit
+            {
+                if (origin.Owner.Move.Contains("straight"))
+                {
+                    moves.AddRange(GetStraightMove(original));
+                }
+
+                if (origin.Owner.Move.Contains("diagonal"))
+                {
+                    moves.AddRange(GetDiagonalMove(original));
+                }
+            }
+            else //Movement is an absolute distance
+            {
+                moves.AddRange(GetAbsoluteMove(original));
+            }
+            return moves;
+        }
+
         public List<Move> GetStraightMove(Move original)
         {
             Tile origin = original.Org;
@@ -216,7 +239,7 @@ namespace Chess
                     newMove.Target = tiles[y, xR];
                     diagonalMoves.Add(newMove);
                 }
-                else if (xR < 8 && tiles[y, xR].Owner == null && rightUnbroken)
+                else if (xR < 8 && tiles[y, xR].Owner != null && rightUnbroken)
                 {
                     newMove = CheckForKill(newMove);
                     rightUnbroken = false;
@@ -255,6 +278,34 @@ namespace Chess
             return diagonalMoves;
         }
 
+        public List<Move> GetAbsoluteMove(Move original)
+        {
+            Tile origin = original.Org;
+            List<Move> absMoves = new List<Move>();
+            Move newMove = null;
+            foreach (String s in origin.Owner.Move)
+            {
+                String[] m = s.Split(new Char[] { ',' }, 2);
+                int y = origin.Y + int.Parse(m[0]);
+                int x = origin.X + int.Parse(m[1]);
+                if(y >= 0 && x >= 0 && y < 8 && x < 8){
+                newMove = new Move(origin);
+                newMove.Target = tiles[y, x];
+                }else{
+                    newMove = null;
+                }
+                if (newMove != null && tiles[y, x].Owner != null)
+                {
+                    CheckForKill(newMove);
+                    absMoves.Add(newMove);
+                }
+                else
+                {
+                    absMoves.Add(newMove);
+                }
+            }
+            return absMoves;
+        }
 
         public List<Tile> GetStraightMoves(Tile origin)
         {
