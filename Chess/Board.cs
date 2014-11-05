@@ -3,285 +3,604 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
 namespace Chess
 {
+    /*
+    * Board is based on a 2-dimensional array of ints, pieces are defined as:
+    * 1 - Pawn
+    * 2 - Rook
+    * 3 - Knight
+    * 4 - Bishop
+    * 5 - Queen
+    * 6 - King
+    */
     public class Board
     {
-        private Tile[,] tiles;
-        private int tX, tY;
-        private MainWindow window;
-
-        public Board(MainWindow window)
+        private int[,] tiles;
+        public int[,] Tiles
         {
-            tiles = new Tile[8, 8];
+            get
+            {
+                return tiles;
+            }
+            set
+            {
+                tiles = value;
+            }
+        }
+        private static Board board;
+        public static Board Game
+        {
+            get
+            {
+                if (board == null)
+                {
+                    board = new Board();
+                }
+                return board;
+            }
+        }
+        public Board()
+        {
+            tiles = new int[8, 8];
+        }
+        //Used for resetting the pieces on the board
+        public void ResetGame(int color)
+        {
             for (int h = 0; h < 8; h++)
             {
                 for (int w = 0; w < 8; w++)
                 {
-                    Tile tile = new Tile(h, w);
-                    if (h == 0 || h == 1 || h == 6 || h == 7)
-                    {
-                        tile.Owner = GetStartPiece(tile);
-                    }
-                    tiles[h, w] = tile;
+                    tiles[h, w] = GetStartPiece(h, w, color);
+                    Evaluation.evaluate();
                 }
             }
-            this.window = window;
         }
-
         //Used for getting which piece will be at the a specified tile at the start of a game
-        public Piece GetStartPiece(Tile tile)
+        public int GetStartPiece(int h, int w, int color)
         {
-            int h = tile.Y;
-            int w = tile.X;
-            Piece piece = null;
-            if (h == 0)
+            int piece = 0;
+            if (h == 1 || h == 6)
             {
-                if (w == 0 || w == 7)
-                {
-                    piece = new Rook(false);
-                }
-                else if (w == 1 || w == 6)
-                {
-                    piece = new Knight(false);
-                }
-                else if (w == 2 || w == 5)
-                {
-                    piece = new Bishop(false);
-                }
-                else if (w == 3)
-                {
-                    piece = new Queen(false);
-                }
-                else if (w == 4)
-                {
-                    piece = new King(false);
-                }
+                piece = 1;
             }
-            else if (h == 1)
+            else if (w == 0 || w == 7)
             {
-                piece = new Pawn(false);
+                piece = 2;
             }
-            else if (h == 6)
+            else if (w == 1 || w == 6)
             {
-                piece = new Pawn(true);
+                piece = 3;
             }
-            else if (h == 7)
+            else if (w == 2 || w == 5)
             {
-                if (w == 0 || w == 7)
-                {
-                    piece = new Rook(true);
-                }
-                else if (w == 1 || w == 6)
-                {
-                    piece = new Knight(true);
-                }
-                else if (w == 2 || w == 5)
-                {
-                    piece = new Bishop(true);
-                }
-                else if (w == 3)
-                {
-                    piece = new Queen(true);
-                }
-                else if (w == 4)
-                {
-                    piece = new King(true);
-                }
+                piece = 4;
             }
-            return piece;
-        }
-        public void PrintBoard()
-        {
-            var rowCount = tiles.GetLength(0);
-            var colCount = tiles.GetLength(1);
-            for (int row = 0; row < rowCount; row++)
+            else if (w == 3)
             {
-                for (int col = 0; col < colCount; col++)
-                    Console.Write(String.Format("{0}\t", tiles[row, col]));
-                Console.WriteLine();
+                piece = 5;
             }
-        }
-        public List<Tile> GetLegalMovements(Tile origin)
-        {
-            List<Tile> moves = new List<Tile>();
-            Piece piece = origin.Owner;
-            if (piece != null && piece.Movement) //Movement is without range limit
+            else if (w == 4)
             {
-                Console.WriteLine("relative movement");
-                if(piece.Move.Contains("straight")){
-                    Console.WriteLine("straight movement");
-                    for (int x = origin.X + 1; x < 8; x++)
-                    {
-                        Console.WriteLine("checking " + origin.Y + "," + x);
-                        Tile target = tiles[origin.Y, x];
-                        if (target.Owner == null)
-                        {
-                            moves.Add(target);
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                    for (int x = origin.X - 1; x > 0; x--)
-                    {
-                        Console.WriteLine("checking " + origin.Y + "," + x);
-                        Tile target = tiles[origin.Y, x];
-                        if (target.Owner == null)
-                        {
-                            moves.Add(target);
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                    for (int y = origin.Y + 1; y < 8; y++)
-                    {
-                        Console.WriteLine("checking " + y + "," + origin.X);
-                        Tile target = tiles[y, origin.X];
-                        if (target.Owner == null)
-                        {
-                            moves.Add(target);
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                    for (int y = origin.Y - 1; y > 0; y--)
-                    {
-                        Console.WriteLine("checking " + y + "," + origin.X);
-                        Tile target = tiles[y, origin.X];
-                        if (target.Owner == null)
-                        {
-                            moves.Add(target);
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                }
-                if(piece.Move.Contains("diagonal")){
-                    int xL, xR;
-                    xL = xR = origin.X;
-                    Boolean leftUnbroken, rightUnbroken;
-                    leftUnbroken = rightUnbroken = true;
-                    for(int y = origin.Y + 1; y < 8; y++){ //Lower diagonals
-                        xL--;
-                        xR++;
-                        if(xL > 0 && tiles[y, xL].Owner == null && leftUnbroken){
-                            moves.Add(tiles[y, xL]);
-                        }else{
-                            leftUnbroken = false;
-                        }
-                        if(xR < 8 && tiles[y, xR].Owner == null && rightUnbroken){
-                            moves.Add(tiles[y, xR]);
-                        }else{
-                            rightUnbroken = false;
-                        }
-                    }
-                    xL = xR = origin.X;
-                    leftUnbroken = rightUnbroken = true;
-                    for(int y = origin.Y - 1; y >= 0; y--){ //Upper diagonals
-                        xL--;
-                        xR++;
-                        if (xL > 0 && tiles[y, xL].Owner == null && leftUnbroken)
-                        {
-                            moves.Add(tiles[y, xL]);
-                        }else{
-                            leftUnbroken = false;
-                        }
-                        if (xR < 8 && tiles[y, xR].Owner == null && rightUnbroken)
-                        {
-                            moves.Add(tiles[y, xR]);
-                        }else{
-                            rightUnbroken = false;
-                        }
-                    }
-                }
+                piece = 6;
             }
-            else //Movement is an absolute distance
+            if (h == 0 || h == 1)
             {
-                Console.WriteLine("absolute movement");
-                foreach (Tile t in tiles)
-                {
-                    moves.Add(t);
-                }
+                piece = piece * -color;
+                Console.WriteLine("top piece is " + piece);
             }
-            Console.WriteLine("legal moves for " + origin.toString());
-            foreach (Tile t in moves)
+            else if (h == 7 || h == 6)
             {
-                Console.WriteLine(t.toString());
-            }
-            PrintBoard();
-            return moves;
-        }
-
-        public Tile[,] GetTiles()
-        {
-            return tiles;
-        }
-
-        public Tile GetSpecificTile(int y, int x)
-        {
-            return tiles[y, x];
-        }
-    }  
-
-    public class Tile
-    {
-        protected int y;
-        public int Y { get { return y; } }
-        protected int x;
-        public int X { get { return x; } }
-        protected Piece owner;
-        public Piece Owner { get { return owner; } set { owner = value; } }
-
-        public Tile(int y, int x)
-        {
-            this.y = y;
-            this.x = x;
-        }
-
-        public String toString()
-        {
-            String tile;
-            if (owner != null)
-            {
-                tile = "Tile at " + y + "," + x + " contains " + owner.Name;
+                piece = piece * color;
             }
             else
             {
-                tile = "Tile at " + y + "," + x + " is empty";
+                piece = 0;
             }
-            return tile;
+            return piece;
+        }
+        public List<SimpleMove> GetLegalMovements(int[] origin)
+        {
+            List<SimpleMove> moves = new List<SimpleMove>();
+            int piece = Math.Abs(tiles[origin[0], origin[1]]);
+            if (piece == 2 || piece == 5) //Movement in straight lines
+            {
+                moves.AddRange(GetStraightMoves(origin));
+            }
+            if (piece == 4 || piece == 5) //Movement in diagonal lines
+            {
+                moves.AddRange(GetDiagonalMoves(origin));
+            }
+            if (piece == 1 || piece == 3 || piece == 6) //Movement is an absolute distance
+            {
+                moves.AddRange(GetAbsoluteMoves(origin));
+            }
+            return moves;
+        }
+        public List<SimpleMove> GetStraightMoves(int[] origin)
+        {
+            SimpleMove newMove = null;
+            List<SimpleMove> straightMoves = new List<SimpleMove>();
+            for (int y = origin[0] + 1; y < 8; y++) //Vertical lower
+            {
+                newMove = new SimpleMove(origin);
+                newMove.Target = new int[] { y, origin[1] };
+                if (GetSpecificTile(newMove.Target) == 0)
+                {
+                    straightMoves.Add(newMove);
+                }
+                else
+                {
+                    if (CheckForKill(newMove))
+                    {
+                        straightMoves.Add(newMove);
+                    }
+                    break;
+                }
+            }
+            for (int y = origin[0] - 1; y >= 0; y--) //Vertical upper
+            {
+                newMove = new SimpleMove(origin);
+                newMove.Target = new int[] { y, origin[1] };
+                if (GetSpecificTile(newMove.Target) == 0)
+                {
+                    straightMoves.Add(newMove);
+                }
+                else
+                {
+                    if (CheckForKill(newMove))
+                    {
+                        straightMoves.Add(newMove);
+                    }
+                    break;
+                }
+            }
+            for (int x = origin[1] + 1; x < 8; x++) //Horizontal right
+            {
+                newMove = new SimpleMove(origin);
+                newMove.Target = new int[] { origin[0], x };
+                if (GetSpecificTile(newMove.Target) == 0)
+                {
+                    straightMoves.Add(newMove);
+                }
+                else
+                {
+                    if (CheckForKill(newMove))
+                    {
+                        straightMoves.Add(newMove);
+                    }
+                    break;
+                }
+            }
+            for (int x = origin[1] - 1; x >= 0; x--) //Horizontal left
+            {
+                newMove = new SimpleMove(origin);
+                newMove.Target = new int[] { origin[0], x };
+                if (GetSpecificTile(newMove.Target) == 0)
+                {
+                    straightMoves.Add(newMove);
+                }
+                else
+                {
+                    if (CheckForKill(newMove))
+                    {
+                        straightMoves.Add(newMove);
+                    }
+                    break;
+                }
+            }
+            return straightMoves;
+        }
+        public List<SimpleMove> GetDiagonalMoves(int[] origin)
+        {
+            List<SimpleMove> diagonalMoves = new List<SimpleMove>();
+            int xL, xR;
+            xL = xR = origin[1];
+            Boolean leftUnbroken, rightUnbroken;
+            leftUnbroken = rightUnbroken = true;
+            SimpleMove newMove = null;
+            for (int y = origin[0] + 1; y < 8; y++) //Lower diagonals
+            {
+                xL--;
+                xR++;
+                newMove = new SimpleMove(origin);
+                newMove.Target = new int[] { y, xL };
+                if (xL > 0 && tiles[y, xL] == 0 && leftUnbroken)
+                {
+                    diagonalMoves.Add(newMove);
+                }
+                else if (xL > 0 && leftUnbroken)
+                {
+                    if (CheckForKill(newMove))
+                    {
+                        diagonalMoves.Add(newMove);
+                    }
+                    leftUnbroken = false;
+                }
+                newMove = new SimpleMove(origin);
+                newMove.Target = new int[] { y, xR };
+                if (xR < 8 && tiles[y, xR] == 0 && rightUnbroken)
+                {
+                    diagonalMoves.Add(newMove);
+                }
+                else if (xR < 8 && rightUnbroken)
+                {
+                    if (CheckForKill(newMove))
+                    {
+                        diagonalMoves.Add(newMove);
+                    }
+                    rightUnbroken = false;
+                }
+            }
+            xL = xR = origin[1];
+            leftUnbroken = rightUnbroken = true;
+            for (int y = origin[0] - 1; y >= 0; y--) //Upper diagonals
+            {
+                xL--;
+                xR++;
+                newMove = new SimpleMove(origin);
+                newMove.Target = new int[] { y, xL };
+                if (xL > 0 && tiles[y, xL] == 0 && leftUnbroken)
+                {
+                    diagonalMoves.Add(newMove);
+                }
+                else if (xL > 0 && leftUnbroken)
+                {
+                    if (CheckForKill(newMove))
+                    {
+                        diagonalMoves.Add(newMove);
+                    }
+                    leftUnbroken = false;
+                }
+                newMove = new SimpleMove(origin);
+                newMove.Target = new int[] { y, xR };
+                if (xR < 8 && tiles[y, xR] == 0 && rightUnbroken)
+                {
+                    diagonalMoves.Add(newMove);
+                }
+                else if (xR < 8 && rightUnbroken)
+                {
+                    if (CheckForKill(newMove))
+                    {
+                        diagonalMoves.Add(newMove);
+                    }
+                    rightUnbroken = false;
+                }
+            }
+            return diagonalMoves;
+        }
+        public List<SimpleMove> GetAbsoluteMoves(int[] origin)
+        {
+            String[] moves = null;
+            int piece = GetSpecificTile(origin);
+            List<SimpleMove> absMoves = new List<SimpleMove>();
+            if (piece * MainWindow.color == -1)
+            {
+                moves = new String[] { "1,0" };
+            }
+            else if (piece * MainWindow.color == 1)
+            {
+                moves = new String[] { "-1,0" };
+            }
+            else if (Math.Abs(piece) == 3)
+            {
+                moves = new String[] { "2,1", "1,2", "2,-1", "1,-2", "-2,1", "-1,2", "-2,-1", "-1,-2" };
+            }
+            else if (Math.Abs(piece) == 6)
+            {
+                moves = new String[] { "1,0", "-1,0", "0,1", "0,-1", "1,1", "1,-1", "-1,1", "-1,-1" };
+            }
+            foreach (String s in moves)
+            {
+                SimpleMove newMove = new SimpleMove(origin);
+                String[] m = s.Split(new Char[] { ',' }, 2);
+                int y = origin[0] + int.Parse(m[0]);
+                int x = origin[1] + int.Parse(m[1]);
+                if (y >= 0 && x >= 0 && y < 8 && x < 8)
+                {
+                    newMove.Target = new int[] { y, x };
+                    if (GetSpecificTile(newMove.Target) == 0)
+                    {
+                        absMoves.Add(newMove);
+                    }
+                    else if (CheckForKill(newMove))
+                    {
+                        absMoves.Add(newMove);
+                    }
+                }
+            }
+            return absMoves;
+        }
+        public Boolean CheckForKill(SimpleMove move)
+        {
+            if (move.ToMove * GetSpecificTile(move.Target) < 0)
+            {
+                move.ToKill = move.Target;
+                return true;
+            }
+            return false;
+        }
+        public int GetSpecificTile(int[] tile)
+        {
+            return tiles[tile[0], tile[1]];
+        }
+        public int[,] CloneBoard()
+        {
+            int[,] newBoard = board.tiles;
+            return newBoard;
         }
     }
-
-    public class Move
+    interface Move
     {
-        private Tile org;
-        public Tile Org { get { return org;} }
-        private Tile target;
-        public Tile Target { get { return target; } set { target = value; } }
-        private Boolean special;
-        private Piece mover;
-        private Piece kill;
-
-        public Move(Tile org)
+        void Execute();
+    }
+    public class SimpleMove : Move
+    {
+        private int[] origin;
+        public int[] Origin { get { return origin; } }
+        private int[] target;
+        public int[] Target { get { return target; } set { target = value; } }
+        private int toMove;
+        public int ToMove { get { return toMove; } set { toMove = value; } }
+        private int[] toKill;
+        public int[] ToKill { get { return toKill; } set { toKill = value; } }
+        public SimpleMove(int[] origin)
         {
-            this.org = org;
-            mover = org.Owner;
+            this.origin = origin;
+            toMove = Board.Game.Tiles[origin[0], origin[1]];
         }
-
         public void Execute()
         {
-            org.Owner = null;
-            target.Owner = mover;
+            int[,] tiles = Board.Game.Tiles;
+            if (toKill != null)
+            {
+                tiles[toKill[0], toKill[1]] = 0;
+            }
+            tiles[target[0], target[1]] = toMove;
+            tiles[origin[0], origin[1]] = 0;
+        }
+    }
+    public class EnPassante : Move
+    {
+        private int[] origin;
+        public int[] Origin { get { return origin; } }
+        private int[] target;
+        public int[] Target { get { return target; } set { target = value; } }
+        private int[] toKill;
+        public int[] ToKill { get { return toKill; } set { toKill = value; } }
+        public EnPassante(int[] origin)
+        {
+        }
+        public void Execute()
+        {
+        }
+    }
+    public class Castling : Move
+    {
+        private int[] origin;
+        public int[] Origin { get { return origin; } }
+        private int[] target;
+        public int[] Target { get { return target; } set { target = value; } }
+        private int[] toKill;
+        public int[] ToKill { get { return toKill; } set { toKill = value; } }
+        public Castling(int[] origin)
+        {
+        }
+        public void Execute()
+        {
+        }
+    }
+    public class Promotion : Move
+    {
+        private int[] origin;
+        public int[] Origin { get { return origin; } }
+        private int[] target;
+        public int[] Target { get { return target; } set { target = value; } }
+        private int[] toKill;
+        public int[] ToKill { get { return toKill; } set { toKill = value; } }
+        public Promotion(int[] origin)
+        {
+        }
+        public void Execute()
+        {
+        }
+    }
+    public class Evaluation
+    {
+        private int whitescore, blackscore;
+        private static int[,] pawnTable =
+        {
+            {50, 50, 50, 50, 50, 50, 50, 50},
+            {10, 10, 20, 30, 30, 20, 10, 10},
+            {5, 5, 10, 27, 27, 10, 5, 5},
+            {0, 0, 0, 25, 25, 0, 0, 0},
+            {5, -5, -10, 0, 0, -10, -5, 5},
+            {5, 10, 10, -25, -25, 10, 10, 5},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0}
+        };
+
+        private static int[,] knightTable =
+        {
+            {-50, -40, -20, -30, -30, -20, -40, -50},
+            {-40, -20, 0, 5, 5, 0, -20, -40}, 
+            {-30, 5, 10, 15, 15, 10, 5, -30},
+            {-30, 0, 15, 20, 20, 15, 0, -30}, 
+            {-30, 5, 15, 20, 20, 15, 5, -30}, 
+            {-30, 0, 10, 15, 15, 10, 0, -30},
+            {-40, -20, 0, 0, 0, 0, -20, -40},
+            {-50, -40, -30, -30, -30, -30, -40, -50}
+        };
+
+        private static int[,] bishopTable =
+        {
+            {-20, -10, -10, -10, -10, -10, -10, -20},
+            {-10, 5, 0, 0, 0, 0, 5, -10}, 
+            {-10, 10, 10, 10, 10, 10, 10, -10},
+            {-10, 0, 10, 10, 10, 10, 0, -10}, 
+            {-10, 5, 5, 10, 10, 5, 5, -10}, 
+            {-10, 0, 5, 10, 10, 5, 0, -10},
+            {-10, 0, 0, 0, 0, 0, 0, -10}, 
+            {-20, -10, -10, -10, -10, -10, -10, -20}
+        };
+
+        private static int[,] rookTable =
+        {
+            {0, 0, 0, 5, 5, 0, 0, 0},
+            {-5, 0, 0, 0, 0, 0, 0, -5}, 
+            {-5, 0, 0, 0, 0, 0, 0, -5}, 
+            {-5, 0, 0, 0, 0, 0, 0, -5},
+            {-5, 0, 0, 0, 0, 0, 0, -5},
+            {-5, 0, 0, 0, 0, 0, 0, -5},
+            {5, 10, 10, 10, 10, 10, 10, 5},
+            {0, 0, 0, 0, 0, 0, 0, 0}
+        };
+
+        private static int[,] queenTable =
+        {
+            {-20, -10, -10, -5, -5, -10, -10, -20}, 
+            {-10, 0, 5, 0, 0, 0, 0, -10}, 
+            {-10, 5, 5, 5, 5, 5, 0, -10},
+            {0, 0, 5, 5, 5, 5, 0, -5}, 
+            {-5, 0, 5, 5, 5, 5, 0, -5}, 
+            {-10, 0, 5, 5, 5, 5, 0, -10},
+            {-10, 0, 0, 0, 0, 0, 0, -10},
+            {-20, -10, -10, -5, -5, -10, -10, -20}
+        };
+
+        private static int[,] kingTable =
+        {
+            {20, 30, 10, 0, 0, 10, 30, 20}, 
+            {20, 20, 0, 0, 0, 0, 20, 20}, 
+            {-10, -20, -20, -20, -20, -20, -20, -10},
+            {-20, -30, -30, -40, -40, -30, -30, -20},
+            {-30, -40, -40, -50, -50, -40, -40, -30},
+            {-30, -40, -40, -50, -50, -40, -40, -30}, 
+            {-30, -40, -40, -50, -50, -40, -40, -30},
+            {-30, -40, -40, -50, -50, -40, -40, -30}
+        };
+
+
+
+
+
+        private static int[,] blackPawnTable =
+        {
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {5, 10, 10, -25, -25, 10, 10, 5},
+            {5, -5, -10, 0, 0, -10, -5, 5},
+            {0, 0, 0, 25, 25, 0, 0, 0},
+            {5, 5, 10, 27, 27, 10, 5, 5},
+            {10, 10, 20, 30, 30, 20, 10, 10},
+            {50, 50, 50, 50, 50, 50, 50, 50}
+        };
+
+        private static int[,] blackKnightTable =
+        {
+            {-50, -40, -30, -30, -30, -30, -40, -50},
+            {-40, -20, 0, 0, 0, 0, -20, -40},
+            {-30, 0, 10, 15, 15, 10, 0, -30},
+            {-30, 5, 15, 20, 20, 15, 5, -30}, 
+            {-30, 0, 15, 20, 20, 15, 0, -30},
+            {-30, 5, 10, 15, 15, 10, 5, -30},
+            {-40, -20, 0, 5, 5, 0, -20, -40},
+            {-50, -40, -20, -30, -30, -20, -40, -50}
+
+        };
+
+        private static int[,] blackBishopTable =
+        {
+            {-20, -10, -10, -10, -10, -10, -10, -20},
+            {-10, 0, 0, 0, 0, 0, 0, -10}, 
+            {-10, 0, 5, 10, 10, 5, 0, -10},
+            {-10, 5, 5, 10, 10, 5, 5, -10}, 
+            {-10, 0, 10, 10, 10, 10, 0, -10}, 
+            {-10, 10, 10, 10, 10, 10, 10, -10},
+            {-10, 5, 0, 0, 0, 0, 5, -10}, 
+            {-20, -10, -10, -10, -10, -10, -10, -20}
+        };
+
+        private static int[,] blackRookTable =
+        {
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {5, 10, 10, 10, 10, 10, 10, 5},
+            {-5, 0, 0, 0, 0, 0, 0, -5},
+            {-5, 0, 0, 0, 0, 0, 0, -5},
+            {-5, 0, 0, 0, 0, 0, 0, -5},
+            {-5, 0, 0, 0, 0, 0, 0, -5}, 
+            {-5, 0, 0, 0, 0, 0, 0, -5}, 
+            {0, 0, 0, 5, 5, 0, 0, 0}
+        };
+
+        private static int[,] blackQueenTable =
+        {
+            {-20, -10, -10, -5, -5, -10, -10, -20},
+            {-10, 0, 0, 0, 0, 0, 0, -10},
+            {-10, 0, 5, 5, 5, 5, 0, -10},
+            {-5, 0, 5, 5, 5, 5, 0, -5}, 
+            {0, 0, 5, 5, 5, 5, 0, -5}, 
+            {-10, 5, 5, 5, 5, 5, 0, -10},
+            {-10, 0, 5, 0, 0, 0, 0, -10}, 
+            {-20, -10, -10, -5, -5, -10, -10, -20}
+
+        };
+
+        private static int[,] blackKingTable =
+        {
+            {-30, -40, -40, -50, -50, -40, -40, -30},
+            {-30, -40, -40, -50, -50, -40, -40, -30},
+            {-30, -40, -40, -50, -50, -40, -40, -30}, 
+            {-30, -40, -40, -50, -50, -40, -40, -30},
+            {-20, -30, -30, -40, -40, -30, -30, -20},
+            {-10, -20, -20, -20, -20, -20, -20, -10},
+            {20, 20, 0, 0, 0, 0, 20, 20}, 
+            {20, 30, 10, 0, 0, 10, 30, 20}
+        };
+        public static void evaluate()
+        {
+            
+            for (int row = 0; row < tiles.GetLength(0); row++)
+            {
+                for(int col =0; col<tiles.GetLength(0); col++) {
+                    if (tiles[row,col]== 1){
+                        whitescore += pawnTable[row,col];}
+                    else if (tiles[row,col]== -1){
+                        blackscore += blackPawnTable[row,col];
+                        }
+                    else if (tiles[row,col]== 2){
+                        whitescore += rookTable[row,col];
+                        }
+                    else if (tiles[row,col]== -2){
+                        blackscore += blackRookTable[row,col];
+                        }
+                    else if (tiles[row,col]== 3){
+                        whitescore += knightTable[row,col];
+                        }
+                    else if (tiles[row,col]== -3){
+                        blackscore += blackKnightTable[row,col];
+                        }
+                    else if (tiles[row,col]== 4){
+                        whitescore += bishopTable[row,col];
+                        }
+                    else if (tiles[row,col]== -4){
+                        blackscore += blackBishopTable[row,col];
+                        }
+                    else if (tiles[row,col]== 5){
+                        whitescore += queenTable[row,col];
+                        }
+                    else if (tiles[row,col]== -5){
+                        blackscore += blackQueenTable[row,col];
+                        }
+                    else if (tiles[row,col]== 6){
+                        whitescore += kingTable[row,col];
+                        }
+                    else if (tiles[row,col]== -6){
+                        blackscore += blackKingTable[row, col];
+                        }
+                }
+            }
+             Console.WriteLine("White Score: "+ whitescore +"\nBlack Score: " + blackscore);
         }
     }
 }

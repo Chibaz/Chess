@@ -61,7 +61,7 @@ namespace Chess
             Piece piece = tile.Owner;
             String c = new BrushConverter().ConvertToString(color);
             String uni = null;
-            if ((c.Equals("#FFFFFFFF") && piece.Owner) || (c.Equals("#FF000000") && !piece.Owner))
+            if ((c.Equals("#FFFFFFFF") && piece.Color) || (c.Equals("#FF000000") && !piece.Color))
             {
                 if (piece.Name == "pawn")
                 {
@@ -88,7 +88,7 @@ namespace Chess
                     uni = "\u2654";
                 }
             }
-            else if ((c.Equals("#FF000000") && piece.Owner) || (c.Equals("#FFFFFFFF") && !piece.Owner))
+            else if ((c.Equals("#FF000000") && piece.Color) || (c.Equals("#FFFFFFFF") && !piece.Color))
             {
                 if (piece.Name == "pawn")
                 {
@@ -124,7 +124,8 @@ namespace Chess
             int y = Int32.Parse(s.Name.Substring(1, 1));
             int x = Int32.Parse(s.Name.Substring(2, 1));
             Console.WriteLine("selected: " + y + ":" + x);
-            if (nextMove != null)
+            Tile clicked = game.GetSpecificTile(y, x);
+            if (nextMove == null && clicked.Owner != null)
             {
                 UIElement uie = s;
                 uie.Effect = new BlurEffect
@@ -132,15 +133,22 @@ namespace Chess
                     //GlowColor = new Color {A = 255, R = 255, G = 255, B = 0},
                     //GlowSize = 320,
                 };
-                nextMove = new Move(game.GetSpecificTile(y, x));
+                nextMove = new Move(clicked);
                 //game.MovePieceA(y-1, x-1);
+                Console.WriteLine("move started");
             }
-            else
+            else if (nextMove != null && clicked == nextMove.Org)
             {
-                if (game.GetLegalMovements(nextMove.Org).Contains(game.GetSpecificTile(y, x)))
+                nextMove = null;
+                UIElement uie = s;
+                uie.Effect = null;
+            }
+            else if (nextMove != null)
+            {
+                if (game.GetLegalMovements(nextMove.Org).Contains(clicked))
                 {
                     Console.WriteLine("move is legal");
-                    nextMove.Target = game.GetSpecificTile(y, x);
+                    nextMove.Target = clicked;
                     //int[] org = game.MovePieceB(y - 1, x - 1);
                     //TextBlock o = (TextBlock)this.FindName("c" + org[0] + "" + org[1]);
                     nextMove.Execute();

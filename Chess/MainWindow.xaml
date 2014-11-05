@@ -1,17 +1,7 @@
 ﻿<Window x:Class="Chess.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" Height="500" Width="500" WindowStyle="None" MaxWidth="500" MaxHeight="500" MinWidth="500" MinHeight="500" xmlns:my="clr-namespace:Chess">
-    <!--
-    <DockPanel>
-        <Menu DockPanel.Dock="Top">
-            <MenuItem Header="File">
-                <MenuItem Command="my:MainWindow.NewGame" />
-                <Separator />
-
-            </MenuItem>
-        </Menu>
- -->
+        Title="MainWindow" Height="500" Width="500" WindowStyle="None" MaxWidth="500" MaxHeight="500" MinWidth="500" MinHeight="500">
     <Grid x:Name="grid" MinWidth="50" MinHeight="50" Margin="2" >
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -116,7 +106,4 @@
         <TextBlock Grid.Row="7" Grid.Column="6" Name="c76" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="White" Background="Black" Width="58" MouseDown="MouseClick"/>
         <TextBlock Grid.Row="7" Grid.Column="7" Name="c77" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="55" Foreground="Black" Background="White" Width="58" MouseDown="MouseClick"/>
     </Grid>
-    <!--
-    </DockPanel>
-    -->
 </Window>
