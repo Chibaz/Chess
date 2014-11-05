@@ -22,13 +22,14 @@ namespace Chess
     public partial class MainWindow : Window
     {
         private Board game;
-        private Move nextMove;
+        private SimpleMove nextMove;
+        public static int color = 1;
 
         public MainWindow()
         {
             InitializeComponent();
             game = Board.Game;
-            game.ResetGame(-1);
+            game.ResetGame(color);
             DrawBoard();
         }
 
@@ -133,11 +134,10 @@ namespace Chess
                     //GlowColor = new Color {A = 255, R = 255, G = 255, B = 0},
                     //GlowSize = 320,
                 };
-                nextMove = new Move(clicked);
+                nextMove = new SimpleMove(clicked);
                 nextMove.ToMove = game.GetSpecificTile(clicked);
                 
-                
-                foreach (Move m in game.GetLegalMovements(clicked))
+                foreach (SimpleMove m in game.GetLegalMovements(clicked))
                 {
                     Console.WriteLine(m.Target[0] + "," + m.Target[1]);
                     if (m.ToKill != null)
@@ -189,6 +189,24 @@ namespace Chess
                     Console.WriteLine("move is illegal");
                 }*/
             }
+        }
+
+        private void MenuItem_NewGame(object sender, RoutedEventArgs e)
+        {
+            game.ResetGame(color);
+            DrawBoard(); //skal have lavet så blurred brikker ikke er blurred mere...
+        }
+
+        private void MenuItem_Switch(object sender, RoutedEventArgs e)
+        {
+            color = color * -1;
+            game.ResetGame(color);
+            DrawBoard();
+        }
+
+        private void MenuItem_ExitGame(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
         }
     }
 }
