@@ -338,6 +338,12 @@ namespace Chess
         {
             return tiles[tile[0], tile[1]];
         }
+
+        public int[,] CloneBoard()
+        {
+            int[,] newBoard = board.tiles;
+            return newBoard;
+        }
     }
     interface Move
     {
