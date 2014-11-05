@@ -13,7 +13,7 @@ namespace Chess
 
         public int doAlphaBeta(Board temp, int rDepth, int alpha, int beta, int rPlayer)
         {
-            List<Board> childs = temp.getChilds(rPlayer);
+            //List<Board> childs = temp.getChilds(rPlayer);
             if (!childs.Any() || rDepth == 0)
             {
                 int e = evaluate(temp);
