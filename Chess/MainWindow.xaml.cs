@@ -144,6 +144,12 @@ namespace Chess
             {
                 if (game.GetLegalMovements(nextMove.Org).Contains(clicked))
                 {
+                    String lastPos = "c" + nextMove.Org.Y + nextMove.Org.X;
+                    TextBlock lastS = (TextBlock)this.FindName(lastPos);
+                    Console.WriteLine(lastPos);
+                    UIElement lastElem = lastS;
+                    lastElem.Effect = null;
+
                     Console.WriteLine("move is legal");
                     nextMove.Target = clicked;
                     //int[] org = game.MovePieceB(y - 1, x - 1);
@@ -163,8 +169,9 @@ namespace Chess
 
         private void MenuItem_NewGame(object sender, RoutedEventArgs e)
         {
+            nextMove = null;
             game.resetGame(moving);
-            DrawBoard(); //skal have lavet så blurred brikker ikke er blurred mere...
+            DrawBoard();
         }
 
         private void MenuItem_ExitGame(object sender, RoutedEventArgs e)
@@ -182,6 +189,7 @@ namespace Chess
             {
                 moving = true;
             }
+            nextMove = null;
             game.resetGame(moving);
             DrawBoard();
         }
