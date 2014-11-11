@@ -109,26 +109,26 @@ namespace Chess
             return piece;
         }
 
-        public List<SimpleMove> GetAllMovesForPlayer()
+        public List<Move> GetAllMovesForPlayer(int player)
         {
-            List<SimpleMove> allMoves= new List<SimpleMove>();
+            List<Move> allMoves= new List<Move>();
             for (int h = 0; h < 8; h++)
             {
                 for (int w = 0; w < 8; w++)
                 {
-                    if (tiles[h, w] != 0)
+                    if (tiles[h, w]*player > 0)
                     {
                         allMoves.AddRange(GetLegalMovements(new int[] { h, w }));
                     }
                 }
             }
-            Console.WriteLine("number of moves for board is :" + allMoves.Count);
+            //Console.WriteLine("number of moves for board is :" + allMoves.Count);
             return allMoves;
         }
 
-        public List<SimpleMove> GetLegalMovements(int[] origin)
+        public List<Move> GetLegalMovements(int[] origin)
         {
-            List<SimpleMove> moves = new List<SimpleMove>();
+            List<Move> moves = new List<Move>();
             int piece = Math.Abs(tiles[origin[0], origin[1]]);
 
             if (piece == 2 || piece == 5) //Movement in straight lines
@@ -142,6 +142,10 @@ namespace Chess
             if (piece == 1 || piece == 3 || piece == 6) //Movement is an absolute distance
             {
                 moves.AddRange(GetAbsoluteMoves(origin));
+                if (piece == 1 || piece == 6)
+                {
+                    moves.AddRange(GetSpecialMoves(origin));
+                }
             }
             return moves;
         }
@@ -341,6 +345,33 @@ namespace Chess
                 }
             }
             return absMoves;
+        }
+
+        public List<Move> GetSpecialMoves(int[] origin)
+        {
+            List<Move> specialMoves= new List<Move>();
+            int piece = GetSpecificTile(origin);
+            if (piece == 1)
+            {
+                if (origin[0] == 6)
+                {
+                    specialMoves.Add(new SimpleMove(origin));
+                    
+                }
+            }
+            else if (piece == -1)
+            {
+
+            }
+            else if (piece == 6)
+            {
+
+            }
+            else if (piece == -6)
+            {
+
+            }
+            return specialMoves;
         }
 
         public Boolean CheckForKill(SimpleMove move)

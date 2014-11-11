@@ -10,25 +10,30 @@ namespace Chess
     public class Logic
     {
         private Move next;
-        private int depth = 3;
-        private int count;
+        private int depth = 8;
+        private int score, count, total;
 
         public void GetBestMove()
         {
             Board orgBoard = Board.Game.CloneBoard();
-            count = 0;
+            count = score = total = 0;
             doAlphaBeta(orgBoard, depth, Int32.MinValue, Int32.MaxValue, Board.color);
+            Console.WriteLine(count + " evaluations after " + total + " boards, score is " + score);
         }
         
         public int doAlphaBeta(Board lastBoard, int rDepth, int alpha, int beta, int rPlayer)
         {
-            List<SimpleMove> newMoves = lastBoard.GetAllMovesForPlayer();
-            
-            Console.WriteLine("number of moves from last board: " + newMoves.Count);
+            List<SimpleMove> newMoves = lastBoard.GetAllMovesForPlayer(rPlayer);
+            total += newMoves.Count;
+            //Console.WriteLine("number of moves from last board: " + newMoves.Count + " at depth " + rDepth + " for player + " + rPlayer);
             if (!newMoves.Any() || rDepth == 0)
             {
-                //int e = evaluate(temp);
-                //return e;
+                int e = evaluate(lastBoard);
+                if (e > score)
+                {
+                    score = e;
+                }
+                return e;
             }
             if (rPlayer == 1) //Maximizing
             {
@@ -90,7 +95,7 @@ namespace Chess
             {0, 0, 0, 0, 0, 0, 0, 0}
         };
 
-        private static int[,] knightTable =
+        private static int[,] blackKnightTable =
         {
             {-50, -40, -20, -30, -30, -20, -40, -50},
             {-40, -20, 0, 5, 5, 0, -20, -40}, 
@@ -102,7 +107,7 @@ namespace Chess
             {-50, -40, -30, -30, -30, -30, -40, -50}
         };
 
-        private static int[,] bishopTable =
+        private static int[,] blackBishopTable =
         {
             {-20, -10, -10, -10, -10, -10, -10, -20},
             {-10, 5, 0, 0, 0, 0, 5, -10}, 
@@ -114,7 +119,7 @@ namespace Chess
             {-20, -10, -10, -10, -10, -10, -10, -20}
         };
 
-        private static int[,] rookTable =
+        private static int[,] blackRookTable =
         {
             {0, 0, 0, 5, 5, 0, 0, 0},
             {-5, 0, 0, 0, 0, 0, 0, -5}, 
@@ -126,7 +131,7 @@ namespace Chess
             {0, 0, 0, 0, 0, 0, 0, 0}
         };
 
-        private static int[,] queenTable =
+        private static int[,] blackQueenTable =
         {
             {-20, -10, -10, -5, -5, -10, -10, -20}, 
             {-10, 0, 5, 0, 0, 0, 0, -10}, 
@@ -138,7 +143,7 @@ namespace Chess
             {-20, -10, -10, -5, -5, -10, -10, -20}
         };
 
-        private static int[,] kingTable =
+        private static int[,] blackKingTable =
         {
             {20, 30, 10, 0, 0, 10, 30, 20}, 
             {20, 20, 0, 0, 0, 0, 20, 20}, 
@@ -149,10 +154,6 @@ namespace Chess
             {-30, -40, -40, -50, -50, -40, -40, -30},
             {-30, -40, -40, -50, -50, -40, -40, -30}
         };
-
-
-
-
 
         private static int[,] blackPawnTable =
         {
@@ -166,7 +167,7 @@ namespace Chess
             {50, 50, 50, 50, 50, 50, 50, 50}
         };
 
-        private static int[,] blackKnightTable =
+        private static int[,] knightTable =
         {
             {-50, -40, -30, -30, -30, -30, -40, -50},
             {-40, -20, 0, 0, 0, 0, -20, -40},
@@ -179,7 +180,7 @@ namespace Chess
 
         };
 
-        private static int[,] blackBishopTable =
+        private static int[,] bishopTable =
         {
             {-20, -10, -10, -10, -10, -10, -10, -20},
             {-10, 0, 0, 0, 0, 0, 0, -10}, 
@@ -191,7 +192,7 @@ namespace Chess
             {-20, -10, -10, -10, -10, -10, -10, -20}
         };
 
-        private static int[,] blackRookTable =
+        private static int[,] rookTable =
         {
             {0, 0, 0, 0, 0, 0, 0, 0},
             {5, 10, 10, 10, 10, 10, 10, 5},
@@ -203,7 +204,7 @@ namespace Chess
             {0, 0, 0, 5, 5, 0, 0, 0}
         };
 
-        private static int[,] blackQueenTable =
+        private static int[,] queenTable =
         {
             {-20, -10, -10, -5, -5, -10, -10, -20},
             {-10, 0, 0, 0, 0, 0, 0, -10},
@@ -216,7 +217,7 @@ namespace Chess
 
         };
 
-        private static int[,] blackKingTable =
+        private static int[,] kingTable =
         {
             {-30, -40, -40, -50, -50, -40, -40, -30},
             {-30, -40, -40, -50, -50, -40, -40, -30},
@@ -284,7 +285,7 @@ namespace Chess
                 }
             }
             count++;
-            Console.WriteLine("Iteration " + count + " White Score: " + whitescore + "\nBlack Score: " + blackscore);
+            //Console.WriteLine("Iteration " + count + " White Score: " + whitescore + "\nBlack Score: " + blackscore);
             return whitescore - blackscore;
         }
         
