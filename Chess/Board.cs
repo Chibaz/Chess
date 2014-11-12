@@ -355,8 +355,16 @@ namespace Chess
             {
                 if (origin[0] == 6)
                 {
-                    specialMoves.Add(new SimpleMove(origin));
-                    
+                    SimpleMove special = new SimpleMove(origin);
+                    special.Target = new int[] { origin[0] + 2, origin[1] };
+                    specialMoves.Add(special);
+                }
+                if (origin[0] == 3)
+                {
+                    EnPassante special = new EnPassante(origin);
+                    special.Target = new int[] { origin[0] + 1, origin[1] };
+
+                    specialMoves.Add(special);
                 }
             }
             else if (piece == -1)

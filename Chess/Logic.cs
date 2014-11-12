@@ -23,7 +23,7 @@ namespace Chess
         
         public int doAlphaBeta(Board lastBoard, int rDepth, int alpha, int beta, int rPlayer)
         {
-            List<SimpleMove> newMoves = lastBoard.GetAllMovesForPlayer(rPlayer);
+            List<Move> newMoves = lastBoard.GetAllMovesForPlayer(rPlayer);
             total += newMoves.Count;
             //Console.WriteLine("number of moves from last board: " + newMoves.Count + " at depth " + rDepth + " for player + " + rPlayer);
             if (!newMoves.Any() || rDepth == 0)
