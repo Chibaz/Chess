@@ -47,6 +47,8 @@ namespace Chess
         public Board()
         {
             tiles = new int[8, 8];
+
+
         }
 
         //Used for resetting the pieces on the board
@@ -403,6 +405,11 @@ namespace Chess
                 return true;
             }
             return false;
+        }
+
+        public Boolean CheckForCheck(Move move)
+        {
+
         }
 
         public int GetSpecificTile(int[] tile)
