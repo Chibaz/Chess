@@ -17,7 +17,7 @@ namespace Chess
      */
     public class Board
     {
-        public static int color = 1;
+        public static int aiColor = 1;
         private static Board board;
         public static Board Game
         {
@@ -85,11 +85,11 @@ namespace Chess
             //Sets the correct color of the pieces
             if (h == 0 || h == 1)
             {
-                piece = piece * -color;
+                piece = piece * -aiColor;
             }
             else if (h == 7 || h == 6)
             {
-                piece = piece * color;
+                piece = piece * aiColor;
             }
             else
             {

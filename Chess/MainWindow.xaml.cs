@@ -29,7 +29,6 @@ namespace Chess
         {
             InitializeComponent();
             logic = new Logic();
-            logic.gui = this;
             game = Board.Game;
             game.ResetGame();
             DrawBoard();
@@ -208,7 +207,7 @@ namespace Chess
 
         private void MenuItem_Switch(object sender, RoutedEventArgs e)
         {
-            Board.color *= -1;
+            Board.aiColor *= -1;
             game.ResetGame();
             DrawBoard();
         }

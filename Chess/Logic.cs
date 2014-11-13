@@ -12,21 +12,26 @@ namespace Chess
         private IMove next;
         private int depth = 5;
         private int score, count, total;
-        public GUI gui;
+        private MoveGenerator mg;
+
+        public Logic()
+        {
+            mg = new MoveGenerator();
+        }
 
         public void GetBestMove()
         {
             Console.WriteLine("performing best move");
             Board orgBoard = Board.Game.CloneBoard();
             count = score = total = 0;
-            doAlphaBeta(Board.Game, depth, Int32.MinValue, Int32.MaxValue, Board.color);
+            doAlphaBeta(Board.Game, depth, Int32.MinValue, Int32.MaxValue, Board.aiColor);
             Console.WriteLine(count + " evaluations after " + total + " boards, score is " + score);
             next.Execute();
         }
         
         public int doAlphaBeta(Board lastBoard, int rDepth, int alpha, int beta, int rPlayer)
         {
-            List<IMove> newMoves = lastBoard.GetAllMovesForPlayer(rPlayer);
+            List<IMove> newMoves = mg.GetAllMovesForPlayer(rPlayer);
             total += newMoves.Count;
             //Console.WriteLine("number of moves from last board: " + newMoves.Count + " at depth " + rDepth + " for player + " + rPlayer);
             if (!newMoves.Any() || rDepth == 0)
@@ -51,7 +56,6 @@ namespace Chess
                     if (v > alpha)
                     {
                         alpha = v;
-                        
                         if (rDepth == depth)
                         {
                             Console.WriteLine("new best move " + v);
@@ -72,7 +76,6 @@ namespace Chess
                     //Board newBoard = lastBoard.CloneBoard();
                     //move.ExecuteOnBoard(newBoard);
                     move.Execute();
-                    gui.DrawBoard();
                     int v = doAlphaBeta(lastBoard, rDepth - 1, alpha, beta, rPlayer*-1); //Recursive call on possible methods
                     move.Undo();
                     if (v < beta)
@@ -238,10 +241,11 @@ namespace Chess
             {20, 30, 10, 0, 0, 10, 30, 20}
         };
 
-        public int evaluate(Board board)
+        public int evaluate()
         {
             int whitescore, blackscore;
             whitescore = blackscore = 0;
+            Board board = Board.Game;
             for (int row = 0; row < board.Tiles.GetLength(0); row++)
             {
                 for(int col =0; col<board.Tiles.GetLength(0); col++) {

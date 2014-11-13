@@ -15,7 +15,7 @@ namespace Chess
             {
                 for (int w = 0; w < 8; w++)
                 {
-                    if (Board.Game.tiles[h, w] * player == 1)
+                    if (Board.Game.tiles[h, w] * player > 0)
                     {
                         allMoves.AddRange(GetLegalMovements(new int[] { h, w }));
                     }
@@ -90,7 +90,7 @@ namespace Chess
             for (int x = origin[1] + 1; x < 8; x++) //Horizontal right
             {
                 newMove = new Move(origin, Board.Game.tiles[origin[0], origin[1]]);
-                newMove.moving.Target = new int[] { y, origin[1] };
+                newMove.moving.Target = new int[] { x, origin[1] };
                 if (Board.Game.tiles[newMove.moving.Target[0], newMove.moving.Target[1]] == 0)
                 {
                     straightMoves.Add(newMove);
@@ -107,7 +107,7 @@ namespace Chess
             for (int x = origin[1] - 1; x >= 0; x--) //Horizontal left
             {
                 newMove = new Move(origin, Board.Game.tiles[origin[0], origin[1]]);
-                newMove.moving.Target = new int[] { y, origin[1] };
+                newMove.moving.Target = new int[] { x, origin[1] };
                 if (Board.Game.tiles[newMove.moving.Target[0], newMove.moving.Target[1]] == 0)
                 {
                     straightMoves.Add(newMove);
@@ -208,11 +208,11 @@ namespace Chess
             String[] moves = null;
             int piece = Board.Game.tiles[origin[0], origin[1]];
             List<Move> absMoves = new List<Move>();
-            if (piece * Board.color == -1)
+            if (piece * Board.aiColor == -1)
             {
                 moves = new String[] { "1,0" };
             }
-            else if (piece * Board.color == 1)
+            else if (piece * Board.aiColor == 1)
             {
                 moves = new String[] { "-1,0" };
             }
@@ -248,17 +248,71 @@ namespace Chess
 
         public List<IMove> GetPawnMoves(int[] origin)
         {
-            String[] moves = null;
             int piece = Board.Game.tiles[origin[0], origin[1]];
-            List<Move> absMoves = new List<Move>();
-            if (piece * Board.color == 1)
+            List<IMove> pawnMoves = new List<IMove>();
+            int direction = piece * Board.aiColor;
+            Move newMove;
+
+            if (Board.Game.tiles[origin[0] - direction, origin[1]] == 0)
             {
-                
+                newMove = new Move(origin, piece);
+                newMove.moving.Target = new int[] { origin[0] - 1, origin[1] };
+                pawnMoves.Add(newMove);
             }
-            else if (piece * Board.color == 1)
+            if (Board.Game.tiles[origin[0] - (2 * direction), origin[1]] == 0 && origin[0] == 6)
             {
-                moves = new String[] { "-1,0" };
+                newMove = new Move(origin, piece);
+                newMove.moving.Target = new int[] { origin[0] - (2 * direction), origin[1] };
+                pawnMoves.Add(newMove);
             }
+            if (Board.Game.tiles[origin[0] - direction, origin[1] + 1] * piece < 0)
+            {
+                newMove = new Move(origin, piece);
+                newMove.moving.Target = new int[] { origin[0] - direction, origin[1] + 1 };
+                newMove.killing.Position = new int[] { origin[0] - direction, origin[1] + 1 };
+                newMove.killing.Piece = Board.Game.tiles[origin[0] - direction, origin[1] + 1];
+                pawnMoves.Add(newMove);
+            }
+            if (Board.Game.tiles[origin[0] - direction, origin[1] - 1] * piece < 0)
+            {
+                newMove = new Move(origin, piece);
+                newMove.moving.Target = new int[] { origin[0] - direction, origin[1] - 1 };
+                newMove.killing.Position = new int[] { origin[0] - direction, origin[1] - 1 };
+                newMove.killing.Piece = Board.Game.tiles[origin[0] - direction, origin[1] - 1];
+                pawnMoves.Add(newMove);
+            }
+            return pawnMoves;
+            /*if(piece * Board.aiColor == -1)
+            {
+                if (Board.Game.tiles[origin[0] + 1, origin[1]] == 0)
+                {
+                    newMove = new Move(origin, piece);
+                    newMove.moving.Target = new int[] { origin[0] - 1, origin[1] };
+                    pawnMoves.Add(newMove);
+                }
+                if (Board.Game.tiles[origin[0] - 2, origin[1]] == 0)
+                {
+                    newMove = new Move(origin, piece);
+                    newMove.moving.Target = new int[] { origin[0] - 2, origin[1] };
+                    pawnMoves.Add(newMove);
+                }
+                if (Board.Game.tiles[origin[0] - 1, origin[1] + 1] * piece < 0)
+                {
+                    newMove = new Move(origin, piece);
+                    newMove.moving.Target = new int[] { origin[0] + 1, origin[1] + 1 };
+                    newMove.killing.Position = new int[] { origin[0] + 1, origin[1] + 1 };
+                    newMove.killing.Piece = Board.Game.tiles[origin[0] + 1, origin[1] + 1];
+                    pawnMoves.Add(newMove);
+                }
+                if (Board.Game.tiles[origin[0] - 1, origin[1] - 1] * piece < 0)
+                {
+                    newMove = new Move(origin, piece);
+                    newMove.moving.Target = new int[] { origin[0] - 1, origin[1] - 1 };
+                    newMove.killing.Position = new int[] { origin[0] - 1, origin[1] - 1 };
+                    newMove.killing.Piece = Board.Game.tiles[origin[0] - 1, origin[1] - 1];
+                    pawnMoves.Add(newMove);
+                }
+            }*/
         }
 
         public List<IMove> GetSpecialMoves(int[] origin)
