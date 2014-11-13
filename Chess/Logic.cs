@@ -9,21 +9,24 @@ namespace Chess
 
     public class Logic
     {
-        private Move next;
-        private int depth = 8;
+        private IMove next;
+        private int depth = 5;
         private int score, count, total;
+        public GUI gui;
 
         public void GetBestMove()
         {
+            Console.WriteLine("performing best move");
             Board orgBoard = Board.Game.CloneBoard();
             count = score = total = 0;
-            doAlphaBeta(orgBoard, depth, Int32.MinValue, Int32.MaxValue, Board.color);
+            doAlphaBeta(Board.Game, depth, Int32.MinValue, Int32.MaxValue, Board.color);
             Console.WriteLine(count + " evaluations after " + total + " boards, score is " + score);
+            next.Execute();
         }
         
         public int doAlphaBeta(Board lastBoard, int rDepth, int alpha, int beta, int rPlayer)
         {
-            List<Move> newMoves = lastBoard.GetAllMovesForPlayer(rPlayer);
+            List<IMove> newMoves = lastBoard.GetAllMovesForPlayer(rPlayer);
             total += newMoves.Count;
             //Console.WriteLine("number of moves from last board: " + newMoves.Count + " at depth " + rDepth + " for player + " + rPlayer);
             if (!newMoves.Any() || rDepth == 0)
@@ -38,16 +41,20 @@ namespace Chess
             if (rPlayer == 1) //Maximizing
             {
                 //Get all possible moves from current state
-                foreach (Move move in newMoves)
+                foreach (IMove move in newMoves)
                 {
-                    Board newBoard = lastBoard.CloneBoard();
-                    move.ExecuteOnBoard(newBoard);
-                    int v = doAlphaBeta(newBoard, rDepth - 1, alpha, beta, rPlayer*-1); //Recursive call on possible methods
+                    //Board newBoard = lastBoard.CloneBoard();
+                    //move.ExecuteOnBoard(newBoard);
+                    move.Execute();
+                    int v = doAlphaBeta(lastBoard, rDepth - 1, alpha, beta, rPlayer*-1); //Recursive call on possible methods
+                    move.Undo();
                     if (v > alpha)
                     {
                         alpha = v;
+                        
                         if (rDepth == depth)
                         {
+                            Console.WriteLine("new best move " + v);
                             next = move;
                         }
                     }
@@ -60,14 +67,17 @@ namespace Chess
             }
             else //Minimizing
             {
-                foreach (Move move in newMoves)
+                foreach (IMove move in newMoves)
                 {
-                    Board newBoard = lastBoard.CloneBoard();
-                    move.ExecuteOnBoard(newBoard);
-                    int v = doAlphaBeta(newBoard, rDepth - 1, alpha, beta, rPlayer*-1); //Recursive call on possible methods
+                    //Board newBoard = lastBoard.CloneBoard();
+                    //move.ExecuteOnBoard(newBoard);
+                    move.Execute();
+                    gui.DrawBoard();
+                    int v = doAlphaBeta(lastBoard, rDepth - 1, alpha, beta, rPlayer*-1); //Recursive call on possible methods
+                    move.Undo();
                     if (v < beta)
                     {
-                        alpha = v;
+                        beta = v;
                         if (rDepth == depth)
                         {
                             next = move;
@@ -82,7 +92,6 @@ namespace Chess
             }
         }
 
-        private static int whitescore, blackscore;
         private static int[,] pawnTable =
         {
             {50, 50, 50, 50, 50, 50, 50, 50},
@@ -231,32 +240,34 @@ namespace Chess
 
         public int evaluate(Board board)
         {
-            
+            int whitescore, blackscore;
+            whitescore = blackscore = 0;
             for (int row = 0; row < board.Tiles.GetLength(0); row++)
             {
                 for(int col =0; col<board.Tiles.GetLength(0); col++) {
                     if (Board.Game.Tiles[row, col] == 1)
                     {
-                        whitescore += pawnTable[row,col];}
+                        whitescore += pawnTable[row,col];
+                    }
                     else if (Board.Game.Tiles[row, col] == -1)
                     {
-                        blackscore -= blackPawnTable[row, col];
-                        }
+                        blackscore += blackPawnTable[row, col];
+                    }
                     else if (Board.Game.Tiles[row, col] == 2)
                     {
                         whitescore += rookTable[row,col];
-                        }
+                    }
                     else if (Board.Game.Tiles[row, col] == -2)
                     {
-                        blackscore -= blackRookTable[row, col];
-                        }
+                        blackscore += blackRookTable[row, col];
+                    }
                     else if (Board.Game.Tiles[row, col] == 3)
                     {
                         whitescore += knightTable[row,col];
-                        }
+                    }
                     else if (Board.Game.Tiles[row, col] == -3)
                     {
-                        blackscore -= blackKnightTable[row, col];
+                        blackscore += blackKnightTable[row, col];
                         }
                     else if (Board.Game.Tiles[row, col] == 4)
                     {
@@ -264,7 +275,7 @@ namespace Chess
                         }
                     else if (Board.Game.Tiles[row, col] == -4)
                     {
-                        blackscore -= blackBishopTable[row, col];
+                        blackscore += blackBishopTable[row, col];
                         }
                     else if (Board.Game.Tiles[row, col] == 5)
                     {
@@ -272,7 +283,7 @@ namespace Chess
                         }
                     else if (Board.Game.Tiles[row, col] == -5)
                     {
-                        blackscore -= blackQueenTable[row, col];
+                        blackscore += blackQueenTable[row, col];
                         }
                     else if (Board.Game.Tiles[row, col] == 6)
                     {
@@ -280,12 +291,14 @@ namespace Chess
                         }
                     else if (Board.Game.Tiles[row, col] == -6)
                     {
-                        blackscore -= blackKingTable[row, col];
-                        }
+                        blackscore += blackKingTable[row, col];
+                    }
                 }
             }
             count++;
-            //Console.WriteLine("Iteration " + count + " White Score: " + whitescore + "\nBlack Score: " + blackscore);
+
+            //Console.WriteLine("Iteration " + count + " White Score: " + whitescore + " Black Score: " + blackscore);
+
             return whitescore - blackscore;
         }
         

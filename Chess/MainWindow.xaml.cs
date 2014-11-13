@@ -22,15 +22,16 @@ namespace Chess
     public partial class GUI : Window
     {
         private Board game;
-        private SimpleMove nextMove;
+        private Move nextMove;
+        private Logic logic;
 
         public GUI()
         {
             InitializeComponent();
+            logic = new Logic();
+            logic.gui = this;
             game = Board.Game;
             game.ResetGame();
-            Logic l = new Logic();
-            l.GetBestMove();
             DrawBoard();
         }
 
@@ -135,17 +136,18 @@ namespace Chess
                     //GlowColor = new Color {A = 255, R = 255, G = 255, B = 0},
                     //GlowSize = 320,
                 };
-                nextMove = new SimpleMove(clicked);
+                nextMove = new Move(clicked);
                 nextMove.ToMove = game.GetSpecificTile(clicked);
                 
-                foreach (SimpleMove m in game.GetLegalMovements(clicked))
+                foreach (Move m in game.GetLegalMovements(clicked))
                 {
                     Console.WriteLine(m.Target[0] + "," + m.Target[1]);
+                    /*
                     if (m.ToKill != null)
                     {
-                        Console.WriteLine("kill is " + m.ToKill[0] + "," + m.ToKill[1]);
+                       Console.WriteLine("kill is " + m.ToKill[0] + "," + m.ToKill[1]);
                     }
-                    /*
+                    
                     uie = (UIElement)FindName("c" + m.Target[0] + m.Target[1]);
 
                     uie.Effect = new DropShadowEffect
@@ -199,7 +201,7 @@ namespace Chess
         private void MenuItem_NewGame(object sender, RoutedEventArgs e)
         {
             game.ResetGame();
-            DrawBoard(); //skal have lavet så blurred brikker ikke er blurred mere...
+            DrawBoard();
         }
 
         private void MenuItem_Switch(object sender, RoutedEventArgs e)
@@ -212,6 +214,12 @@ namespace Chess
         private void MenuItem_ExitGame(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();
+        }
+
+        private void MenuItem_DoMove(object sender, RoutedEventArgs e)
+        {
+            logic.GetBestMove();
+            DrawBoard();
         }
     }
 }

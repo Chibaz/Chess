@@ -109,9 +109,9 @@ namespace Chess
             return piece;
         }
 
-        public List<Move> GetAllMovesForPlayer(int player)
+        public List<IMove> GetAllMovesForPlayer(int player)
         {
-            List<Move> allMoves= new List<Move>();
+            List<IMove> allMoves= new List<IMove>();
             for (int h = 0; h < 8; h++)
             {
                 for (int w = 0; w < 8; w++)
@@ -126,9 +126,9 @@ namespace Chess
             return allMoves;
         }
 
-        public List<Move> GetLegalMovements(int[] origin)
+        public List<IMove> GetLegalMovements(int[] origin)
         {
-            List<Move> moves = new List<Move>();
+            List<IMove> moves = new List<IMove>();
             int piece = Math.Abs(tiles[origin[0], origin[1]]);
 
             if (piece == 2 || piece == 5) //Movement in straight lines
@@ -150,13 +150,13 @@ namespace Chess
             return moves;
         }
 
-        public List<SimpleMove> GetStraightMoves(int[] origin)
+        public List<Move> GetStraightMoves(int[] origin)
         {
-            SimpleMove newMove = null;
-            List<SimpleMove> straightMoves = new List<SimpleMove>();
+            Move newMove = null;
+            List<Move> straightMoves = new List<Move>();
             for (int y = origin[0] + 1; y < 8; y++) //Vertical lower
             {
-                newMove = new SimpleMove(origin);
+                newMove = new Move(origin);
                 newMove.Target = new int[] { y, origin[1] };
                 if (GetSpecificTile(newMove.Target) == 0)
                 {
@@ -173,7 +173,7 @@ namespace Chess
             }
             for (int y = origin[0] - 1; y >= 0; y--) //Vertical upper
             {
-                newMove = new SimpleMove(origin);
+                newMove = new Move(origin);
                 newMove.Target = new int[] { y, origin[1] };
                 if (GetSpecificTile(newMove.Target) == 0)
                 {
@@ -190,7 +190,7 @@ namespace Chess
             }
             for (int x = origin[1] + 1; x < 8; x++) //Horizontal right
             {
-                newMove = new SimpleMove(origin);
+                newMove = new Move(origin);
                 newMove.Target = new int[] { origin[0], x };
                 if (GetSpecificTile(newMove.Target) == 0)
                 {
@@ -207,7 +207,7 @@ namespace Chess
             }
             for (int x = origin[1] - 1; x >= 0; x--) //Horizontal left
             {
-                newMove = new SimpleMove(origin);
+                newMove = new Move(origin);
                 newMove.Target = new int[] { origin[0], x };
                 if (GetSpecificTile(newMove.Target) == 0)
                 {
@@ -225,19 +225,19 @@ namespace Chess
             return straightMoves;
         }
 
-        public List<SimpleMove> GetDiagonalMoves(int[] origin)
+        public List<Move> GetDiagonalMoves(int[] origin)
         {
-            List<SimpleMove> diagonalMoves = new List<SimpleMove>();
+            List<Move> diagonalMoves = new List<Move>();
             int xL, xR;
             xL = xR = origin[1];
             Boolean leftUnbroken, rightUnbroken;
             leftUnbroken = rightUnbroken = true;
-            SimpleMove newMove = null;
+            Move newMove = null;
             for (int y = origin[0] + 1; y < 8; y++) //Lower diagonals
             {
                 xL--;
                 xR++;
-                newMove = new SimpleMove(origin);
+                newMove = new Move(origin);
                 newMove.Target = new int[] { y, xL };
                 if (xL > 0 && tiles[y, xL] == 0 && leftUnbroken)
                 {
@@ -251,7 +251,7 @@ namespace Chess
                     }
                     leftUnbroken = false;
                 }
-                newMove = new SimpleMove(origin);
+                newMove = new Move(origin);
                 newMove.Target = new int[] { y, xR };
                 if (xR < 8 && tiles[y, xR] == 0 && rightUnbroken)
                 {
@@ -272,7 +272,7 @@ namespace Chess
             {
                 xL--;
                 xR++;
-                newMove = new SimpleMove(origin);
+                newMove = new Move(origin);
                 newMove.Target = new int[] { y, xL };
                 if (xL > 0 && tiles[y, xL] == 0 && leftUnbroken)
                 {
@@ -286,7 +286,7 @@ namespace Chess
                     }
                     leftUnbroken = false;
                 }
-                newMove = new SimpleMove(origin);
+                newMove = new Move(origin);
                 newMove.Target = new int[] { y, xR };
                 if (xR < 8 && tiles[y, xR] == 0 && rightUnbroken)
                 {
@@ -304,11 +304,11 @@ namespace Chess
             return diagonalMoves;
         }
 
-        public List<SimpleMove> GetAbsoluteMoves(int[] origin)
+        public List<Move> GetAbsoluteMoves(int[] origin)
         {
             String[] moves = null;
             int piece = GetSpecificTile(origin);
-            List<SimpleMove> absMoves = new List<SimpleMove>();
+            List<Move> absMoves = new List<Move>();
             if (piece * color == -1)
             {
                 moves = new String[] { "1,0" };
@@ -327,7 +327,7 @@ namespace Chess
             }
             foreach (String s in moves)
             {
-                SimpleMove newMove = new SimpleMove(origin);
+                Move newMove = new Move(origin);
                 String[] m = s.Split(new Char[] { ',' }, 2);
                 int y = origin[0] + int.Parse(m[0]);
                 int x = origin[1] + int.Parse(m[1]);
@@ -347,19 +347,32 @@ namespace Chess
             return absMoves;
         }
 
-        public List<Move> GetSpecialMoves(int[] origin)
+        public List<IMove> GetSpecialMoves(int[] origin)
         {
-            List<Move> specialMoves= new List<Move>();
+            List<IMove> specialMoves= new List<IMove>();
             int piece = GetSpecificTile(origin);
             if (piece == 1)
             {
                 if (origin[0] == 6)
                 {
-                    SimpleMove special = new SimpleMove(origin);
-                    special.Target = new int[] { origin[0] + 2, origin[1] };
+                    Move special = new Move(origin);
+                    special.Target = new int[] { origin[0] -2, origin[1] };
                     specialMoves.Add(special);
                 }
                 if (origin[0] == 3)
+                {
+                    EnPassante special = new EnPassante(origin);
+                    special.Target = new int[] { origin[0] - 1, origin[1] };
+
+                    specialMoves.Add(special);
+                }
+                if (origin[0] == 1)
+                {
+                    Move special = new Move(origin);
+                    special.Target = new int[] { origin[0] + 2, origin[1] };
+                    specialMoves.Add(special);
+                }
+                if (origin[0] == 4)
                 {
                     EnPassante special = new EnPassante(origin);
                     special.Target = new int[] { origin[0] + 1, origin[1] };
@@ -382,11 +395,11 @@ namespace Chess
             return specialMoves;
         }
 
-        public Boolean CheckForKill(SimpleMove move)
+        public Boolean CheckForKill(Move move)
         {
             if (move.ToMove * GetSpecificTile(move.Target) < 0)
             {
-                move.ToKill = move.Target;
+                //move.ToKill = move.Target;
                 return true;
             }
             return false;
@@ -411,24 +424,52 @@ namespace Chess
         }
     }
 
-    interface Move
+    public interface IMove
     {
         void Execute();
         void ExecuteOnBoard(Board temp);
+        void Undo();
     }
 
-    public class SimpleMove : Move
+    public class Move : IMove
     {
+        public struct MovingPiece
+        {
+            public int[] Origin;
+            public int[] Target;
+            public int Piece;
+
+        public MovingPiece(int[] origin, int[] target, int piece)
+            {
+                Origin = origin;
+                Target = target;
+                Piece = piece;
+            }
+        }
+
+        public struct TakenPiece
+        {
+            public int[] Position;
+
+            public TakenPiece(int[] position)
+            {
+                Position = position;
+            }
+        }
+
+
+
+        /*
         private int[] origin;
         public int[] Origin { get { return origin; } }
         private int[] target;
         public int[] Target { get { return target; } set { target = value; } }
         private int toMove;
         public int ToMove { get { return toMove; } set { toMove = value; } }
-        private int[] toKill;
-        public int[] ToKill { get { return toKill; } set { toKill = value; } }
+        private int toKill;
+        public int ToKill { get { return toKill; } set { toKill = value; } }
 
-        public SimpleMove(int[] origin)
+        public Move(int[] origin)
         {
             this.origin = origin;
             toMove = Board.Game.Tiles[origin[0], origin[1]];
@@ -437,51 +478,32 @@ namespace Chess
         public void Execute()
         {
             int[,] tiles = Board.Game.Tiles;
-            if (toKill != null)
-            {
-                tiles[toKill[0], toKill[1]] = 0;
-            }
+            toKill = tiles[target[0], target[1]];
             tiles[target[0], target[1]] = toMove;
             tiles[origin[0], origin[1]] = 0;
         }
-
+        
         public void ExecuteOnBoard(Board temp)
         {
             int[,] tiles = temp.Tiles;
             if (toKill != null)
             {
-                tiles[toKill[0], toKill[1]] = 0;
+                //tiles[toKill[0], toKill[1]] = 0;
             }
             tiles[target[0], target[1]] = toMove;
             tiles[origin[0], origin[1]] = 0;
         }
+
+        public void Undo()
+        {
+            int[,] tiles = Board.Game.Tiles;
+            tiles[target[0], target[1]] = toKill;
+            tiles[origin[0], origin[1]] = toMove;
+        }
+        */
     }
 
-    public class EnPassante : Move
-    {
-        private int[] origin;
-        public int[] Origin { get { return origin; } }
-        private int[] target;
-        public int[] Target { get { return target; } set { target = value; } }
-        private int[] toKill;
-        public int[] ToKill { get { return toKill; } set { toKill = value; } }
-
-        public EnPassante(int[] origin)
-        {
-
-        }
-
-        public void Execute()
-        {
-
-        }
-        public void ExecuteOnBoard(Board temp)
-        {
-
-        }
-    }
-
-    public class Castling : Move
+    public class Castling : IMove
     {
         private int[] origin;
         public int[] Origin { get { return origin; } }
@@ -503,27 +525,7 @@ namespace Chess
         {
 
         }
-    }
-
-    public class Promotion : Move
-    {
-        private int[] origin;
-        public int[] Origin { get { return origin; } }
-        private int[] target;
-        public int[] Target { get { return target; } set { target = value; } }
-        private int[] toKill;
-        public int[] ToKill { get { return toKill; } set { toKill = value; } }
-
-        public Promotion(int[] origin)
-        {
-
-        }
-
-        public void Execute()
-        {
-
-        }
-        public void ExecuteOnBoard(Board temp)
+        public void Undo()
         {
 
         }
