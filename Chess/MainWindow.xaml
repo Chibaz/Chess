@@ -1,16 +1,17 @@
-﻿<Window x:Class="Chess.MainWindow"
+﻿<Window x:Class="Chess.GUI"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" Height="500" Width="500" WindowStyle="None" MaxWidth="500" MaxHeight="500" MinWidth="500" MinHeight="500">
+        Title="GUI" Height="500" Width="500" WindowStyle="None" MaxWidth="500" MaxHeight="500" MinWidth="500" MinHeight="500">
     
     <DockPanel>
         <Menu DockPanel.Dock="Top">
-            <MenuItem Header="_Spil" >
+            <MenuItem Header="_Game" >
                 <MenuItem Header="_New Game" Click="MenuItem_NewGame"/>
-                <MenuItem Header="_Skift retning" Click="MenuItem_Change_Direction" />
+                <MenuItem Header="_Switch" Click="MenuItem_Switch" />
                 <MenuItem Header="_Exit" Click="MenuItem_ExitGame"/>
             </MenuItem>
-            <MenuItem Header="_AI-indstillinger">
+            <MenuItem Header="_AI Options" >
+                <MenuItem Header="_Do Move" Click="MenuItem_DoMove"/>
                 <MenuItem Header="_Depth" />
                 <MenuItem Header="_Timer" />
             </MenuItem>

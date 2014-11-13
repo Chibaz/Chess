@@ -6,464 +6,421 @@ using System.Threading.Tasks;
 
 namespace Chess
 {
+    /*
+     * Board is based on a 2-dimensional array of ints, pieces are defined as:
+     * 1 - Pawn
+     * 2 - Rook
+     * 3 - Knight
+     * 4 - Bishop
+     * 5 - Queen
+     * 6 - King
+     */
     public class Board
     {
-        private Tile[,] tiles;
-        private MainWindow window;
 
-        public Board(MainWindow window)
+        private int[,] tiles;
+        public int[,] Tiles
         {
-            tiles = new Tile[8, 8];
-            resetGame(true);
-            this.window = window;
+            get
+            {
+                return tiles;
+            }
+            set
+            {
+                tiles = value;
+            }
+        }
+        public static int color = 1;
+        private static Board board;
+        public static Board Game
+        {
+            get
+            {
+                if (board == null)
+                {
+                    board = new Board();
+                }
+                return board;
+            }
+        }
+
+        public Board()
+        {
+            tiles = new int[8, 8];
         }
 
         //Used for resetting the pieces on the board
-        public void resetGame(Boolean color)
+        public void ResetGame()
         {
             for (int h = 0; h < 8; h++)
             {
                 for (int w = 0; w < 8; w++)
                 {
-                    Tile tile = new Tile(h, w);
-                    if (h == 0 || h == 1 || h == 6 || h == 7)
-                    {
-                        tile.Owner = GetStartPiece(tile, color);
-                    }
-                    tiles[h, w] = tile;
+                    tiles[h, w] = GetStartPiece(h, w);
                 }
             }
         }
 
 
-        //Used for getting which piece will be at the a specified tile and color at the start of a game
-        public Piece GetStartPiece(Tile tile, Boolean color)
+        //Used for getting which piece will be at the a specified tile at the start of a game
+        public int GetStartPiece(int h, int w)
         {
-            int h = tile.Y;
-            int w = tile.X;
-            Piece piece = null;
-            if (h == 0)
+            int piece = 0;
+
+            //Gets which piece is supposed to be at what position
+            if (h == 1 || h == 6)
             {
-                if (w == 0 || w == 7)
-                {
-                    piece = new Rook(!color);
-                }
-                else if (w == 1 || w == 6)
-                {
-                    piece = new Knight(!color);
-                }
-                else if (w == 2 || w == 5)
-                {
-                    piece = new Bishop(!color);
-                }
-                else if (w == 3)
-                {
-                    piece = new Queen(!color);
-                }
-                else if (w == 4)
-                {
-                    piece = new King(!color);
-                }
+                piece = 1;
             }
-            else if (h == 1)
+            else if (w == 0 || w == 7)
             {
-                piece = new Pawn(!color, false);
+                piece = 2;
             }
-            else if (h == 6)
+            else if (w == 1 || w == 6)
             {
-                piece = new Pawn(color, true);
+                piece = 3;
             }
-            else if (h == 7)
+            else if (w == 2 || w == 5)
             {
-                if (w == 0 || w == 7)
-                {
-                    piece = new Rook(color);
-                }
-                else if (w == 1 || w == 6)
-                {
-                    piece = new Knight(color);
-                }
-                else if (w == 2 || w == 5)
-                {
-                    piece = new Bishop(color);
-                }
-                else if (w == 3)
-                {
-                    piece = new Queen(color);
-                }
-                else if (w == 4)
-                {
-                    piece = new King(color);
-                }
+                piece = 4;
+            }
+            else if (w == 3)
+            {
+                piece = 5;
+            }
+            else if (w == 4)
+            {
+                piece = 6;
+            }
+
+            //Sets the correct color of the pieces
+            if (h == 0 || h == 1)
+            {
+                piece = piece * -color;
+            }
+            else if (h == 7 || h == 6)
+            {
+                piece = piece * color;
+            }
+            else
+            {
+                piece = 0;
             }
             return piece;
         }
 
-        public List<Tile> GetLegalMovements(Tile origin)
+        public List<IMove> GetAllMovesForPlayer(int player)
         {
-            List<Move> movesb = new List<Move>();
-            List<Tile> moves = new List<Tile>();
-            Piece piece = origin.Owner;
-            if (piece.Movement) //Movement is without range limit
+            List<IMove> allMoves= new List<IMove>();
+            for (int h = 0; h < 8; h++)
             {
-                if (piece.Move.Contains("straight"))
+                for (int w = 0; w < 8; w++)
                 {
-                    moves.AddRange(GetStraightMoves(origin));
-                }
-
-                if (piece.Move.Contains("diagonal"))
-                {
-                    moves.AddRange(GetDiagonalMoves(origin));
+                    if (tiles[h, w]*player > 0)
+                    {
+                        allMoves.AddRange(GetLegalMovements(new int[] { h, w }));
+                    }
                 }
             }
-            else //Movement is an absolute distance
+            //Console.WriteLine("number of moves for board is :" + allMoves.Count);
+            return allMoves;
+        }
+
+        public List<IMove> GetLegalMovements(int[] origin)
+        {
+            List<IMove> moves = new List<IMove>();
+            int piece = Math.Abs(tiles[origin[0], origin[1]]);
+
+            if (piece == 2 || piece == 5) //Movement in straight lines
+            {
+                moves.AddRange(GetStraightMoves(origin));
+            }
+            if (piece == 4 || piece == 5) //Movement in diagonal lines
+            {
+                moves.AddRange(GetDiagonalMoves(origin));
+            }
+            if (piece == 1 || piece == 3 || piece == 6) //Movement is an absolute distance
             {
                 moves.AddRange(GetAbsoluteMoves(origin));
+                if (piece == 1 || piece == 6)
+                {
+                    moves.AddRange(GetSpecialMoves(origin));
+                }
             }
             return moves;
         }
 
-        public List<Move> GetStraightMove(Move original)
+        public List<Move> GetStraightMoves(int[] origin)
         {
-            Tile origin = original.Org;
+            Move newMove = null;
             List<Move> straightMoves = new List<Move>();
-            for (int y = origin.Y + 1; y < 8; y++)
-            { //Horizontal lower
-                Move newMove = new Move(original.Org);
-                if (tiles[y, origin.X].Owner == null)
-                {
-                    newMove.Target = tiles[y, origin.X];
-                }
-                else
-                {
-                    CheckForKill(newMove);
-                    break;
-                }
-                straightMoves.Add(newMove);
-            }
-            for (int y = origin.Y - 1; y >= 0; y--) //Horizontal upper
+            for (int y = origin[0] + 1; y < 8; y++) //Vertical lower
             {
-                Move newMove = new Move(original.Org);
-                if (tiles[y, origin.X].Owner == null)
+                newMove = new Move(origin);
+                newMove.Target = new int[] { y, origin[1] };
+                if (GetSpecificTile(newMove.Target) == 0)
                 {
-                    newMove.Target = tiles[y, origin.X];
+                    straightMoves.Add(newMove);
                 }
                 else
                 {
-                    CheckForKill(newMove);
+                    if (CheckForKill(newMove))
+                    {
+                        straightMoves.Add(newMove);
+                    }
                     break;
                 }
-                straightMoves.Add(newMove);
             }
-            for (int x = origin.X + 1; x < 8; x++) //Vertical right
+            for (int y = origin[0] - 1; y >= 0; y--) //Vertical upper
             {
-                Move newMove = new Move(original.Org);
-                if (tiles[origin.Y, x].Owner == null)
+                newMove = new Move(origin);
+                newMove.Target = new int[] { y, origin[1] };
+                if (GetSpecificTile(newMove.Target) == 0)
                 {
-                    newMove.Target = tiles[origin.Y, x];
+                    straightMoves.Add(newMove);
                 }
                 else
                 {
-                    CheckForKill(newMove);
+                    if (CheckForKill(newMove))
+                    {
+                        straightMoves.Add(newMove);
+                    }
                     break;
                 }
-                straightMoves.Add(newMove);
             }
-            for (int x = origin.X - 1; x > 0; x--) //Vertical right
+            for (int x = origin[1] + 1; x < 8; x++) //Horizontal right
             {
-                Move newMove = new Move(original.Org);
-                if (tiles[origin.Y, x].Owner == null)
+                newMove = new Move(origin);
+                newMove.Target = new int[] { origin[0], x };
+                if (GetSpecificTile(newMove.Target) == 0)
                 {
-                    newMove.Target = tiles[origin.Y, x];
+                    straightMoves.Add(newMove);
                 }
                 else
                 {
-                    CheckForKill(newMove);
+                    if (CheckForKill(newMove))
+                    {
+                        straightMoves.Add(newMove);
+                    }
                     break;
                 }
-                straightMoves.Add(newMove);
+            }
+            for (int x = origin[1] - 1; x >= 0; x--) //Horizontal left
+            {
+                newMove = new Move(origin);
+                newMove.Target = new int[] { origin[0], x };
+                if (GetSpecificTile(newMove.Target) == 0)
+                {
+                    straightMoves.Add(newMove);
+                }
+                else
+                {
+                    if (CheckForKill(newMove))
+                    {
+                        straightMoves.Add(newMove);
+                    }
+                    break;
+                }
             }
             return straightMoves;
         }
 
-        public List<Move> GetDiagonalMove(Move original)
+        public List<Move> GetDiagonalMoves(int[] origin)
         {
-            Tile origin = original.Org;
             List<Move> diagonalMoves = new List<Move>();
             int xL, xR;
-            xL = xR = origin.X;
+            xL = xR = origin[1];
             Boolean leftUnbroken, rightUnbroken;
             leftUnbroken = rightUnbroken = true;
             Move newMove = null;
-            for (int y = origin.Y + 1; y < 8; y++)
-            { //Lower diagonals
+            for (int y = origin[0] + 1; y < 8; y++) //Lower diagonals
+            {
                 xL--;
                 xR++;
-                if (xL > 0 && tiles[y, xL].Owner == null && leftUnbroken)
+                newMove = new Move(origin);
+                newMove.Target = new int[] { y, xL };
+                if (xL > 0 && tiles[y, xL] == 0 && leftUnbroken)
                 {
-                    newMove = new Move(origin);
-                    newMove.Target = tiles[y, xL];
                     diagonalMoves.Add(newMove);
                 }
-                else if (xL > 0 && tiles[y, xL].Owner != null && leftUnbroken)
+                else if (xL > 0 && leftUnbroken)
                 {
-                    newMove = CheckForKill(newMove);
+                    if (CheckForKill(newMove))
+                    {
+                        diagonalMoves.Add(newMove);
+                    }
                     leftUnbroken = false;
                 }
-                if (xR < 8 && tiles[y, xR].Owner == null && rightUnbroken)
+                newMove = new Move(origin);
+                newMove.Target = new int[] { y, xR };
+                if (xR < 8 && tiles[y, xR] == 0 && rightUnbroken)
                 {
-                    newMove = new Move(origin);
-                    newMove.Target = tiles[y, xR];
                     diagonalMoves.Add(newMove);
                 }
-                else if (xR < 8 && tiles[y, xR].Owner == null && rightUnbroken)
+                else if (xR < 8 && rightUnbroken)
                 {
-                    newMove = CheckForKill(newMove);
+                    if (CheckForKill(newMove))
+                    {
+                        diagonalMoves.Add(newMove);
+                    }
                     rightUnbroken = false;
                 }
             }
-            xL = xR = origin.X;
+            xL = xR = origin[1];
             leftUnbroken = rightUnbroken = true;
-            newMove = null;
-            for (int y = origin.Y - 1; y >= 0; y--)
-            { //Upper diagonals
+            for (int y = origin[0] - 1; y >= 0; y--) //Upper diagonals
+            {
                 xL--;
                 xR++;
-                if (xL > 0 && tiles[y, xL].Owner == null && leftUnbroken)
+                newMove = new Move(origin);
+                newMove.Target = new int[] { y, xL };
+                if (xL > 0 && tiles[y, xL] == 0 && leftUnbroken)
                 {
-                    newMove = new Move(origin);
-                    newMove.Target = tiles[y, xL];
                     diagonalMoves.Add(newMove);
                 }
-                else if (xL > 0 && tiles[y, xL].Owner != null && leftUnbroken)
+                else if (xL > 0 && leftUnbroken)
                 {
-                    CheckForKill(newMove);
+                    if (CheckForKill(newMove))
+                    {
+                        diagonalMoves.Add(newMove);
+                    }
                     leftUnbroken = false;
                 }
-                if (xR < 8 && tiles[y, xR].Owner == null && rightUnbroken)
+                newMove = new Move(origin);
+                newMove.Target = new int[] { y, xR };
+                if (xR < 8 && tiles[y, xR] == 0 && rightUnbroken)
                 {
-                    newMove = new Move(origin);
-                    newMove.Target = tiles[y, xR];
                     diagonalMoves.Add(newMove);
                 }
-                else if (xR < 8 && tiles[y, xR].Owner != null && rightUnbroken)
+                else if (xR < 8 && rightUnbroken)
                 {
-                    CheckForKill(newMove);
+                    if (CheckForKill(newMove))
+                    {
+                        diagonalMoves.Add(newMove);
+                    }
                     rightUnbroken = false;
                 }
             }
             return diagonalMoves;
         }
 
-
-        public List<Tile> GetStraightMoves(Tile origin)
+        public List<Move> GetAbsoluteMoves(int[] origin)
         {
-            List<Tile> straightMoves = new List<Tile>();
-            for (int y = origin.Y + 1; y < 8; y++)
-            { //Horizontal lower
-                if (tiles[y, origin.X].Owner == null)
-                {
-                    straightMoves.Add(tiles[y, origin.X]);
-                }
-                else
-                {
-                    //check for kill move
-                    break;
-                }
-            }
-            for (int y = origin.Y - 1; y >= 0; y--) //Horizontal upper
+            String[] moves = null;
+            int piece = GetSpecificTile(origin);
+            List<Move> absMoves = new List<Move>();
+            if (piece * color == -1)
             {
-                if (tiles[y, origin.X].Owner == null)
-                {
-                    straightMoves.Add(tiles[y, origin.X]);
-                }
-                else
-                {
-                    //check for kill move
-                    break;
-                }
+                moves = new String[] { "1,0" };
             }
-            for (int x = origin.X + 1; x < 8; x++) //Vertical right
+            else if (piece * color == 1)
             {
-                if (tiles[origin.Y, x].Owner == null)
-                {
-                    straightMoves.Add(tiles[origin.Y, x]);
-                }
-                else
-                {
-                    //check for kill move
-                    break;
-                }
+                moves = new String[] { "-1,0" };
             }
-            for (int x = origin.X - 1; x > 0; x--) //Vertical right
+            else if (Math.Abs(piece) == 3)
             {
-                if (tiles[origin.Y, x].Owner == null)
-                {
-                    straightMoves.Add(tiles[origin.Y, x]);
-                }
-                else
-                {
-                    //check for kill move
-                    break;
-                }
+                moves = new String[] { "2,1", "1,2", "2,-1", "1,-2", "-2,1", "-1,2", "-2,-1", "-1,-2" };
             }
-            return straightMoves;
-        }
-
-        public List<Tile> GetDiagonalMoves(Tile origin)
-        {
-            List<Tile> diagonalMoves = new List<Tile>();
-            int xL, xR;
-            xL = xR = origin.X;
-            Boolean leftUnbroken, rightUnbroken;
-            leftUnbroken = rightUnbroken = true;
-            for (int y = origin.Y + 1; y < 8; y++)
-            { //Lower diagonals
-                xL--;
-                xR++;
-                if (xL > 0 && tiles[y, xL].Owner == null && leftUnbroken)
-                {
-                    diagonalMoves.Add(tiles[y, xL]);
-                }
-                else if(leftUnbroken)
-                {
-                    //Check for kill move
-                    leftUnbroken = false;
-                }
-                if (xR < 8 && tiles[y, xR].Owner == null && rightUnbroken)
-                {
-                    diagonalMoves.Add(tiles[y, xR]);
-                }
-                else if(rightUnbroken)
-                {
-                    //Check for kill move
-                    rightUnbroken = false;
-                }
-            }
-            xL = xR = origin.X;
-            leftUnbroken = rightUnbroken = true;
-            for (int y = origin.Y - 1; y >= 0; y--)
-            { //Upper diagonals
-                xL--;
-                xR++;
-                if (xL > 0 && tiles[y, xL].Owner == null && leftUnbroken)
-                {
-                    diagonalMoves.Add(tiles[y, xL]);
-                }
-                else if(leftUnbroken)
-                {
-                    //Check for kill move
-                    leftUnbroken = false;
-                }
-                if (xR < 8 && tiles[y, xR].Owner == null && rightUnbroken)
-                {
-                    diagonalMoves.Add(tiles[y, xR]);
-                }
-                else if(rightUnbroken)
-                {
-                    //Check for kill move
-                    rightUnbroken = false;
-                }
-            }
-            return diagonalMoves;
-        }
-
-        public List<Tile> GetAbsoluteMoves(Tile origin)
-        {
-            List<Tile> absMoves = new List<Tile>();
-            foreach (String s in origin.Owner.Move)
+            else if (Math.Abs(piece) == 6)
             {
+                moves = new String[] { "1,0", "-1,0", "0,1", "0,-1", "1,1", "1,-1", "-1,1", "-1,-1" };
+            }
+            foreach (String s in moves)
+            {
+                Move newMove = new Move(origin);
                 String[] m = s.Split(new Char[] { ',' }, 2);
-                int y = origin.Y + int.Parse(m[0]);
-                int x = origin.X + int.Parse(m[1]);
-                if (y >= 0 && x >= 0 && y < 8 && x < 8 && tiles[y, x].Owner == null)
+                int y = origin[0] + int.Parse(m[0]);
+                int x = origin[1] + int.Parse(m[1]);
+                if (y >= 0 && x >= 0 && y < 8 && x < 8)
                 {
-                    absMoves.Add(tiles[y, x]);
-                }
-                else if (y >= 0 && x >= 0 && y < 8 && x < 8 && tiles[y, x].Owner != null)
-                {
-                    //check for kill move
+                    newMove.Target = new int[] { y, x };
+                    if (GetSpecificTile(newMove.Target) == 0)
+                    {
+                        absMoves.Add(newMove);
+                    }
+                    else if (CheckForKill(newMove))
+                    {
+                        absMoves.Add(newMove);
+                    }
                 }
             }
             return absMoves;
         }
 
-        public Move CheckForKill(Move move)
+        public List<IMove> GetSpecialMoves(int[] origin)
         {
-            if (!move.Special && move.Mover.Color != move.Target.Owner.Color)
+            List<IMove> specialMoves= new List<IMove>();
+            int piece = GetSpecificTile(origin);
+            if (piece == 1)
             {
-                move.Kill = move.Target;
+                if (origin[0] == 6)
+                {
+                    Move special = new Move(origin);
+                    special.Target = new int[] { origin[0] -2, origin[1] };
+                    specialMoves.Add(special);
+                }
+                if (origin[0] == 3)
+                {
+                    EnPassante special = new EnPassante(origin);
+                    special.Target = new int[] { origin[0] - 1, origin[1] };
+
+                    specialMoves.Add(special);
+                }
+                if (origin[0] == 1)
+                {
+                    Move special = new Move(origin);
+                    special.Target = new int[] { origin[0] + 2, origin[1] };
+                    specialMoves.Add(special);
+                }
+                if (origin[0] == 4)
+                {
+                    EnPassante special = new EnPassante(origin);
+                    special.Target = new int[] { origin[0] + 1, origin[1] };
+
+                    specialMoves.Add(special);
+                }
             }
-            return move;
-        }
-
-        public Tile[,] GetTiles()
-        {
-            return tiles;
-        }
-
-        public Tile GetSpecificTile(int y, int x)
-        {
-            return tiles[y, x];
-        }
-    }
-
-    public class Tile
-    {
-        protected int y;
-        public int Y { get { return y; } }
-        protected int x;
-        public int X { get { return x; } }
-        protected Piece owner;
-        public Piece Owner { get { return owner; } set { owner = value; } }
-
-        public Tile(int y, int x)
-        {
-            this.y = y;
-            this.x = x;
-        }
-
-        public String toString()
-        {
-            String tile;
-            if (owner != null)
+            else if (piece == -1)
             {
-                tile = "Tile at " + y + "," + x + " contains " + owner.Name;
+
             }
-            else
+            else if (piece == 6)
             {
-                tile = "Tile at " + y + "," + x + " is empty";
+
             }
-            return tile;
-        }
-    }
+            else if (piece == -6)
+            {
 
-    public class Move
-    {
-        private Tile org;
-        public Tile Org { get { return org; } }
-        private Tile target;
-        public Tile Target { get { return target; } set { target = value; } }
-        private Boolean special;
-        public Boolean Special { get { return special; } }
-        public Piece Mover { get { return org.Owner; } }
-        private Tile killPos;
-        public Tile Kill { get { return killPos; } set { killPos = value; } }
-
-        public Move(Tile org)
-        {
-            this.org = org;
+            }
+            return specialMoves;
         }
 
-        public void Execute()
+        public Boolean CheckForKill(Move move)
         {
-            if (killPos != null)
+            if (move.ToMove * GetSpecificTile(move.Target) < 0)
             {
-                killPos.Owner = null;
+                //move.ToKill = move.Target;
+                return true;
             }
-            target.Owner = org.Owner;
-            org.Owner = null;
-            
+            return false;
+        }
+
+        public int GetSpecificTile(int[] tile)
+        {
+            return tiles[tile[0], tile[1]];
+        }
+
+        public Board CloneBoard()
+        {
+            Board newBoard = new Board();
+            for (int h = 0; h < 8; h++)
+            {
+                for (int w = 0; w < 8; w++)
+                {
+                    newBoard.Tiles[h, w] = this.tiles[h, w];
+                }
+            }
+            return newBoard;
         }
     }
 }

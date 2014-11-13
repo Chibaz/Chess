@@ -17,97 +17,103 @@ using System.Windows.Media.Effects;
 namespace Chess
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for GUI.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class GUI : Window
     {
         private Board game;
-        private Boolean moving = true;
         private Move nextMove;
-        
+        private Logic logic;
 
-        public MainWindow()
+        public GUI()
         {
             InitializeComponent();
-            game = new Board(this);
+            logic = new Logic();
+            logic.gui = this;
+            game = Board.Game;
+            game.ResetGame();
             DrawBoard();
         }
 
         //Goes through the tiles in the board and puts the pieces in the correct places
         public void DrawBoard()
         {
-            Tile[,] tiles = game.GetTiles();
-            foreach (Tile t in tiles)
+            int[,] tiles = game.Tiles;
+            for (int h = 0; h < 8; h++)
             {
-                String pos = "c" + t.Y + t.X;
-                TextBlock block = (TextBlock)this.FindName(pos);
-                if (t.Owner != null)
+                for (int w = 0; w < 8; w++)
                 {
-                    block.Text = GetUnicode(t, block.Background);
-                }
-                else
-                {
-                    block.Text = "";
+                    int piece = tiles[h, w];
+                    String pos = "c" + h + w;
+                    TextBlock block = (TextBlock)this.FindName(pos);
+                    if (piece != 0)
+                    {
+                        block.Text = GetUnicode(piece, block.Background);
+                    }
+                    else
+                    {
+                        block.Text = "";
+                    }
                 }
             }
         }
 
         //Gets the unicode string used for symbolizing any specific piece
-        public String GetUnicode(Tile tile, Brush color)
+        public String GetUnicode(int piece, Brush color)
         {
-            Piece piece = tile.Owner;
             String c = new BrushConverter().ConvertToString(color);
             String uni = null;
-            if ((c.Equals("#FFFFFFFF") && piece.Color) || (c.Equals("#FF000000") && !piece.Color))
+            int absPiece = Math.Abs(piece);
+            if ((c.Equals("#FFFFFFFF") && piece > 0) || (c.Equals("#FF000000") && piece < 0))
             {
-                if (piece.Name == "pawn")
+                if (absPiece == 1)
                 {
                     uni = "\u2659";
                 }
-                else if (piece.Name == "knight")
+                else if (absPiece == 3)
                 {
                     uni = "\u2658";
                 }
-                else if (piece.Name == "bishop")
+                else if (absPiece == 4)
                 {
                     uni = "\u2657";
                 }
-                else if (piece.Name == "rook")
+                else if (absPiece == 2)
                 {
                     uni = "\u2656";
                 }
-                else if (piece.Name == "queen")
+                else if (absPiece == 5)
                 {
                     uni = "\u2655";
                 }
-                else if (piece.Name == "king")
+                else if (absPiece == 6)
                 {
                     uni = "\u2654";
                 }
             }
-            else if ((c.Equals("#FF000000") && piece.Color) || (c.Equals("#FFFFFFFF") && !piece.Color))
+            else if ((c.Equals("#FF000000") && piece > 0) || (c.Equals("#FFFFFFFF") && piece < 0))
             {
-                if (piece.Name == "pawn")
+                if (absPiece == 1)
                 {
                     uni = "\u265F";
                 }
-                else if (piece.Name == "knight")
+                else if (absPiece == 3)
                 {
                     uni = "\u265E";
                 }
-                else if (piece.Name == "bishop")
+                else if (absPiece == 4)
                 {
                     uni = "\u265D";
                 }
-                else if (piece.Name == "rook")
+                else if (absPiece == 2)
                 {
                     uni = "\u265C";
                 }
-                else if (piece.Name == "queen")
+                else if (absPiece == 5)
                 {
                     uni = "\u265B";
                 }
-                else if (piece.Name == "king")
+                else if (absPiece == 6)
                 {
                     uni = "\u265A";
                 }
@@ -120,9 +126,9 @@ namespace Chess
             TextBlock s = (TextBlock)sender;
             int y = Int32.Parse(s.Name.Substring(1, 1));
             int x = Int32.Parse(s.Name.Substring(2, 1));
-            Console.WriteLine("selected: " + y + ":" + x);
-            Tile clicked = game.GetSpecificTile(y, x);
-            if (nextMove == null && clicked.Owner != null)
+            Console.WriteLine("Selected: " + y + ":" + x);
+            int[] clicked = new int[] { y, x };//game.GetSpecificTile(y, x);
+            if (nextMove == null && game.GetSpecificTile(clicked) != 0)
             {
                 UIElement uie = s;
                 uie.Effect = new BlurEffect
@@ -131,10 +137,30 @@ namespace Chess
                     //GlowSize = 320,
                 };
                 nextMove = new Move(clicked);
-                //game.MovePieceA(y-1, x-1);
-                Console.WriteLine("move started");
+                nextMove.ToMove = game.GetSpecificTile(clicked);
+                
+                foreach (Move m in game.GetLegalMovements(clicked))
+                {
+                    Console.WriteLine(m.Target[0] + "," + m.Target[1]);
+                    /*
+                    if (m.ToKill != null)
+                    {
+                       Console.WriteLine("kill is " + m.ToKill[0] + "," + m.ToKill[1]);
+                    }
+                    
+                    uie = (UIElement)FindName("c" + m.Target[0] + m.Target[1]);
+
+                    uie.Effect = new DropShadowEffect
+                    {
+                        Color = new Color { A = 255, R = 0, G = 0, B = 255 },
+                        Direction = 320,
+                        ShadowDepth = 0,
+                        Opacity = 1
+                    };
+                    */
+                }
             }
-            else if (nextMove != null && clicked == nextMove.Org)
+            else if (nextMove != null && (clicked[0] == nextMove.Origin[0] && clicked[1] == nextMove.Origin[1]))
             {
                 nextMove = null;
                 UIElement uie = s;
@@ -142,14 +168,19 @@ namespace Chess
             }
             else if (nextMove != null)
             {
+                nextMove.Target = clicked;
+                nextMove.Execute();
+
+                UIElement uie = (UIElement)FindName("c" + nextMove.Origin[0] + nextMove.Origin[1]);
+                uie.Effect = null;
+                uie = s;
+                uie.Effect = null;
+
+                nextMove = null;
+                DrawBoard();
+                /*
                 if (game.GetLegalMovements(nextMove.Org).Contains(clicked))
                 {
-                    String lastPos = "c" + nextMove.Org.Y + nextMove.Org.X;
-                    TextBlock lastS = (TextBlock)this.FindName(lastPos);
-                    Console.WriteLine(lastPos);
-                    UIElement lastElem = lastS;
-                    lastElem.Effect = null;
-
                     Console.WriteLine("move is legal");
                     nextMove.Target = clicked;
                     //int[] org = game.MovePieceB(y - 1, x - 1);
@@ -163,14 +194,20 @@ namespace Chess
                 else
                 {
                     Console.WriteLine("move is illegal");
-                }
+                }*/
             }
         }
 
         private void MenuItem_NewGame(object sender, RoutedEventArgs e)
         {
-            nextMove = null;
-            game.resetGame(moving);
+            game.ResetGame();
+            DrawBoard();
+        }
+
+        private void MenuItem_Switch(object sender, RoutedEventArgs e)
+        {
+            Board.color *= -1;
+            game.ResetGame();
             DrawBoard();
         }
 
@@ -179,18 +216,9 @@ namespace Chess
             Application.Current.Shutdown();
         }
 
-        private void MenuItem_Change_Direction(object sender, RoutedEventArgs e)
+        private void MenuItem_DoMove(object sender, RoutedEventArgs e)
         {
-            if (moving)
-            {
-                moving = false;
-            }
-            else
-            {
-                moving = true;
-            }
-            nextMove = null;
-            game.resetGame(moving);
+            logic.GetBestMove();
             DrawBoard();
         }
     }
