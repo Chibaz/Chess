@@ -36,7 +36,7 @@ namespace Chess
             //Console.WriteLine("number of moves from last board: " + newMoves.Count + " at depth " + rDepth + " for player + " + rPlayer);
             if (!newMoves.Any() || rDepth == 0)
             {
-                int e = evaluate(lastBoard);
+                int e = evaluate();
                 if (e > score)
                 {
                     score = e;
@@ -245,55 +245,55 @@ namespace Chess
         {
             int whitescore, blackscore;
             whitescore = blackscore = 0;
-            Board board = Board.Game;
-            for (int row = 0; row < board.Tiles.GetLength(0); row++)
+            int[,] tiles = Board.Game.tiles;
+            for (int row = 0; row < tiles.GetLength(0); row++)
             {
-                for(int col =0; col<board.Tiles.GetLength(0); col++) {
-                    if (Board.Game.Tiles[row, col] == 1)
+                for(int col =0; col<tiles.GetLength(0); col++) {
+                    if (tiles[row, col] == 1)
                     {
                         whitescore += pawnTable[row,col];
                     }
-                    else if (Board.Game.Tiles[row, col] == -1)
+                    else if (tiles[row, col] == -1)
                     {
                         blackscore += blackPawnTable[row, col];
                     }
-                    else if (Board.Game.Tiles[row, col] == 2)
+                    else if (tiles[row, col] == 2)
                     {
                         whitescore += rookTable[row,col];
                     }
-                    else if (Board.Game.Tiles[row, col] == -2)
+                    else if (tiles[row, col] == -2)
                     {
                         blackscore += blackRookTable[row, col];
                     }
-                    else if (Board.Game.Tiles[row, col] == 3)
+                    else if (tiles[row, col] == 3)
                     {
                         whitescore += knightTable[row,col];
                     }
-                    else if (Board.Game.Tiles[row, col] == -3)
+                    else if (tiles[row, col] == -3)
                     {
                         blackscore += blackKnightTable[row, col];
                         }
-                    else if (Board.Game.Tiles[row, col] == 4)
+                    else if (tiles[row, col] == 4)
                     {
                         whitescore += bishopTable[row,col];
                         }
-                    else if (Board.Game.Tiles[row, col] == -4)
+                    else if (tiles[row, col] == -4)
                     {
                         blackscore += blackBishopTable[row, col];
                         }
-                    else if (Board.Game.Tiles[row, col] == 5)
+                    else if (tiles[row, col] == 5)
                     {
                         whitescore += queenTable[row,col];
                         }
-                    else if (Board.Game.Tiles[row, col] == -5)
+                    else if (tiles[row, col] == -5)
                     {
                         blackscore += blackQueenTable[row, col];
                         }
-                    else if (Board.Game.Tiles[row, col] == 6)
+                    else if (tiles[row, col] == 6)
                     {
                         whitescore += kingTable[row,col];
                         }
-                    else if (Board.Game.Tiles[row, col] == -6)
+                    else if (tiles[row, col] == -6)
                     {
                         blackscore += blackKingTable[row, col];
                     }

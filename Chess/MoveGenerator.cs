@@ -30,6 +30,10 @@ namespace Chess
             List<IMove> moves = new List<IMove>();
             int piece = Math.Abs(Board.Game.tiles[origin[0], origin[1]]);
 
+            if (piece == 1)
+            {
+                moves.AddRange(GetPawnMoves(origin));
+            }
             if (piece == 2 || piece == 5) //Movement in straight lines
             {
                 moves.AddRange(GetStraightMoves(origin));
@@ -38,13 +42,9 @@ namespace Chess
             {
                 moves.AddRange(GetDiagonalMoves(origin));
             }
-            if (piece == 1 || piece == 3 || piece == 6) //Movement is an absolute distance
+            if (piece == 3 || piece == 6) //Movement is an absolute distance
             {
                 moves.AddRange(GetAbsoluteMoves(origin));
-                if (piece == 1 || piece == 6)
-                {
-                    moves.AddRange(GetSpecialMoves(origin));
-                }
             }
             return moves;
         }
@@ -208,15 +208,7 @@ namespace Chess
             String[] moves = null;
             int piece = Board.Game.tiles[origin[0], origin[1]];
             List<Move> absMoves = new List<Move>();
-            if (piece * Board.aiColor == -1)
-            {
-                moves = new String[] { "1,0" };
-            }
-            else if (piece * Board.aiColor == 1)
-            {
-                moves = new String[] { "-1,0" };
-            }
-            else if (Math.Abs(piece) == 3)
+            if (Math.Abs(piece) == 3)
             {
                 moves = new String[] { "2,1", "1,2", "2,-1", "1,-2", "-2,1", "-1,2", "-2,-1", "-1,-2" };
             }
@@ -281,6 +273,17 @@ namespace Chess
                 newMove.killing.Piece = Board.Game.tiles[origin[0] - direction, origin[1] - 1];
                 pawnMoves.Add(newMove);
             }
+            if (Board.EnPassant != null)
+            {
+                if (Board.Game.tiles[Board.EnPassant[0], Board.EnPassant[1]] * piece < 0)
+                {
+                    newMove = new Move(origin, piece);
+                    newMove.moving.Target = new int[]{Board.EnPassant[0] - direction, Board.EnPassant[1]};
+                    newMove.killing.Position = Board.EnPassant;
+                    newMove.killing.Piece = Board.Game.tiles[Board.EnPassant[0], Board.EnPassant[1]];
+                    pawnMoves.Add(newMove);
+                }
+            }
             return pawnMoves;
             /*if(piece * Board.aiColor == -1)
             {
@@ -313,54 +316,6 @@ namespace Chess
                     pawnMoves.Add(newMove);
                 }
             }*/
-        }
-
-        public List<IMove> GetSpecialMoves(int[] origin)
-        {
-            List<IMove> specialMoves = new List<IMove>();
-            int piece = GetSpecificTile(origin);
-            if (piece == 1)
-            {
-                if (origin[0] == 6)
-                {
-                    Move special = new Move(origin);
-                    special.Target = new int[] { origin[0] - 2, origin[1] };
-                    specialMoves.Add(special);
-                }
-                if (origin[0] == 3)
-                {
-                    EnPassante special = new EnPassante(origin);
-                    special.Target = new int[] { origin[0] - 1, origin[1] };
-
-                    specialMoves.Add(special);
-                }
-                if (origin[0] == 1)
-                {
-                    Move special = new Move(origin);
-                    special.Target = new int[] { origin[0] + 2, origin[1] };
-                    specialMoves.Add(special);
-                }
-                if (origin[0] == 4)
-                {
-                    EnPassante special = new EnPassante(origin);
-                    special.Target = new int[] { origin[0] + 1, origin[1] };
-
-                    specialMoves.Add(special);
-                }
-            }
-            else if (piece == -1)
-            {
-
-            }
-            else if (piece == 6)
-            {
-
-            }
-            else if (piece == -6)
-            {
-
-            }
-            return specialMoves;
         }
 
         public Boolean CheckForKill(Move move)

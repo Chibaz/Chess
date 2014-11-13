@@ -37,7 +37,7 @@ namespace Chess
         //Goes through the tiles in the board and puts the pieces in the correct places
         public void DrawBoard()
         {
-            int[,] tiles = game.Tiles;
+            int[,] tiles = game.tiles;
             for (int h = 0; h < 8; h++)
             {
                 for (int w = 0; w < 8; w++)
