@@ -128,7 +128,8 @@ namespace Chess
             int x = Int32.Parse(s.Name.Substring(2, 1));
             Console.WriteLine("Selected: " + y + ":" + x);
             int[] clicked = new int[] { y, x };//game.GetSpecificTile(y, x);
-            if (nextMove == null && game.GetSpecificTile(clicked) != 0)
+            int tileClicked = game.GetSpecificTile(clicked);
+            if (nextMove == null && tileClicked != 0)
             {
                 UIElement uie = s;
                 uie.Effect = new BlurEffect
@@ -136,13 +137,13 @@ namespace Chess
                     //GlowColor = new Color {A = 255, R = 255, G = 255, B = 0},
                     //GlowSize = 320,
                 };
-                nextMove = new Move(clicked);
-                nextMove.ToMove = game.GetSpecificTile(clicked);
+                nextMove = new Move(clicked, tileClicked);
                 
+                /*
                 foreach (Move m in game.GetLegalMovements(clicked))
                 {
                     Console.WriteLine(m.Target[0] + "," + m.Target[1]);
-                    /*
+                    
                     if (m.ToKill != null)
                     {
                        Console.WriteLine("kill is " + m.ToKill[0] + "," + m.ToKill[1]);
@@ -157,10 +158,10 @@ namespace Chess
                         ShadowDepth = 0,
                         Opacity = 1
                     };
-                    */
-                }
+                    
+                }*/
             }
-            else if (nextMove != null && (clicked[0] == nextMove.Origin[0] && clicked[1] == nextMove.Origin[1]))
+            else if (nextMove != null && clicked == nextMove.moving.Origin)
             {
                 nextMove = null;
                 UIElement uie = s;
@@ -168,10 +169,11 @@ namespace Chess
             }
             else if (nextMove != null)
             {
-                nextMove.Target = clicked;
+                nextMove.killing.Position = clicked;
+                nextMove.killing.Piece = tileClicked;
                 nextMove.Execute();
 
-                UIElement uie = (UIElement)FindName("c" + nextMove.Origin[0] + nextMove.Origin[1]);
+                UIElement uie = (UIElement)FindName("c" + nextMove.moving.Origin[0] + nextMove.moving.Origin[1]);
                 uie.Effect = null;
                 uie = s;
                 uie.Effect = null;
