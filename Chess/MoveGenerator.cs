@@ -30,6 +30,10 @@ namespace Chess
             List<IMove> moves = new List<IMove>();
             int piece = Math.Abs(Board.Game.tiles[origin[0], origin[1]]);
 
+            if (piece == 5)
+                {
+                    Console.WriteLine("moving queen from " + origin[0] + "," + origin[1]);
+                }
             if (piece == 1)
             {
                 moves.AddRange(GetPawnMoves(origin));
@@ -138,11 +142,11 @@ namespace Chess
                 xR++;
                 newMove = new Move(origin, Board.Game.tiles[origin[0], origin[1]]);
                 newMove.moving.Target = new int[] { y, xL };
-                if (xL > 0 && Board.Game.tiles[y, xL] == 0 && leftUnbroken)
+                if (xL >= 0 && Board.Game.tiles[y, xL] == 0 && leftUnbroken)
                 {
                     diagonalMoves.Add(newMove);
                 }
-                else if (xL > 0 && leftUnbroken)
+                else if (xL >= 0 && leftUnbroken)
                 {
                     if (CheckForKill(newMove))
                     {
@@ -173,11 +177,11 @@ namespace Chess
                 xR++;
                 newMove = new Move(origin, Board.Game.tiles[origin[0], origin[1]]);
                 newMove.moving.Target = new int[] { y, xL };
-                if (xL > 0 && Board.Game.tiles[y, xL] == 0 && leftUnbroken)
+                if (xL >= 0 && Board.Game.tiles[y, xL] == 0 && leftUnbroken)
                 {
                     diagonalMoves.Add(newMove);
                 }
-                else if (xL > 0 && leftUnbroken)
+                else if (xL >= 0 && leftUnbroken)
                 {
                     if (CheckForKill(newMove))
                     {
@@ -257,7 +261,7 @@ namespace Chess
                 newMove.moving.Target = new int[] { origin[0] - (2 * direction), origin[1] };
                 pawnMoves.Add(newMove);
             }
-            if (Board.Game.tiles[origin[0] - direction, origin[1] + 1] * piece < 0)
+            if (origin[1] < 7 && Board.Game.tiles[origin[0] - direction, origin[1] + 1] * piece < 0)
             {
                 newMove = new Move(origin, piece);
                 newMove.moving.Target = new int[] { origin[0] - direction, origin[1] + 1 };
@@ -265,7 +269,7 @@ namespace Chess
                 newMove.killing.Piece = Board.Game.tiles[origin[0] - direction, origin[1] + 1];
                 pawnMoves.Add(newMove);
             }
-            if (Board.Game.tiles[origin[0] - direction, origin[1] - 1] * piece < 0)
+            if (origin[1] > 0 && Board.Game.tiles[origin[0] - direction, origin[1] - 1] * piece < 0)
             {
                 newMove = new Move(origin, piece);
                 newMove.moving.Target = new int[] { origin[0] - direction, origin[1] - 1 };

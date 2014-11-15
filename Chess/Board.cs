@@ -31,8 +31,8 @@ namespace Chess
         }
         public static int aiColor = 1;
         public static int[] EnPassant;
+        public static Boolean whiteCastling, blackCastling;
         public int[,] tiles;
-        
         
         public Board()
         {
