@@ -33,6 +33,7 @@ namespace Chess
         {
             List<IMove> newMoves = mg.GetAllMovesForPlayer(rPlayer);
             total += newMoves.Count;
+            //test
             //Console.WriteLine("number of moves from last board: " + newMoves.Count + " at depth " + rDepth + " for player + " + rPlayer);
             if (!newMoves.Any() || rDepth == 0)
             {
