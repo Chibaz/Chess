@@ -126,7 +126,7 @@ namespace Chess
             int y = Int32.Parse(s.Name.Substring(1, 1));
             int x = Int32.Parse(s.Name.Substring(2, 1));
             Console.WriteLine("Selected: " + y + ":" + x);
-            int[] clicked = new int[] { y, x };//game.GetSpecificTile(y, x);
+            int[] clicked = new int[] { y, x }; //game.GetSpecificTile(y, x);
             int tileClicked = game.GetSpecificTile(clicked);
             if (nextMove == null && tileClicked != 0)
             {
