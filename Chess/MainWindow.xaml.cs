@@ -29,7 +29,6 @@ namespace Chess
         {
             InitializeComponent();
             logic = new Logic();
-            logic.gui = this;
             game = Board.Game;
             game.ResetGame();
             DrawBoard();
@@ -38,7 +37,7 @@ namespace Chess
         //Goes through the tiles in the board and puts the pieces in the correct places
         public void DrawBoard()
         {
-            int[,] tiles = game.Tiles;
+            int[,] tiles = game.tiles;
             for (int h = 0; h < 8; h++)
             {
                 for (int w = 0; w < 8; w++)
@@ -167,10 +166,11 @@ namespace Chess
                 UIElement uie = s;
                 uie.Effect = null;
             }
-            else if (nextMove != null)
+            else if (nextMove != null && clicked != nextMove.moving.Origin)
             {
-                nextMove.killing.Position = clicked;
-                nextMove.killing.Piece = tileClicked;
+                //nextMove.killing.Position = clicked;
+                //nextMove.killing.Piece = tileClicked;
+                nextMove.moving.Target = clicked;
                 nextMove.Execute();
 
                 UIElement uie = (UIElement)FindName("c" + nextMove.moving.Origin[0] + nextMove.moving.Origin[1]);
@@ -208,7 +208,7 @@ namespace Chess
 
         private void MenuItem_Switch(object sender, RoutedEventArgs e)
         {
-            Board.color *= -1;
+            Board.aiColor *= -1;
             game.ResetGame();
             DrawBoard();
         }

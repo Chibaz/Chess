@@ -9,7 +9,7 @@ namespace Chess
     public interface IMove
     {
         void Execute();
-        //void ExecuteOnBoard(Board temp);
+        void ExecuteOnBoard(Board temp);
         void Undo();
     }
 
@@ -57,12 +57,22 @@ namespace Chess
                 Board.Game.tiles[killing.Position[0], killing.Position[1]] = 0;
             }
             Board.Game.tiles[moving.Target[0], moving.Target[1]] = moving.Piece;
-            Board.Game.tiles[moving.Origin[0], moving.Origin[0]] = 0;
+            Board.Game.tiles[moving.Origin[0], moving.Origin[1]] = 0;
+        }
+
+        public void ExecuteOnBoard(Board temp)
+        {
+            if (killing.Position != null)
+            {
+                temp.tiles[killing.Position[0], killing.Position[1]] = 0;
+            }
+            temp.tiles[moving.Target[0], moving.Target[1]] = moving.Piece;
+            temp.tiles[moving.Origin[0], moving.Origin[1]] = 0;
         }
 
         public void Undo()
         {
-            Board.Game.tiles[moving.Origin[0], moving.Origin[0]] = moving.Piece;
+            Board.Game.tiles[moving.Origin[0], moving.Origin[1]] = moving.Piece;
             Board.Game.tiles[moving.Target[0], moving.Target[1]] = 0;
             if (killing.Position != null)
             {
@@ -119,6 +129,11 @@ namespace Chess
 
 
         public void Execute()
+        {
+
+        }
+
+        public void ExecuteOnBoard(Board temp)
         {
 
         }
