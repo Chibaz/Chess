@@ -252,51 +252,51 @@ namespace Chess
                 for(int col =0; col<tiles.GetLength(0); col++) {
                     if (tiles[row, col] == 1)
                     {
-                        whitescore += pawnTable[row,col];
+                        whitescore += pawnTable[row,col] + 100;
                     }
                     else if (tiles[row, col] == -1)
                     {
-                        blackscore += blackPawnTable[row, col];
+                        blackscore += blackPawnTable[row, col] + 100;
                     }
                     else if (tiles[row, col] == 2)
                     {
-                        whitescore += rookTable[row,col];
+                        whitescore += rookTable[row, col] + 500;
                     }
                     else if (tiles[row, col] == -2)
                     {
-                        blackscore += blackRookTable[row, col];
+                        blackscore += blackRookTable[row, col] + 500;
                     }
                     else if (tiles[row, col] == 3)
                     {
-                        whitescore += knightTable[row,col];
+                        whitescore += knightTable[row, col] + 320;
                     }
                     else if (tiles[row, col] == -3)
                     {
-                        blackscore += blackKnightTable[row, col];
+                        blackscore += blackKnightTable[row, col] + 320;
                         }
                     else if (tiles[row, col] == 4)
                     {
-                        whitescore += bishopTable[row,col];
+                        whitescore += bishopTable[row, col] + 325;
                         }
                     else if (tiles[row, col] == -4)
                     {
-                        blackscore += blackBishopTable[row, col];
+                        blackscore += blackBishopTable[row, col] + 325;
                         }
                     else if (tiles[row, col] == 5)
                     {
-                        whitescore += queenTable[row,col];
+                        whitescore += queenTable[row,col] + 999;
                         }
                     else if (tiles[row, col] == -5)
                     {
-                        blackscore += blackQueenTable[row, col];
+                        blackscore += blackQueenTable[row, col] + 999;
                         }
                     else if (tiles[row, col] == 6)
                     {
-                        whitescore += kingTable[row,col];
+                        whitescore += kingTable[row,col] + 11111;
                         }
                     else if (tiles[row, col] == -6)
                     {
-                        blackscore += blackKingTable[row, col];
+                        blackscore += blackKingTable[row, col] + 11111;
                     }
                 }
             }
