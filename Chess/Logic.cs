@@ -37,7 +37,7 @@ namespace Chess
             //Console.WriteLine("number of moves from last board: " + newMoves.Count + " at depth " + rDepth + " for player + " + rPlayer);
             if (!newMoves.Any() || rDepth == 0)
             {
-                int e = evaluate();
+                int e = evaluate(lastBoard);
                 if (e > score)
                 {
                     score = e;
@@ -49,11 +49,11 @@ namespace Chess
                 //Get all possible moves from current state
                 foreach (IMove move in newMoves)
                 {
-                    //Board newBoard = lastBoard.CloneBoard();
-                    //move.ExecuteOnBoard(newBoard);
-                    move.Execute();
-                    int v = doAlphaBeta(lastBoard, rDepth - 1, alpha, beta, rPlayer*-1); //Recursive call on possible methods
-                    move.Undo();
+                    Board newBoard = lastBoard.CloneBoard();
+                    move.ExecuteOnBoard(newBoard);
+                    //move.Execute();
+                    int v = doAlphaBeta(newBoard, rDepth - 1, alpha, beta, rPlayer*-1); //Recursive call on possible methods
+                    //move.Undo();
                     if (v > alpha)
                     {
                         alpha = v;
@@ -74,11 +74,11 @@ namespace Chess
             {
                 foreach (IMove move in newMoves)
                 {
-                    //Board newBoard = lastBoard.CloneBoard();
-                    //move.ExecuteOnBoard(newBoard);
-                    move.Execute();
-                    int v = doAlphaBeta(lastBoard, rDepth - 1, alpha, beta, rPlayer*-1); //Recursive call on possible methods
-                    move.Undo();
+                    Board newBoard = lastBoard.CloneBoard();
+                    move.ExecuteOnBoard(newBoard);
+                    //move.Execute();
+                    int v = doAlphaBeta(newBoard, rDepth - 1, alpha, beta, rPlayer*-1); //Recursive call on possible methods
+                    //move.Undo();
                     if (v < beta)
                     {
                         beta = v;
@@ -242,11 +242,11 @@ namespace Chess
             {20, 30, 10, 0, 0, 10, 30, 20}
         };
 
-        public int evaluate()
+        public int evaluate(Board toEvaluate)
         {
             int whitescore, blackscore;
             whitescore = blackscore = 0;
-            int[,] tiles = Board.Game.tiles;
+            int[,] tiles = toEvaluate.tiles;
             for (int row = 0; row < tiles.GetLength(0); row++)
             {
                 for(int col =0; col<tiles.GetLength(0); col++) {

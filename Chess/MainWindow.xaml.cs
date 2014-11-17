@@ -166,10 +166,11 @@ namespace Chess
                 UIElement uie = s;
                 uie.Effect = null;
             }
-            else if (nextMove != null)
+            else if (nextMove != null && clicked != nextMove.moving.Origin)
             {
-                nextMove.killing.Position = clicked;
-                nextMove.killing.Piece = tileClicked;
+                //nextMove.killing.Position = clicked;
+                //nextMove.killing.Piece = tileClicked;
+                nextMove.moving.Target = clicked;
                 nextMove.Execute();
 
                 UIElement uie = (UIElement)FindName("c" + nextMove.moving.Origin[0] + nextMove.moving.Origin[1]);

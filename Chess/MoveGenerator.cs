@@ -30,10 +30,6 @@ namespace Chess
             List<IMove> moves = new List<IMove>();
             int piece = Math.Abs(Board.Game.tiles[origin[0], origin[1]]);
 
-            if (piece == 5)
-                {
-                    Console.WriteLine("moving queen from " + origin[0] + "," + origin[1]);
-                }
             if (piece == 1)
             {
                 moves.AddRange(GetPawnMoves(origin));
@@ -155,7 +151,7 @@ namespace Chess
                     leftUnbroken = false;
                 }
                 newMove = new Move(origin, Board.Game.tiles[origin[0], origin[1]]);
-                newMove.moving.Target = new int[] { y, xL };
+                newMove.moving.Target = new int[] { y, xR };
                 if (xR < 8 && Board.Game.tiles[y, xR] == 0 && rightUnbroken)
                 {
                     diagonalMoves.Add(newMove);
@@ -190,7 +186,7 @@ namespace Chess
                     leftUnbroken = false;
                 }
                 newMove = new Move(origin, Board.Game.tiles[origin[0], origin[1]]);
-                newMove.moving.Target = new int[] { y, xL };
+                newMove.moving.Target = new int[] { y, xR };
                 if (xR < 8 && Board.Game.tiles[y, xR] == 0 && rightUnbroken)
                 {
                     diagonalMoves.Add(newMove);
@@ -252,7 +248,7 @@ namespace Chess
             if (Board.Game.tiles[origin[0] - direction, origin[1]] == 0)
             {
                 newMove = new Move(origin, piece);
-                newMove.moving.Target = new int[] { origin[0] - 1, origin[1] };
+                newMove.moving.Target = new int[] { origin[0] - direction, origin[1] };
                 pawnMoves.Add(newMove);
             }
             if (Board.Game.tiles[origin[0] - (2 * direction), origin[1]] == 0 && origin[0] == 6)
