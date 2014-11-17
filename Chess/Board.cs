@@ -407,8 +407,27 @@ namespace Chess
             return false;
         }
 
-        public Boolean CheckForCheck(Move move)
+        public Boolean CheckForCheck(MoveGenerator move)
         {
+            int[] king = {0,0};
+            for (int row = 0; row < board.Tiles.GetLength(0); row++)
+            {
+                for(int col =0; col<board.Tiles.GetLength(0); col++) {
+                    if ((Board.Game.Tiles[row, col]*color) == 6){
+                        int[] king = {row, col};
+                    }
+                }
+            }
+            List<IMove> check = move.GetAllMovesForPlayer(color * -1);
+
+            foreach (Move element in check)
+            {
+                if (element.moving.Target == king){
+                    return true;
+                }
+
+            }
+			return false;
 
         }
 
