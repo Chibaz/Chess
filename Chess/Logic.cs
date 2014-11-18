@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,30 +11,40 @@ namespace Chess
     public class Logic
     {
         private IMove next;
-        private int depth = 5;
+        private int depth = 3;
         private int score, count, total;
-        public GUI gui;
+        private MoveGenerator mg;
+
+        public Logic()
+        {
+            mg = new MoveGenerator();
+        }
 
         public void GetBestMove()
         {
             Console.WriteLine("performing best move");
             Board orgBoard = Board.Game.CloneBoard();
             count = score = total = 0;
-            doAlphaBeta(Board.Game, depth, Int32.MinValue, Int32.MaxValue, Board.color);
-            Console.WriteLine(count + " evaluations after " + total + " boards, score is " + score);
+            Stopwatch time = new Stopwatch();
+            time.Start();
+            doAlphaBeta(Board.Game, depth, Int32.MinValue, Int32.MaxValue, Board.aiColor);
+            time.Stop();
+            Console.WriteLine(time.Elapsed + " " + count + " evaluations after " + total + " boards, score is " + score);
             next.Execute();
         }
         
         public int doAlphaBeta(Board lastBoard, int rDepth, int alpha, int beta, int rPlayer)
         {
-            List<IMove> newMoves = lastBoard.GetAllMovesForPlayer(rPlayer);
+            List<IMove> newMoves = mg.GetAllMovesForPlayer(rPlayer);
             total += newMoves.Count;
+            //test
             //Console.WriteLine("number of moves from last board: " + newMoves.Count + " at depth " + rDepth + " for player + " + rPlayer);
             if (!newMoves.Any() || rDepth == 0)
             {
                 int e = evaluate(lastBoard);
                 if (e > score)
                 {
+                    Console.WriteLine("new best evaluation " + e);
                     score = e;
                 }
                 return e;
@@ -43,15 +54,12 @@ namespace Chess
                 //Get all possible moves from current state
                 foreach (IMove move in newMoves)
                 {
-                    //Board newBoard = lastBoard.CloneBoard();
-                    //move.ExecuteOnBoard(newBoard);
-                    move.Execute();
-                    int v = doAlphaBeta(lastBoard, rDepth - 1, alpha, beta, rPlayer*-1); //Recursive call on possible methods
-                    move.Undo();
+                    Board newBoard = lastBoard.CloneBoard();
+                    move.ExecuteOnBoard(newBoard);
+                    int v = doAlphaBeta(newBoard, rDepth - 1, alpha, beta, rPlayer*-1); //Recursive call on possible methods
                     if (v > alpha)
                     {
                         alpha = v;
-                        
                         if (rDepth == depth)
                         {
                             Console.WriteLine("new best move " + v);
@@ -69,12 +77,9 @@ namespace Chess
             {
                 foreach (IMove move in newMoves)
                 {
-                    //Board newBoard = lastBoard.CloneBoard();
-                    //move.ExecuteOnBoard(newBoard);
-                    move.Execute();
-                    gui.DrawBoard();
-                    int v = doAlphaBeta(lastBoard, rDepth - 1, alpha, beta, rPlayer*-1); //Recursive call on possible methods
-                    move.Undo();
+                    Board newBoard = lastBoard.CloneBoard();
+                    move.ExecuteOnBoard(newBoard);
+                    int v = doAlphaBeta(newBoard, rDepth - 1, alpha, beta, rPlayer*-1); //Recursive call on possible methods
                     if (v < beta)
                     {
                         beta = v;
@@ -94,13 +99,13 @@ namespace Chess
 
         private static int[,] pawnTable =
         {
-            {50, 50, 50, 50, 50, 50, 50, 50},
-            {10, 10, 20, 30, 30, 20, 10, 10},
-            {5, 5, 10, 27, 27, 10, 5, 5},
-            {0, 0, 0, 25, 25, 0, 0, 0},
-            {5, -5, -10, 0, 0, -10, -5, 5},
-            {5, 10, 10, -25, -25, 10, 10, 5},
-            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},    
+            {7, 7, 13, 23, 26, 13, 7, 7},
+            {-2, -2, 4, 12, 15, 4, -2, -2},
+            {-3, -3, 2, 9, 11, 2, -3, -3},
+            {-4, -4, 0, 6, 8, 0, -4, -4},
+            {-4, -4, 0, 4, 6, 0, -4, -4},
+            {-1, -1, 1, 5, 6, 1, -1, -1},
             {0, 0, 0, 0, 0, 0, 0, 0}
         };
 
@@ -166,14 +171,14 @@ namespace Chess
 
         private static int[,] blackPawnTable =
         {
-            {0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0},
-            {5, 10, 10, -25, -25, 10, 10, 5},
-            {5, -5, -10, 0, 0, -10, -5, 5},
-            {0, 0, 0, 25, 25, 0, 0, 0},
-            {5, 5, 10, 27, 27, 10, 5, 5},
-            {10, 10, 20, 30, 30, 20, 10, 10},
-            {50, 50, 50, 50, 50, 50, 50, 50}
+            {0, 0, 0, 0, 0, 0, 0, 0},    
+            {-1, -1, 1, 5, 6, 1, -1, -1},
+            {-4, -4, 0, 4, 6, 0, -4, -4},
+            {-4, -4, 0, 6, 8, 0, -4, -4},
+            {-3, -3, 2, 9, 11, 2, -3, -3},
+            {-2, -2, 4, 12, 15, 4, -2, -2},
+            {7, 7, 13, 23, 26, 13, 7, 7},
+            {0, 0, 0, 0, 0, 0, 0, 0}
         };
 
         private static int[,] knightTable =
@@ -238,60 +243,61 @@ namespace Chess
             {20, 30, 10, 0, 0, 10, 30, 20}
         };
 
-        public int evaluate(Board board)
+        public int evaluate(Board toEvaluate)
         {
             int whitescore, blackscore;
             whitescore = blackscore = 0;
-            for (int row = 0; row < board.Tiles.GetLength(0); row++)
+            int[,] tiles = toEvaluate.tiles;
+            for (int row = 0; row < tiles.GetLength(0); row++)
             {
-                for(int col =0; col<board.Tiles.GetLength(0); col++) {
-                    if (Board.Game.Tiles[row, col] == 1)
+                for(int col =0; col<tiles.GetLength(0); col++) {
+                    if (tiles[row, col] * Board.aiColor == 1)
                     {
-                        whitescore += pawnTable[row,col];
+                        whitescore += pawnTable[row,col] + 100;
                     }
-                    else if (Board.Game.Tiles[row, col] == -1)
+                    else if (tiles[row, col] * Board.aiColor == -1)
                     {
-                        blackscore += blackPawnTable[row, col];
+                        blackscore += blackPawnTable[row, col] + 100;
                     }
-                    else if (Board.Game.Tiles[row, col] == 2)
+                    else if (tiles[row, col] * Board.aiColor == 2)
                     {
-                        whitescore += rookTable[row,col];
+                        whitescore += rookTable[row, col] + 500;
                     }
-                    else if (Board.Game.Tiles[row, col] == -2)
+                    else if (tiles[row, col] * Board.aiColor == -2)
                     {
-                        blackscore += blackRookTable[row, col];
+                        blackscore += blackRookTable[row, col] + 500;
                     }
-                    else if (Board.Game.Tiles[row, col] == 3)
+                    else if (tiles[row, col] * Board.aiColor == 3)
                     {
-                        whitescore += knightTable[row,col];
+                        whitescore += knightTable[row, col] + 320;
                     }
-                    else if (Board.Game.Tiles[row, col] == -3)
+                    else if (tiles[row, col] * Board.aiColor == -3)
                     {
-                        blackscore += blackKnightTable[row, col];
+                        blackscore += blackKnightTable[row, col] + 320;
                         }
-                    else if (Board.Game.Tiles[row, col] == 4)
+                    else if (tiles[row, col] * Board.aiColor == 4)
                     {
-                        whitescore += bishopTable[row,col];
+                        whitescore += bishopTable[row, col] + 325;
                         }
-                    else if (Board.Game.Tiles[row, col] == -4)
+                    else if (tiles[row, col] * Board.aiColor == -4)
                     {
-                        blackscore += blackBishopTable[row, col];
+                        blackscore += blackBishopTable[row, col] + 325;
                         }
-                    else if (Board.Game.Tiles[row, col] == 5)
+                    else if (tiles[row, col] * Board.aiColor == 5)
                     {
-                        whitescore += queenTable[row,col];
+                        whitescore += queenTable[row,col] + 999;
                         }
-                    else if (Board.Game.Tiles[row, col] == -5)
+                    else if (tiles[row, col] * Board.aiColor == -5)
                     {
-                        blackscore += blackQueenTable[row, col];
+                        blackscore += blackQueenTable[row, col] + 999;
                         }
-                    else if (Board.Game.Tiles[row, col] == 6)
+                    else if (tiles[row, col] * Board.aiColor == 6)
                     {
-                        whitescore += kingTable[row,col];
+                        whitescore += kingTable[row,col] + 11111;
                         }
-                    else if (Board.Game.Tiles[row, col] == -6)
+                    else if (tiles[row, col] * Board.aiColor == -6)
                     {
-                        blackscore += blackKingTable[row, col];
+                        blackscore += blackKingTable[row, col] + 11111;
                     }
                 }
             }
