@@ -11,7 +11,7 @@ namespace Chess
     public class Logic
     {
         private IMove next;
-        private int depth = 3;
+        private int depth = 5;
         private int score, count, total;
         private MoveGenerator mg;
 
@@ -44,7 +44,7 @@ namespace Chess
                 int e = evaluate(lastBoard);
                 if (e > score)
                 {
-                    Console.WriteLine("new best evaluation " + e);
+                    //Console.WriteLine("new best evaluation " + e);
                     score = e;
                 }
                 return e;
@@ -56,13 +56,27 @@ namespace Chess
                 {
                     Board newBoard = lastBoard.CloneBoard();
                     move.ExecuteOnBoard(newBoard);
+                    /*
+                    if (rDepth == 1)
+                    {
+                        Console.WriteLine("lastBoard was");
+                        foreach (var entry in lastBoard.tiles)
+                        {
+                            Console.Write(entry + " ");
+                        }
+                        Console.WriteLine("newBoard is");
+                        foreach (var entry in newBoard.tiles)
+                        {
+                            Console.Write(entry + " ");
+                        }
+                        Console.WriteLine();
+                    }*/
                     int v = doAlphaBeta(newBoard, rDepth - 1, alpha, beta, rPlayer*-1); //Recursive call on possible methods
                     if (v > alpha)
                     {
                         alpha = v;
                         if (rDepth == depth)
                         {
-                            Console.WriteLine("new best move " + v);
                             next = move;
                         }
                     }
@@ -79,14 +93,25 @@ namespace Chess
                 {
                     Board newBoard = lastBoard.CloneBoard();
                     move.ExecuteOnBoard(newBoard);
+                    /*
+                    if (rDepth == 1)
+                    {
+                        Console.WriteLine("lastBoard was");
+                        foreach (var entry in lastBoard.tiles)
+                        {
+                            Console.Write(entry + " ");
+                        }
+                        Console.WriteLine("newBoard is");
+                        foreach (var entry in newBoard.tiles)
+                        {
+                            Console.Write(entry + " ");
+                        }
+                        Console.WriteLine();
+                    }*/
                     int v = doAlphaBeta(newBoard, rDepth - 1, alpha, beta, rPlayer*-1); //Recursive call on possible methods
                     if (v < beta)
                     {
                         beta = v;
-                        if (rDepth == depth)
-                        {
-                            next = move;
-                        }
                     }
                     if (alpha >= beta) //Stop if alpha is equal to or higher than beta, and prune the remainder
                     {

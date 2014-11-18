@@ -17,6 +17,7 @@ namespace Chess
      */
     public class Board
     {
+        public static int aiColor = 1;
         private static Board board;
         public static Board Game
         {
@@ -29,8 +30,7 @@ namespace Chess
                 return board;
             }
         }
-        public static int aiColor = 1;
-        public static int[] EnPassant;
+        public int[] EnPassant;
         public Boolean aiLeftCastling, aiRightCastling, playerLeftCastling, playerRightCastling;
         public Boolean aiCheck, playerCheck;
         public int[,] tiles;
@@ -38,6 +38,8 @@ namespace Chess
         public Board()
         {
             tiles = new int[8, 8];
+            aiLeftCastling = aiRightCastling = playerLeftCastling = playerRightCastling = true;
+            aiCheck = playerCheck = false;
         }
 
         //Used for resetting the pieces on the board
@@ -115,6 +117,12 @@ namespace Chess
                     newBoard.tiles[h, w] = this.tiles[h, w];
                 }
             }
+            newBoard.aiCheck = this.aiCheck;
+            newBoard.aiLeftCastling = this.aiLeftCastling;
+            newBoard.aiRightCastling = this.aiRightCastling;
+            newBoard.playerCheck = this.playerCheck;
+            newBoard.playerLeftCastling = this.playerLeftCastling;
+            newBoard.playerRightCastling = this.playerRightCastling;
             return newBoard;
         }
 
@@ -128,7 +136,7 @@ namespace Chess
                 {
                     if ((board.tiles[row, col] * player) == 6)
                     {
-                        king = new int[]{ row, col };
+                        king = new int[] { row, col };
                     }
                 }
             }
@@ -151,6 +159,51 @@ namespace Chess
                         board.playerCheck = true;
                     }
                 }
+            }
+        }
+
+        public static void CheckForStuff(Board board, Move move)
+        {
+            int piece = move.moving.Piece;
+            if (Math.Abs(piece) == 2)
+            {
+                if (piece == 2)
+                {
+                    if (board.aiLeftCastling && move.moving.Origin[1] == 0)
+                    {
+                        board.aiLeftCastling = false;
+                    }
+                    else if (board.aiRightCastling && move.moving.Origin[1] == 7)
+                    {
+                        board.aiRightCastling = false;
+                    }
+                }
+                else
+                {
+                    if (board.playerLeftCastling && move.moving.Origin[1] == 0)
+                    {
+                        board.playerLeftCastling = false;
+                    }
+                    else if (board.playerRightCastling && move.moving.Origin[1] == 7)
+                    {
+                        board.playerRightCastling = false;
+                    }
+                }
+            }
+            else if (Math.Abs(piece) == 1)
+            {
+                if (piece * Board.aiColor > 0 && move.moving.Origin[0] - move.moving.Origin[1] == 2)
+                {
+                    board.EnPassant = move.moving.Target;
+                }
+                else if (piece * Board.aiColor > 0 && move.moving.Origin[0] - move.moving.Origin[1] == -2)
+                {
+                    board.EnPassant = move.moving.Target;
+                }
+            }
+            else
+            {
+                board.EnPassant = null;
             }
         }
     }

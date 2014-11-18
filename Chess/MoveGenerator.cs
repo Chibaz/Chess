@@ -289,7 +289,7 @@ namespace Chess
             }
             if (Board.EnPassant != null)
             {
-                if (Board.Game.tiles[Board.EnPassant[0], Board.EnPassant[1]] * piece < 0)
+                if (Board.Game.tiles[Board.EnPassant[0], Board.EnPassant[1]] * piece == -1)
                 {
                     newMove = new Move(origin, piece);
                     newMove.moving.Target = new int[]{Board.EnPassant[0] - direction, Board.EnPassant[1]};
