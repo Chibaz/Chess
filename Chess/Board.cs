@@ -31,9 +31,10 @@ namespace Chess
         }
         public static int aiColor = 1;
         public static int[] EnPassant;
-        public static Boolean whiteCastling, blackCastling;
+        public Boolean aiLeftCastling, aiRightCastling, playerLeftCastling, playerRightCastling;
+        public Boolean aiCheck, playerCheck;
         public int[,] tiles;
-        
+
         public Board()
         {
             tiles = new int[8, 8];
@@ -115,6 +116,42 @@ namespace Chess
                 }
             }
             return newBoard;
+        }
+
+
+        public static void CheckForCheck(Board board, int player)
+        {
+            int[] king = new int[2];
+            for (int row = 0; row < 8; row++)
+            {
+                for (int col = 0; col < 8; col++)
+                {
+                    if ((board.tiles[row, col] * player) == 6)
+                    {
+                        king = new int[]{ row, col };
+                    }
+                }
+            }
+
+            MoveGenerator move = new MoveGenerator();
+            List<IMove> check = move.GetAllMovesForPlayer(player * -1);
+
+            foreach (Move element in check)
+            {
+                if (element.moving.Target[0] == king[0] && element.moving.Target[1] == king[1])
+                {
+                    if (player * Board.aiColor > 0)
+                    {
+                        board.aiCheck = true;
+                        board.playerCheck = false;
+                    }
+                    else
+                    {
+                        board.aiCheck = false;
+                        board.playerCheck = true;
+                    }
+                }
+            }
         }
     }
 }

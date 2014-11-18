@@ -160,13 +160,13 @@ namespace Chess
                     
                 }*/
             }
-            else if (nextMove != null && clicked == nextMove.moving.Origin)
+            else if (nextMove != null && (clicked[0] == nextMove.moving.Origin[0] && clicked[1] == nextMove.moving.Origin[1]))
             {
                 nextMove = null;
                 UIElement uie = s;
                 uie.Effect = null;
             }
-            else if (nextMove != null && clicked != nextMove.moving.Origin)
+            else if (nextMove != null)
             {
                 //nextMove.killing.Position = clicked;
                 //nextMove.killing.Piece = tileClicked;

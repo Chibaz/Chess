@@ -58,6 +58,7 @@ namespace Chess
             }
             Board.Game.tiles[moving.Target[0], moving.Target[1]] = moving.Piece;
             Board.Game.tiles[moving.Origin[0], moving.Origin[1]] = 0;
+            Board.CheckForCheck(Board.Game, moving.Piece/moving.Piece);
         }
 
         public void ExecuteOnBoard(Board temp)
@@ -68,6 +69,7 @@ namespace Chess
             }
             temp.tiles[moving.Target[0], moving.Target[1]] = moving.Piece;
             temp.tiles[moving.Origin[0], moving.Origin[1]] = 0;
+            Board.CheckForCheck(temp, moving.Piece / moving.Piece);
         }
 
         public void Undo()
@@ -126,16 +128,37 @@ namespace Chess
 
     public class Castling : IMove
     {
-
+        public int king;
+        public int rookX;
 
         public void Execute()
         {
-
+            int[,] tiles = Board.Game.tiles;
+            if (king * Board.aiColor > 0)
+            {
+                tiles[7, 4] = tiles[7, rookX];
+                tiles[7, rookX] = king;
+            }
+            else
+            {
+                tiles[0, 4] = tiles[0, rookX];
+                tiles[0, rookX] = king;
+            }
         }
 
         public void ExecuteOnBoard(Board temp)
         {
-
+            int[,] tiles = temp.tiles;
+            if (king * Board.aiColor > 0)
+            {
+                tiles[7, 4] = tiles[7, rookX];
+                tiles[7, rookX] = king;
+            }
+            else
+            {
+                tiles[0, 4] = tiles[0, rookX];
+                tiles[0, rookX] = king;
+            }
         }
 
         public void Undo()
