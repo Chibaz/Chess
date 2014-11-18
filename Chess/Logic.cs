@@ -269,35 +269,35 @@ namespace Chess
                     }
                     else if (tiles[row, col] * Board.aiColor == 3)
                     {
-                        whitescore += knightTable[row, col] + 320;
+                        whitescore += knightTable[row, col] + 300;
                     }
                     else if (tiles[row, col] * Board.aiColor == -3)
                     {
-                        blackscore += blackKnightTable[row, col] + 320;
+                        blackscore += blackKnightTable[row, col] + 300;
                         }
                     else if (tiles[row, col] * Board.aiColor == 4)
                     {
-                        whitescore += bishopTable[row, col] + 325;
+                        whitescore += bishopTable[row, col] + 300;
                         }
                     else if (tiles[row, col] * Board.aiColor == -4)
                     {
-                        blackscore += blackBishopTable[row, col] + 325;
+                        blackscore += blackBishopTable[row, col] + 300;
                         }
                     else if (tiles[row, col] * Board.aiColor == 5)
                     {
-                        whitescore += queenTable[row,col] + 999;
+                        whitescore += queenTable[row,col] + 900;
                         }
                     else if (tiles[row, col] * Board.aiColor == -5)
                     {
-                        blackscore += blackQueenTable[row, col] + 999;
+                        blackscore += blackQueenTable[row, col] + 900;
                         }
                     else if (tiles[row, col] * Board.aiColor == 6)
                     {
-                        whitescore += kingTable[row,col] + 11111;
+                        whitescore += kingTable[row,col] + 10000;
                         }
                     else if (tiles[row, col] * Board.aiColor == -6)
                     {
-                        blackscore += blackKingTable[row, col] + 11111;
+                        blackscore += blackKingTable[row, col] + 10000;
                     }
                 }
             }
