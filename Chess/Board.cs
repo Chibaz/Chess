@@ -142,7 +142,7 @@ namespace Chess
             }
 
             MoveGenerator move = new MoveGenerator();
-            List<IMove> check = move.GetAllMovesForPlayer(player * -1);
+            List<IMove> check = move.GetAllMovesForPlayer(board, player * -1);
 
             foreach (Move element in check)
             {

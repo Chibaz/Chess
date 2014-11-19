@@ -8,8 +8,11 @@ namespace Chess
 {
     public class MoveGenerator
     {
-        public List<IMove> GetAllMovesForPlayer(int player)
+        private Board moveBoard;
+
+        public List<IMove> GetAllMovesForPlayer(Board board, int player)
         {
+            moveBoard = board;
             List<IMove> allMoves = new List<IMove>();
             for (int h = 0; h < 8; h++)
             {
@@ -28,7 +31,7 @@ namespace Chess
         public List<IMove> GetLegalMovements(int[] origin)
         {
             List<IMove> moves = new List<IMove>();
-            int piece = Math.Abs(Board.Game.tiles[origin[0], origin[1]]);
+            int piece = Math.Abs(moveBoard.tiles[origin[0], origin[1]]);
 
             if (piece == 1)
             {
@@ -55,9 +58,9 @@ namespace Chess
             List<Move> straightMoves = new List<Move>();
             for (int y = origin[0] + 1; y < 8; y++) //Vertical lower
             {
-                newMove = new Move(origin, Board.Game.tiles[origin[0], origin[1]]);
+                newMove = new Move(origin, moveBoard.tiles[origin[0], origin[1]]);
                 newMove.moving.Target = new int[] { y, origin[1] };
-                if (Board.Game.tiles[newMove.moving.Target[0], newMove.moving.Target[1]] == 0)
+                if (moveBoard.tiles[newMove.moving.Target[0], newMove.moving.Target[1]] == 0)
                 {
                     straightMoves.Add(newMove);
                 }
@@ -72,10 +75,10 @@ namespace Chess
             }
             for (int y = origin[0] - 1; y >= 0; y--) //Vertical upper
             {
-                newMove = new Move(origin, Board.Game.tiles[origin[0], origin[1]]);
+                newMove = new Move(origin, moveBoard.tiles[origin[0], origin[1]]);
                 int[] target = new int[] { y, origin[1] };
                 newMove.moving.Target = target;
-                if (Board.Game.tiles[target[0], target[1]] == 0)
+                if (moveBoard.tiles[target[0], target[1]] == 0)
                 {
                     straightMoves.Add(newMove);
                 }
@@ -90,10 +93,10 @@ namespace Chess
             }
             for (int x = origin[1] + 1; x < 8; x++) //Horizontal right
             {
-                newMove = new Move(origin, Board.Game.tiles[origin[0], origin[1]]);
+                newMove = new Move(origin, moveBoard.tiles[origin[0], origin[1]]);
                 int[] target = new int[] { origin[0], x };
                 newMove.moving.Target = target;
-                if (Board.Game.tiles[target[0], target[1]] == 0)
+                if (moveBoard.tiles[target[0], target[1]] == 0)
                 {
                     straightMoves.Add(newMove);
                 }
@@ -108,10 +111,10 @@ namespace Chess
             }
             for (int x = origin[1] - 1; x >= 0; x--) //Horizontal left
             {
-                newMove = new Move(origin, Board.Game.tiles[origin[0], origin[1]]);
+                newMove = new Move(origin, moveBoard.tiles[origin[0], origin[1]]);
                 int[] target = new int[] { origin[0], x };
                 newMove.moving.Target = target;
-                if (Board.Game.tiles[target[0], target[1]] == 0)
+                if (moveBoard.tiles[target[0], target[1]] == 0)
                 {
                     straightMoves.Add(newMove);
                 }
@@ -139,7 +142,7 @@ namespace Chess
             {
                 xL--;
                 xR++;
-                newMove = new Move(origin, Board.Game.tiles[origin[0], origin[1]]);
+                newMove = new Move(origin, moveBoard.tiles[origin[0], origin[1]]);
                 newMove.moving.Target = new int[] { y, xL };
                 if (xL >= 0 && Board.Game.tiles[y, xL] == 0 && leftUnbroken)
                 {
@@ -153,9 +156,9 @@ namespace Chess
                     }
                     leftUnbroken = false;
                 }
-                newMove = new Move(origin, Board.Game.tiles[origin[0], origin[1]]);
+                newMove = new Move(origin, moveBoard.tiles[origin[0], origin[1]]);
                 newMove.moving.Target = new int[] { y, xR };
-                if (xR < 8 && Board.Game.tiles[y, xR] == 0 && rightUnbroken)
+                if (xR < 8 && moveBoard.tiles[y, xR] == 0 && rightUnbroken)
                 {
                     diagonalMoves.Add(newMove);
                 }
@@ -174,9 +177,9 @@ namespace Chess
             {
                 xL--;
                 xR++;
-                newMove = new Move(origin, Board.Game.tiles[origin[0], origin[1]]);
+                newMove = new Move(origin, moveBoard.tiles[origin[0], origin[1]]);
                 newMove.moving.Target = new int[] { y, xL };
-                if (xL >= 0 && Board.Game.tiles[y, xL] == 0 && leftUnbroken)
+                if (xL >= 0 && moveBoard.tiles[y, xL] == 0 && leftUnbroken)
                 {
                     diagonalMoves.Add(newMove);
                 }
@@ -188,9 +191,9 @@ namespace Chess
                     }
                     leftUnbroken = false;
                 }
-                newMove = new Move(origin, Board.Game.tiles[origin[0], origin[1]]);
+                newMove = new Move(origin, moveBoard.tiles[origin[0], origin[1]]);
                 newMove.moving.Target = new int[] { y, xR };
-                if (xR < 8 && Board.Game.tiles[y, xR] == 0 && rightUnbroken)
+                if (xR < 8 && moveBoard.tiles[y, xR] == 0 && rightUnbroken)
                 {
                     diagonalMoves.Add(newMove);
                 }
@@ -209,7 +212,7 @@ namespace Chess
         public List<Move> GetAbsoluteMoves(int[] origin)
         {
             String[] moves = null;
-            int piece = Board.Game.tiles[origin[0], origin[1]];
+            int piece = moveBoard.tiles[origin[0], origin[1]];
             List<Move> absMoves = new List<Move>();
             if (Math.Abs(piece) == 3)
             {
@@ -228,7 +231,7 @@ namespace Chess
                 if (y >= 0 && x >= 0 && y < 8 && x < 8)
                 {
                     newMove.moving.Target = new int[] { y, x };
-                    if (Board.Game.tiles[newMove.moving.Target[0], newMove.moving.Target[1]] == 0)
+                    if (moveBoard.tiles[newMove.moving.Target[0], newMove.moving.Target[1]] == 0)
                     {
                         absMoves.Add(newMove);
                     }
@@ -243,12 +246,12 @@ namespace Chess
 
         public List<IMove> GetPawnMoves(int[] origin)
         {
-            int piece = Board.Game.tiles[origin[0], origin[1]];
+            int piece = moveBoard.tiles[origin[0], origin[1]];
             List<IMove> pawnMoves = new List<IMove>();
             int direction = piece * Board.aiColor;
             Move newMove;
 
-            if (Board.Game.tiles[origin[0] - direction, origin[1]] == 0)
+            if (moveBoard.tiles[origin[0] - direction, origin[1]] == 0)
             {
                 newMove = new Move(origin, piece);
                 newMove.moving.Target = new int[] { origin[0] - direction, origin[1] };
@@ -258,24 +261,25 @@ namespace Chess
                 }
                 pawnMoves.Add(newMove);
             }
-            if (Board.Game.tiles[origin[0] - (2 * direction), origin[1]] == 0 && origin[0] == 6)
+            if (moveBoard.tiles[origin[0] - (2 * direction), origin[1]] == 0 && origin[0] == 6)
             {
                 newMove = new Move(origin, piece);
                 newMove.moving.Target = new int[] { origin[0] - (2 * direction), origin[1] };
                 pawnMoves.Add(newMove);
             }
-            if (origin[1] < 7 && Board.Game.tiles[origin[0] - direction, origin[1] + 1] * piece < 0)
+            if (origin[1] < 7 && moveBoard.tiles[origin[0] - direction, origin[1] + 1] * piece < 0)
             {
                 newMove = new Move(origin, piece);
                 newMove.moving.Target = new int[] { origin[0] - direction, origin[1] + 1 };
                 newMove.killing.Position = new int[] { origin[0] - direction, origin[1] + 1 };
-                newMove.killing.Piece = Board.Game.tiles[origin[0] - direction, origin[1] + 1];
+                newMove.killing.Piece = moveBoard.tiles[origin[0] - direction, origin[1] + 1];
                 if (newMove.moving.Target[0] == 0 || newMove.moving.Target[0] == 7)
                 {
                     CheckForPromotion(newMove);
                 }
                 pawnMoves.Add(newMove);
-            }else if (origin[1] > 0 && Board.Game.tiles[origin[0] - direction, origin[1] - 1] * piece < 0)
+            }
+            else if (origin[1] > 0 && moveBoard.tiles[origin[0] - direction, origin[1] - 1] * piece < 0)
             {
                 newMove = new Move(origin, piece);
                 newMove.moving.Target = new int[] { origin[0] - direction, origin[1] - 1 };
@@ -287,14 +291,14 @@ namespace Chess
                 }
                 pawnMoves.Add(newMove);
             }
-            if (Board.EnPassant != null)
+            if (moveBoard.EnPassant != null)
             {
-                if (Board.Game.tiles[Board.EnPassant[0], Board.EnPassant[1]] * piece == -1)
+                if (moveBoard.tiles[moveBoard.EnPassant[0], moveBoard.EnPassant[1]] * piece == -1)
                 {
                     newMove = new Move(origin, piece);
-                    newMove.moving.Target = new int[]{Board.EnPassant[0] - direction, Board.EnPassant[1]};
-                    newMove.killing.Position = Board.EnPassant;
-                    newMove.killing.Piece = Board.Game.tiles[Board.EnPassant[0], Board.EnPassant[1]];
+                    newMove.moving.Target = new int[] { moveBoard.EnPassant[0] - direction, moveBoard.EnPassant[1] };
+                    newMove.killing.Position = moveBoard.EnPassant;
+                    newMove.killing.Piece = moveBoard.tiles[moveBoard.EnPassant[0], moveBoard.EnPassant[1]];
                     pawnMoves.Add(newMove);
                 }
             }
@@ -349,7 +353,7 @@ namespace Chess
 
         public Boolean CheckForKill(Move move)
         {
-            if ((move.moving.Piece * Board.Game.tiles[move.moving.Target[0], move.moving.Target[1]]) < 0)
+            if ((move.moving.Piece * moveBoard.tiles[move.moving.Target[0], move.moving.Target[1]]) < 0)
             {
                 move.killing.Position = move.moving.Target;
                 move.killing.Piece = move.moving.Piece;

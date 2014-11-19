@@ -11,7 +11,7 @@ namespace Chess
     public class Logic
     {
         private IMove next;
-        private int depth = 5;
+        private int depth = 3;
         private int score, count, total;
         private MoveGenerator mg;
 
@@ -35,7 +35,7 @@ namespace Chess
         
         public int doAlphaBeta(Board lastBoard, int rDepth, int alpha, int beta, int rPlayer)
         {
-            List<IMove> newMoves = mg.GetAllMovesForPlayer(rPlayer);
+            List<IMove> newMoves = mg.GetAllMovesForPlayer(lastBoard, rPlayer);
             total += newMoves.Count;
             //test
             //Console.WriteLine("number of moves from last board: " + newMoves.Count + " at depth " + rDepth + " for player + " + rPlayer);
