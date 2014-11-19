@@ -59,6 +59,7 @@ namespace Chess
             Board.Game.tiles[moving.Target[0], moving.Target[1]] = moving.Piece;
             Board.Game.tiles[moving.Origin[0], moving.Origin[1]] = 0;
             Board.CheckForCheck(Board.Game, moving.Piece/moving.Piece);
+            Board.CheckForStuff(Board.Game, this);
         }
 
         public void ExecuteOnBoard(Board temp)
@@ -70,6 +71,7 @@ namespace Chess
             temp.tiles[moving.Target[0], moving.Target[1]] = moving.Piece;
             temp.tiles[moving.Origin[0], moving.Origin[1]] = 0;
             Board.CheckForCheck(temp, moving.Piece / moving.Piece);
+            Board.CheckForStuff(temp, this);
         }
 
         public void Undo()

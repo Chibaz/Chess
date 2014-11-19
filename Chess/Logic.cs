@@ -11,7 +11,7 @@ namespace Chess
     public class Logic
     {
         private IMove next;
-        private int depth = 3;
+        private int depth = 5;
         private int score, count, total;
         private MoveGenerator mg;
 
@@ -29,7 +29,7 @@ namespace Chess
             time.Start();
             doAlphaBeta(Board.Game, depth, Int32.MinValue, Int32.MaxValue, Board.aiColor);
             time.Stop();
-            Console.WriteLine(time.Elapsed + " " + count + " evaluations after " + total + " boards, score is " + score);
+            Console.WriteLine(time.Elapsed + ": " + count + " evaluations after " + total + " boards");
             next.Execute();
         }
         
@@ -42,11 +42,6 @@ namespace Chess
             if (!newMoves.Any() || rDepth == 0)
             {
                 int e = evaluate(lastBoard);
-                if (e > score)
-                {
-                    //Console.WriteLine("new best evaluation " + e);
-                    score = e;
-                }
                 return e;
             }
             if (rPlayer == 1) //Maximizing
