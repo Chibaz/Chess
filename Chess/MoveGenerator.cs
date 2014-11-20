@@ -251,46 +251,48 @@ namespace Chess
             int direction = piece * Board.aiColor;
             Move newMove;
 
-            if (moveBoard.tiles[origin[0] - direction, origin[1]] == 0)
+            //Move one space
+            if (moveBoard.tiles[origin[0] - direction, origin[1]] == 0) 
             {
                 newMove = new Move(origin, piece);
                 newMove.moving.Target = new int[] { origin[0] - direction, origin[1] };
-                if (newMove.moving.Target[0] == 0 || newMove.moving.Target[0] == 7)
-                {
-                    CheckForPromotion(newMove);
-                }
+                //CheckForPromotion(newMove);
                 pawnMoves.Add(newMove);
             }
-            if (moveBoard.tiles[origin[0] - (2 * direction), origin[1]] == 0 && origin[0] == 6)
+            //Move ahead two spaces from start
+            if ((origin[0] == 6 && piece * Board.aiColor == 1) && moveBoard.tiles[origin[0] - (2 * direction), origin[1]] == 0)
             {
                 newMove = new Move(origin, piece);
                 newMove.moving.Target = new int[] { origin[0] - (2 * direction), origin[1] };
                 pawnMoves.Add(newMove);
             }
-            if (origin[1] < 7 && moveBoard.tiles[origin[0] - direction, origin[1] + 1] * piece < 0)
+            if ((origin[0] == 1 && piece * Board.aiColor == -1) && moveBoard.tiles[origin[0] - (2 * direction), origin[1]] == 0)
+            {
+                newMove = new Move(origin, piece);
+                newMove.moving.Target = new int[] { origin[0] - (2 * direction), origin[1] };
+                pawnMoves.Add(newMove);
+            }
+            //Kill piece right
+            if (origin[1] < 7 && moveBoard.tiles[origin[0] - direction, origin[1] + 1] * piece == -1) 
             {
                 newMove = new Move(origin, piece);
                 newMove.moving.Target = new int[] { origin[0] - direction, origin[1] + 1 };
                 newMove.killing.Position = new int[] { origin[0] - direction, origin[1] + 1 };
                 newMove.killing.Piece = moveBoard.tiles[origin[0] - direction, origin[1] + 1];
-                if (newMove.moving.Target[0] == 0 || newMove.moving.Target[0] == 7)
-                {
-                    CheckForPromotion(newMove);
-                }
+                //CheckForPromotion(newMove);
                 pawnMoves.Add(newMove);
             }
-            else if (origin[1] > 0 && moveBoard.tiles[origin[0] - direction, origin[1] - 1] * piece < 0)
+            //Kill piece left
+            else if (origin[1] > 0 && moveBoard.tiles[origin[0] - direction, origin[1] - 1] * piece == -1) 
             {
                 newMove = new Move(origin, piece);
                 newMove.moving.Target = new int[] { origin[0] - direction, origin[1] - 1 };
                 newMove.killing.Position = new int[] { origin[0] - direction, origin[1] - 1 };
                 newMove.killing.Piece = Board.Game.tiles[origin[0] - direction, origin[1] - 1];
-                if (newMove.moving.Target[0] == 0 || newMove.moving.Target[0] == 7)
-                {
-                    CheckForPromotion(newMove);
-                }
+                //CheckForPromotion(newMove);
                 pawnMoves.Add(newMove);
             }
+            //EnPassant
             if (moveBoard.EnPassant != null)
             {
                 if (moveBoard.tiles[moveBoard.EnPassant[0], moveBoard.EnPassant[1]] * piece == -1)
@@ -336,19 +338,16 @@ namespace Chess
             }*/
         }
 
-        public Boolean CheckForPromotion(Move move)
+        public void CheckForPromotion(Move move)
         {
-            if (move.moving.Piece * Board.aiColor > 0 && move.moving.Target[0] == 1)
+            if (move.moving.Piece * Board.aiColor == 1 && move.moving.Target[0] == 0)
             {
-                move.moving.Piece = 5 * Board.aiColor;
-                return true;
+                move.moving.Piece *= 5;
             }
-            else if (move.moving.Piece * Board.aiColor < 0 && move.moving.Target[0] == 6)
+            else if (move.moving.Piece * Board.aiColor == -1 && move.moving.Target[0] == 7)
             {
-                move.moving.Piece = 5 * (-Board.aiColor);
-                return true;
+                move.moving.Piece *= 5;
             }
-            return false;
         }
 
         public Boolean CheckForKill(Move move)

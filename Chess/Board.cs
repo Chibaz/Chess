@@ -165,34 +165,35 @@ namespace Chess
         public static void CheckForStuff(Board board, Move move)
         {
             int piece = move.moving.Piece;
-            if (Math.Abs(piece) == 2)
+            if (piece * Board.aiColor == 2)
             {
-                if (piece == 2)
+                if (board.aiLeftCastling && move.moving.Origin[1] == 0)
                 {
-                    if (board.aiLeftCastling && move.moving.Origin[1] == 0)
-                    {
-                        board.aiLeftCastling = false;
-                    }
-                    else if (board.aiRightCastling && move.moving.Origin[1] == 7)
-                    {
-                        board.aiRightCastling = false;
-                    }
+                    board.aiLeftCastling = false;
                 }
-                else
+                else if (board.aiRightCastling && move.moving.Origin[1] == 7)
                 {
-                    if (board.playerLeftCastling && move.moving.Origin[1] == 0)
-                    {
-                        board.playerLeftCastling = false;
-                    }
-                    else if (board.playerRightCastling && move.moving.Origin[1] == 7)
-                    {
-                        board.playerRightCastling = false;
-                    }
+                    board.aiRightCastling = false;
+                }
+            }
+            else if (piece * Board.aiColor == -2)
+            {
+                if (board.playerLeftCastling && move.moving.Origin[1] == 0)
+                {
+                    board.playerLeftCastling = false;
+                }
+                else if (board.playerRightCastling && move.moving.Origin[1] == 7)
+                {
+                    board.playerRightCastling = false;
                 }
             }
             else if (Math.Abs(piece) == 1)
             {
-                if (piece * Board.aiColor > 0 && move.moving.Origin[0] - move.moving.Origin[1] == 2)
+                if (move.moving.Target[0] == 0 || move.moving.Target[0] == 7)
+                {
+                    move.moving.Piece = 5 * piece;
+                }
+                else if (piece * Board.aiColor > 0 && move.moving.Origin[0] - move.moving.Origin[1] == 2)
                 {
                     board.EnPassant = move.moving.Target;
                 }
@@ -200,6 +201,16 @@ namespace Chess
                 {
                     board.EnPassant = move.moving.Target;
                 }
+            }
+            else if (piece * Board.aiColor == 6)
+            {
+                board.aiLeftCastling = false;
+                board.aiRightCastling = false;
+            }
+            else if (piece * Board.aiColor == -6)
+            {
+                board.playerLeftCastling = false;
+                board.playerRightCastling = false;
             }
             else
             {

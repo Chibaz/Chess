@@ -130,6 +130,7 @@ namespace Chess
             int tileClicked = game.GetSpecificTile(clicked);
             if (nextMove == null && tileClicked != 0)
             {
+                Console.WriteLine("start new move");
                 UIElement uie = s;
                 uie.Effect = new BlurEffect
                 {
