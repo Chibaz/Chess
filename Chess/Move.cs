@@ -43,6 +43,7 @@ namespace Chess
     {
         public MovingPiece moving;
         public TakenPiece killing;
+        public Move next;
 
         public Move(int[] origin, int piece)
         {
@@ -52,6 +53,7 @@ namespace Chess
 
         public void Execute()
         {
+            Board.CheckForStuff(Board.Game, this);
             if (killing.Position != null)
             {
                 Board.Game.tiles[killing.Position[0], killing.Position[1]] = 0;
@@ -59,11 +61,12 @@ namespace Chess
             Board.Game.tiles[moving.Target[0], moving.Target[1]] = moving.Piece;
             Board.Game.tiles[moving.Origin[0], moving.Origin[1]] = 0;
             Board.CheckForCheck(Board.Game, moving.Piece/moving.Piece);
-            Board.CheckForStuff(Board.Game, this);
+            
         }
 
         public void ExecuteOnBoard(Board temp)
         {
+            Board.CheckForStuff(temp, this);
             if (killing.Position != null)
             {
                 temp.tiles[killing.Position[0], killing.Position[1]] = 0;
@@ -71,7 +74,7 @@ namespace Chess
             temp.tiles[moving.Target[0], moving.Target[1]] = moving.Piece;
             temp.tiles[moving.Origin[0], moving.Origin[1]] = 0;
             Board.CheckForCheck(temp, moving.Piece / moving.Piece);
-            Board.CheckForStuff(temp, this);
+            
         }
 
         public void Undo()
