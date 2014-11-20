@@ -130,7 +130,7 @@ namespace Chess
         public static void CheckForCheck(Board board, int player)
         {
             int[] king = new int[2];
-            for (int row = 0; row < 8; row++)
+            Parallel.For (0, 8, row =>
             {
                 for (int col = 0; col < 8; col++)
                 {
@@ -139,7 +139,7 @@ namespace Chess
                         king = new int[] { row, col };
                     }
                 }
-            }
+            } );
 
             MoveGenerator move = new MoveGenerator();
             List<IMove> check = move.GetAllMovesForPlayer(board, player * -1);

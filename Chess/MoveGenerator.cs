@@ -14,7 +14,7 @@ namespace Chess
         {
             moveBoard = board;
             List<IMove> allMoves = new List<IMove>();
-            for (int h = 0; h < 8; h++)
+            Parallel.For (0; 8; h =>
             {
                 for (int w = 0; w < 8; w++)
                 {
@@ -24,6 +24,7 @@ namespace Chess
                     }
                 }
             }
+            );
             //Console.WriteLine("number of moves for board is :" + allMoves.Count);
             return allMoves;
         }
