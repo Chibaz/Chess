@@ -203,12 +203,14 @@ namespace Chess
 
         private void MenuItem_NewGame(object sender, RoutedEventArgs e)
         {
+            logic.endGame = false;
             game.ResetGame();
             DrawBoard();
         }
 
         private void MenuItem_Switch(object sender, RoutedEventArgs e)
         {
+            logic.endGame = false;
             Board.aiColor *= -1;
             game.ResetGame();
             DrawBoard();

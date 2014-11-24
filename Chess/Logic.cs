@@ -11,9 +11,10 @@ namespace Chess
     public class Logic
     {
         private IMove next;
-        private int depth = 4;
-        private int score, count, total;
+        private int depth = 3;
+        private int score, evals, total;
         private MoveGenerator mg;
+        public Boolean endGame;
 
         public Logic()
         {
@@ -23,17 +24,23 @@ namespace Chess
         public void GetBestMove()
         {
             Console.WriteLine("performing best move");
-            Board orgBoard = Board.Game.CloneBoard();
-            count = score = total = 0;
+            //Board orgBoard = Board.Game.CloneBoard();
+            evals = score = total = 0;
             Stopwatch time = new Stopwatch();
+            //depth = 0;
             time.Start();
-            doAlphaBeta(Board.Game, depth, Int32.MinValue, Int32.MaxValue, Board.aiColor);
+            Move bestMove = null;
+            /*while (time.Elapsed < timeAllowed)
+            {*/
+            doAlphaBeta(Board.Game, depth, Int32.MinValue, Int32.MaxValue, Board.aiColor, bestMove);
+            /*depth++;
+        }*/
             time.Stop();
-            Console.WriteLine(time.Elapsed + ": " + count + " evaluations after " + total + " boards");
+            Console.WriteLine(time.Elapsed + ": " + evals + " evaluations after " + total + " boards");
             next.Execute();
         }
-        
-        public int doAlphaBeta(Board lastBoard, int rDepth, int alpha, int beta, int rPlayer)
+
+        public int doAlphaBeta(Board lastBoard, int rDepth, int alpha, int beta, int rPlayer, Move prioMove)
         {
             List<IMove> newMoves = mg.GetAllMovesForPlayer(lastBoard, rPlayer);
             total += newMoves.Count;
@@ -41,9 +48,11 @@ namespace Chess
             if (!newMoves.Any() || rDepth == 0)
             {
                 int e = evaluate(lastBoard);
+                evals++;
+                //Console.WriteLine("eval " + evals);
                 return e;
             }
-            if (rPlayer == 1) //Maximizing
+            if (rPlayer == Board.aiColor) //Maximizing
             {
                 //Get all possible moves from current state
                 foreach (IMove move in newMoves)
@@ -65,13 +74,13 @@ namespace Chess
                         }
                         Console.WriteLine();
                     }*/
-                    int v = doAlphaBeta(newBoard, rDepth - 1, alpha, beta, rPlayer*-1); //Recursive call on possible methods
+                    int v = doAlphaBeta(newBoard, rDepth - 1, alpha, beta, rPlayer * -1, null); //Recursive call on possible methods
                     if (v > alpha)
                     {
                         alpha = v;
                         if (rDepth == depth)
                         {
-                            Console.WriteLine("new best move " + v);
+                            //Console.WriteLine("new best move " + v);
                             next = move;
                         }
                     }
@@ -103,7 +112,7 @@ namespace Chess
                         }
                         Console.WriteLine();
                     }*/
-                    int v = doAlphaBeta(newBoard, rDepth - 1, alpha, beta, rPlayer*-1); //Recursive call on possible methods
+                    int v = doAlphaBeta(newBoard, rDepth - 1, alpha, beta, rPlayer * -1, null); //Recursive call on possible methods
                     if (v < beta)
                     {
                         beta = v;
@@ -267,166 +276,202 @@ namespace Chess
 
         public int evaluate(Board toEvaluate)
         {
-            int whitescore, blackscore;
-            whitescore = blackscore = 0;
+            int whitescore, blackscore, wPieces, bPieces;
+            whitescore = blackscore = wPieces = bPieces = 0;
             int[,] tiles = toEvaluate.tiles;
             for (int row = 0; row < tiles.GetLength(0); row++)
             {
-                for(int col =0; col<tiles.GetLength(0); col++) {
+                for (int col = 0; col < tiles.GetLength(0); col++)
+                {
                     if (tiles[row, col] * Board.aiColor == 1)
                     {
-                        whitescore += pawnTable[row,col] + 100;
+                        whitescore += pawnTable[row, col];
+                        if (!endGame) { wPieces += 100; }
                     }
                     else if (tiles[row, col] * Board.aiColor == -1)
                     {
-                        blackscore += blackPawnTable[row, col] + 100;
+                        blackscore += blackPawnTable[row, col];
+                        if (!endGame) { bPieces += 100; }
                     }
                     else if (tiles[row, col] * Board.aiColor == 2)
                     {
-                        whitescore += rookTable[row, col] + 500;
+                        whitescore += rookTable[row, col];
+                        if (!endGame) { wPieces += 500; }
                     }
                     else if (tiles[row, col] * Board.aiColor == -2)
                     {
-                        blackscore += blackRookTable[row, col] + 500;
+                        blackscore += blackRookTable[row, col];
+                        if (!endGame) { bPieces += 500; }
                     }
                     else if (tiles[row, col] * Board.aiColor == 3)
                     {
-                        whitescore += knightTable[row, col] + 300;
+                        whitescore += knightTable[row, col];
+                        if (!endGame) { wPieces += 300; }
                     }
                     else if (tiles[row, col] * Board.aiColor == -3)
                     {
-                        blackscore += blackKnightTable[row, col] + 300;
-                        }
+                        blackscore += blackKnightTable[row, col];
+                        if (!endGame) { bPieces += 300; }
+                    }
                     else if (tiles[row, col] * Board.aiColor == 4)
                     {
-                        whitescore += bishopTable[row, col] + 300;
-                        }
+                        whitescore += bishopTable[row, col];
+                        if (!endGame) { wPieces += 300; }
+                    }
                     else if (tiles[row, col] * Board.aiColor == -4)
                     {
-                        blackscore += blackBishopTable[row, col] + 300;
-                        }
+                        blackscore += blackBishopTable[row, col];
+                        if (!endGame) { bPieces += 300; }
+                    }
                     else if (tiles[row, col] * Board.aiColor == 5)
                     {
-                        whitescore += queenTable[row,col] + 900;
-                        }
+                        whitescore += queenTable[row, col];
+                        if (!endGame) { wPieces += 900; }
+                    }
                     else if (tiles[row, col] * Board.aiColor == -5)
                     {
-                        blackscore += blackQueenTable[row, col] + 900;
-                        }
+                        blackscore += blackQueenTable[row, col];
+                        if (!endGame) { bPieces += 900; }
+                    }
                     else if (tiles[row, col] * Board.aiColor == 6)
                     {
-                        whitescore += kingTable[row,col] + 10000;
-                        }
+                        whitescore += kingTable[row, col] + 10000;
+                    }
                     else if (tiles[row, col] * Board.aiColor == -6)
                     {
                         blackscore += blackKingTable[row, col] + 10000;
                     }
                 }
             }
-            count++;
-
+            if (toEvaluate.aiCheck)
+            {
+                whitescore -= 1000;
+                if (toEvaluate.mate == 1)
+                {
+                    whitescore -= 10000;
+                    blackscore += 10000;
+                }
+            }
+            if (toEvaluate.playerCheck)
+            {
+                blackscore -= 1000;
+                if (toEvaluate.mate == -1)
+                {
+                    whitescore += 10000;
+                    blackscore -= 10000;
+                }
+            }
+            if (wPieces < 1000 || bPieces < 1000)
+            {
+                endGame = true;
+            }
+            if (!endGame)
+            {
+                whitescore += wPieces;
+                blackscore += bPieces;
+            }
             //Console.WriteLine("Iteration " + count + " White Score: " + whitescore + " Black Score: " + blackscore);
 
             return whitescore - blackscore;
         }
-        
+
     }
-        /*
-        public int evaluate(Board b)
+    /*
+    public int evaluate(Board b)
+    {
+        count++;
+        int score = 0;
+        score += evaluateLine(b, 0, 0, 0, 1, 0, 2);
+        score += evaluateLine(b, 1, 0, 1, 1, 1, 2);
+        score += evaluateLine(b, 2, 0, 2, 1, 2, 2);
+        score += evaluateLine(b, 0, 0, 1, 0, 2, 0);
+        score += evaluateLine(b, 0, 1, 1, 1, 2, 1);
+        score += evaluateLine(b, 0, 2, 1, 2, 2, 2);
+        score += evaluateLine(b, 0, 0, 1, 1, 2, 2);
+        score += evaluateLine(b, 0, 2, 1, 1, 2, 0);
+        //Console.WriteLine(b.toString());
+        //Console.WriteLine("evaluation: " + score);
+        //Console.ReadLine();
+        return score;
+    }
+
+    public int evaluateLine(Board b, int c1, int r1, int c2, int r2, int c3, int r3)
+    {
+        int score = 0;
+        int[,] board = b.cloneBoard();
+
+        if (board[c1, r1] == computer)
         {
-            count++;
-            int score = 0;
-            score += evaluateLine(b, 0, 0, 0, 1, 0, 2);
-            score += evaluateLine(b, 1, 0, 1, 1, 1, 2);
-            score += evaluateLine(b, 2, 0, 2, 1, 2, 2);
-            score += evaluateLine(b, 0, 0, 1, 0, 2, 0);
-            score += evaluateLine(b, 0, 1, 1, 1, 2, 1);
-            score += evaluateLine(b, 0, 2, 1, 2, 2, 2);
-            score += evaluateLine(b, 0, 0, 1, 1, 2, 2);
-            score += evaluateLine(b, 0, 2, 1, 1, 2, 0);
-            //Console.WriteLine(b.toString());
-            //Console.WriteLine("evaluation: " + score);
-            //Console.ReadLine();
-            return score;
+            score = 1;
+        }
+        else if (board[c1, r1] == player)
+        {
+            score = -1;
         }
 
-        public int evaluateLine(Board b, int c1, int r1, int c2, int r2, int c3, int r3)
+        if (board[c2, r2] == computer)
         {
-            int score = 0;
-            int[,] board = b.cloneBoard();
-
-            if (board[c1, r1] == computer)
+            if (score == 1)
+            {
+                score = 10;
+            }
+            else if (score == -1)
+            {
+                return 0;
+            }
+            else
             {
                 score = 1;
             }
-            else if (board[c1, r1] == player)
+        }
+        else if (board[c2, r2] == player)
+        {
+            if (score == -1)
+            {
+                score = -10;
+            }
+            else if (score == 1)
+            {
+                return 0;
+            }
+            else
             {
                 score = -1;
             }
+        }
 
-            if (board[c2, r2] == computer)
+        if (board[c3, r3] == computer)
+        {
+            if (score > 0)
             {
-                if (score == 1)
-                {
-                    score = 10;
-                }
-                else if (score == -1)
-                {
-                    return 0;
-                }
-                else
-                {
-                    score = 1;
-                }
+                score *= 20;
             }
-            else if (board[c2, r2] == player)
+            else if (score < 0)
             {
-                if (score == -1)
-                {
-                    score = -10;
-                }
-                else if (score == 1)
-                {
-                    return 0;
-                }
-                else
-                {
-                    score = -1;
-                }
+                return 0;
             }
-
-            if (board[c3, r3] == computer)
+            else
             {
-                if (score > 0)
-                {
-                    score *= 20;
-                }
-                else if (score < 0)
-                {
-                    return 0;
-                }
-                else
-                {
-                    score = 1;
-                }
+                score = 1;
             }
-            else if (board[c3, r3] == player)
+        }
+        else if (board[c3, r3] == player)
+        {
+            if (score < 0)
             {
-                if (score < 0)
-                {
-                    score *= 10;
-                }
-                else if (score > 0)
-                {
-                    return 0;
-                }
-                else
-                {
-                    score = -1;
-                }
+                score *= 10;
             }
-            return score;
-        }*/
-    }
+            else if (score > 0)
+            {
+                return 0;
+            }
+            else
+            {
+                score = -1;
+            }
+        }
+        return score;
+    }*/
+}
 
 

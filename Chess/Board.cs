@@ -34,17 +34,22 @@ namespace Chess
         public Boolean aiLeftCastling, aiRightCastling, playerLeftCastling, playerRightCastling;
         public Boolean aiCheck, playerCheck;
         public int[,] tiles;
+        public int mate;
 
         public Board()
         {
             tiles = new int[8, 8];
             aiLeftCastling = aiRightCastling = playerLeftCastling = playerRightCastling = true;
             aiCheck = playerCheck = false;
+            mate = 0;
         }
 
         //Used for resetting the pieces on the board
         public void ResetGame()
         {
+            aiLeftCastling = aiRightCastling = playerLeftCastling = playerRightCastling = true;
+            aiCheck = playerCheck = false;
+            mate = 0;
             for (int h = 0; h < 8; h++)
             {
                 for (int w = 0; w < 8; w++)
@@ -117,6 +122,7 @@ namespace Chess
                     newBoard.tiles[h, w] = this.tiles[h, w];
                 }
             }
+            newBoard.mate = this.mate;
             newBoard.aiCheck = this.aiCheck;
             newBoard.aiLeftCastling = this.aiLeftCastling;
             newBoard.aiRightCastling = this.aiRightCastling;
@@ -126,45 +132,115 @@ namespace Chess
             return newBoard;
         }
 
-
-        public static void CheckForCheck(Board board, int player)
+        /*
+         * Check if specified player is in check
+         */
+        public static void CheckForCheck(Board board, int player, int[] king)
         {
-            int[] king = new int[2];
-            Parallel.For (0, 8, row =>
-            {
-                for (int col = 0; col < 8; col++)
-                {
-                    if ((board.tiles[row, col] * player) == 6)
-                    {
-                        king = new int[] { row, col };
-                    }
-                }
-            } );
+            MoveGenerator mg = new MoveGenerator();
+            List<IMove> checkMoves = mg.GetAllMovesForPlayer(board, -player);
 
-            MoveGenerator move = new MoveGenerator();
-            List<IMove> check = move.GetAllMovesForPlayer(board, player * -1);
-
-            foreach (Move element in check)
+            foreach (Move move in checkMoves)
             {
-                if (element.moving.Target[0] == king[0] && element.moving.Target[1] == king[1])
+                if (move.moving.Target[0] == king[0] && move.moving.Target[1] == king[1])
                 {
-                    if (player * Board.aiColor > 0)
+                    if (player == Board.aiColor)
                     {
+                        //Console.WriteLine("ai in check");
                         board.aiCheck = true;
-                        board.playerCheck = false;
                     }
                     else
                     {
-                        board.aiCheck = false;
+                        //Console.WriteLine("player in check");
                         board.playerCheck = true;
+                    }
+                    
+                }
+            }
+            /*
+            foreach (Move move in checkMovesAI)
+            {
+                if (move.moving.Target[0] == playerKing[0] && move.moving.Target[1] == playerKing[1])
+                {
+                    board.playerCheck = true;
+                    Console.WriteLine("player in check");
+                }
+            }*/
+        }
+
+        /*
+         * Check if specified player has been set in mate
+         */
+        public static Boolean CheckForMate(Board board, int player, int[] king)
+        {
+            MoveGenerator mg = new MoveGenerator();
+
+            if ((player == Board.aiColor && board.aiCheck) || (player != Board.aiColor && board.playerCheck))
+            {
+                List<IMove> checkAI = mg.GetAllMovesForPlayer(board, -player);
+                foreach (Move move in checkAI)
+                {
+                    if (move.moving.Target[0] == king[0] && move.moving.Target[1] == king[1])
+                    {
+                        board.mate = player;
+                        //Console.WriteLine("mate for " + player);
+                        return true;
                     }
                 }
             }
+            return false;
+        }
+        
+        public void CheckChecking(Board board)
+        {
+            int[] aiKing, playerKing;
+            aiKing = playerKing = null;
+            Parallel.For(0, 8, row =>
+            {
+                //if (king != null)
+                //{
+                for (int col = 0; col < 8; col++)
+                {
+                    if ((board.tiles[row, col] * Board.aiColor) == 6)
+                    {
+                        aiKing = new int[] { row, col };
+                    }
+                    else if ((board.tiles[row, col] * -Board.aiColor) == 6)
+                    {
+                        playerKing = new int[] { row, col };
+                    }
+                }
+                //}
+            });
+            /*if (board.aiCheck && aiKing != null)
+            {
+                CheckForMate(board, Board.aiColor, aiKing);
+            }
+            else*/if (aiKing != null)
+            {
+                board.aiCheck = false;
+                CheckForCheck(board, Board.aiColor, aiKing);
+            }
+            /*if (board.playerCheck && playerKing != null)
+            {
+                CheckForMate(board, -Board.aiColor, playerKing);
+            }
+            else*/ if (playerKing != null)
+            {
+                board.playerCheck = false;
+                CheckForCheck(board, -Board.aiColor, playerKing);
+            }
+        }
+        
+        public void CheckMate()
+        {
+
         }
 
         public static void CheckForStuff(Board board, Move move)
         {
             int piece = move.moving.Piece;
+            board.EnPassant = null;
             if (piece * Board.aiColor == 2)
             {
                 if (board.aiLeftCastling && move.moving.Origin[1] == 0)
@@ -193,11 +269,11 @@ namespace Chess
                 {
                     move.moving.Piece = 5 * piece;
                 }
-                else if (piece * Board.aiColor > 0 && move.moving.Origin[0] - move.moving.Origin[1] == 2)
+                else if (piece * Board.aiColor == 1 && Math.Abs(move.moving.Origin[0] - move.moving.Target[0]) == 2)
                 {
                     board.EnPassant = move.moving.Target;
                 }
-                else if (piece * Board.aiColor > 0 && move.moving.Origin[0] - move.moving.Origin[1] == -2)
+                else if (piece * Board.aiColor == -1 && Math.Abs(move.moving.Origin[0] - move.moving.Target[0]) == 2)
                 {
                     board.EnPassant = move.moving.Target;
                 }
@@ -212,10 +288,8 @@ namespace Chess
                 board.playerLeftCastling = false;
                 board.playerRightCastling = false;
             }
-            else
-            {
-                board.EnPassant = null;
-            }
+
         }
     }
 }
+
