@@ -48,7 +48,7 @@ namespace Chess
         public Move(int[] origin, int piece)
         {
             moving = new MovingPiece(origin, null, piece);
-            //killing = new TakenPiece();
+            killing = new TakenPiece(null, 0);
         }
 
         public void Execute()
@@ -135,35 +135,60 @@ namespace Chess
     {
         public int king;
         public int rookX;
+        public int nK, nR;
+
+        public Castling(int k, int rX)
+        {
+            king = k;
+            rookX = rX;
+            if (rookX == 0)
+            {
+                nK = 2;
+                nR = 3;
+            }
+            else
+            {
+                nK = 6;
+                nR = 5;
+            }
+        }
 
         public void Execute()
         {
             int[,] tiles = Board.Game.tiles;
-            if (king * Board.aiColor > 0)
+            Board.CheckForStuff(Board.Game, this);
+
+            if (king * Board.aiColor == 6)
             {
-                tiles[7, 4] = tiles[7, rookX];
-                tiles[7, rookX] = king;
+                tiles[7, nR] = tiles[7, rookX];
+                tiles[7, nK] = king;
             }
             else
             {
-                tiles[0, 4] = tiles[0, rookX];
-                tiles[0, rookX] = king;
+                tiles[0, nR] = tiles[0, rookX];
+                tiles[0, nK] = king;
             }
+            tiles[7, rookX] = 0;
+            tiles[7, 4] = 0;
         }
 
         public void ExecuteOnBoard(Board temp)
         {
             int[,] tiles = temp.tiles;
+            Board.CheckForStuff(temp, this);
+
             if (king * Board.aiColor > 0)
             {
-                tiles[7, 4] = tiles[7, rookX];
-                tiles[7, rookX] = king;
+                tiles[7, nR] = tiles[7, rookX];
+                tiles[7, nK] = king;
             }
             else
             {
-                tiles[0, 4] = tiles[0, rookX];
-                tiles[0, rookX] = king;
+                tiles[0, nR] = tiles[0, rookX];
+                tiles[0, nK] = king;
             }
+            tiles[0, rookX] = 0;
+            tiles[0, 4] = 0;
         }
 
         public void Undo()

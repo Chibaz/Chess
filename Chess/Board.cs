@@ -140,21 +140,25 @@ namespace Chess
             MoveGenerator mg = new MoveGenerator();
             List<IMove> checkMoves = mg.GetAllMovesForPlayer(board, -player);
 
-            foreach (Move move in checkMoves)
+            foreach (IMove move in checkMoves)
             {
-                if (move.moving.Target[0] == king[0] && move.moving.Target[1] == king[1])
+                if (move is Move)
                 {
-                    if (player == Board.aiColor)
+                    Move nMove = (Move)move;
+                    if (nMove.moving.Target[0] == king[0] && nMove.moving.Target[1] == king[1])
                     {
-                        //Console.WriteLine("ai in check");
-                        board.aiCheck = true;
+                        if (player == Board.aiColor)
+                        {
+                            //Console.WriteLine("ai in check");
+                            board.aiCheck = true;
+                        }
+                        else
+                        {
+                            //Console.WriteLine("player in check");
+                            board.playerCheck = true;
+                        }
+
                     }
-                    else
-                    {
-                        //Console.WriteLine("player in check");
-                        board.playerCheck = true;
-                    }
-                    
                 }
             }
             /*
@@ -237,58 +241,61 @@ namespace Chess
 
         }
 
-        public static void CheckForStuff(Board board, Move move)
+        public static void CheckForStuff(Board board, IMove pMove)
         {
-            int piece = move.moving.Piece;
-            board.EnPassant = null;
-            if (piece * Board.aiColor == 2)
+            if (pMove is Move)
             {
-                if (board.aiLeftCastling && move.moving.Origin[1] == 0)
+                Move move = (Move)pMove;
+                int piece = move.moving.Piece;
+                board.EnPassant = null;
+                if (piece * Board.aiColor == 2)
+                {
+                    if (board.aiLeftCastling && move.moving.Origin[1] == 0)
+                    {
+                        board.aiLeftCastling = false;
+                    }
+                    else if (board.aiRightCastling && move.moving.Origin[1] == 7)
+                    {
+                        board.aiRightCastling = false;
+                    }
+                }
+                else if (piece * Board.aiColor == -2)
+                {
+                    if (board.playerLeftCastling && move.moving.Origin[1] == 0)
+                    {
+                        board.playerLeftCastling = false;
+                    }
+                    else if (board.playerRightCastling && move.moving.Origin[1] == 7)
+                    {
+                        board.playerRightCastling = false;
+                    }
+                }
+                else if (Math.Abs(piece) == 1)
+                {
+                    if (move.moving.Target[0] == 0 || move.moving.Target[0] == 7)
+                    {
+                        move.moving.Piece = 5 * piece;
+                    }
+                    else if (piece * Board.aiColor == 1 && Math.Abs(move.moving.Origin[0] - move.moving.Target[0]) == 2)
+                    {
+                        board.EnPassant = move.moving.Target;
+                    }
+                    else if (piece * Board.aiColor == -1 && Math.Abs(move.moving.Origin[0] - move.moving.Target[0]) == 2)
+                    {
+                        board.EnPassant = move.moving.Target;
+                    }
+                }
+                else if (piece * Board.aiColor == 6)
                 {
                     board.aiLeftCastling = false;
-                }
-                else if (board.aiRightCastling && move.moving.Origin[1] == 7)
-                {
                     board.aiRightCastling = false;
                 }
-            }
-            else if (piece * Board.aiColor == -2)
-            {
-                if (board.playerLeftCastling && move.moving.Origin[1] == 0)
+                else if (piece * Board.aiColor == -6)
                 {
                     board.playerLeftCastling = false;
-                }
-                else if (board.playerRightCastling && move.moving.Origin[1] == 7)
-                {
                     board.playerRightCastling = false;
                 }
             }
-            else if (Math.Abs(piece) == 1)
-            {
-                if (move.moving.Target[0] == 0 || move.moving.Target[0] == 7)
-                {
-                    move.moving.Piece = 5 * piece;
-                }
-                else if (piece * Board.aiColor == 1 && Math.Abs(move.moving.Origin[0] - move.moving.Target[0]) == 2)
-                {
-                    board.EnPassant = move.moving.Target;
-                }
-                else if (piece * Board.aiColor == -1 && Math.Abs(move.moving.Origin[0] - move.moving.Target[0]) == 2)
-                {
-                    board.EnPassant = move.moving.Target;
-                }
-            }
-            else if (piece * Board.aiColor == 6)
-            {
-                board.aiLeftCastling = false;
-                board.aiRightCastling = false;
-            }
-            else if (piece * Board.aiColor == -6)
-            {
-                board.playerLeftCastling = false;
-                board.playerRightCastling = false;
-            }
-
         }
     }
 }

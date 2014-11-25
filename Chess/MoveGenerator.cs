@@ -59,10 +59,10 @@ namespace Chess
             return moves;
         }
 
-        public List<Move> GetStraightMoves(int[] origin)
+        public List<IMove> GetStraightMoves(int[] origin)
         {
             Move newMove = null;
-            List<Move> straightMoves = new List<Move>();
+            List<IMove> straightMoves = new List<IMove>();
             for (int y = origin[0] + 1; y < 8; y++) //Vertical lower
             {
                 newMove = new Move(origin, moveBoard.tiles[origin[0], origin[1]]);
@@ -137,90 +137,94 @@ namespace Chess
             return straightMoves;
         }
 
-        public List<Move> GetDiagonalMoves(int[] origin)
+        public List<IMove> GetDiagonalMoves(int[] origin)
         {
-            List<Move> diagonalMoves = new List<Move>();
             int xL, xR;
             xL = xR = origin[1];
-            Boolean leftUnbroken, rightUnbroken;
-            leftUnbroken = rightUnbroken = true;
             Move newMove = null;
-            for (int y = origin[0] + 1; y < 8; y++) //Lower diagonals
+            List<IMove> diagonalMoves = new List<IMove>();
+            for (int y = origin[0] + 1; y < 8; y++) //Lower-Left diagonals
             {
                 xL--;
-                xR++;
                 newMove = new Move(origin, moveBoard.tiles[origin[0], origin[1]]);
                 newMove.moving.Target = new int[] { y, xL };
-                if (xL >= 0 && Board.Game.tiles[y, xL] == 0 && leftUnbroken)
+                if (xL >= 0 && Board.Game.tiles[y, xL] == 0)
                 {
                     diagonalMoves.Add(newMove);
                 }
-                else if (xL >= 0 && leftUnbroken)
+                else if (xL >= 0)
                 {
                     if (CheckForKill(newMove))
                     {
                         diagonalMoves.Add(newMove);
                     }
-                    leftUnbroken = false;
-                }
-                newMove = new Move(origin, moveBoard.tiles[origin[0], origin[1]]);
-                newMove.moving.Target = new int[] { y, xR };
-                if (xR < 8 && moveBoard.tiles[y, xR] == 0 && rightUnbroken)
-                {
-                    diagonalMoves.Add(newMove);
-                }
-                else if (xR < 8 && rightUnbroken)
-                {
-                    if (CheckForKill(newMove))
-                    {
-                        diagonalMoves.Add(newMove);
-                    }
-                    rightUnbroken = false;
+                    break;
                 }
             }
-            xL = xR = origin[1];
-            leftUnbroken = rightUnbroken = true;
-            for (int y = origin[0] - 1; y >= 0; y--) //Upper diagonals
+            for (int y = origin[0] + 1; y < 8; y++) //Lower-Right diagonals
             {
-                xL--;
                 xR++;
                 newMove = new Move(origin, moveBoard.tiles[origin[0], origin[1]]);
-                newMove.moving.Target = new int[] { y, xL };
-                if (xL >= 0 && moveBoard.tiles[y, xL] == 0 && leftUnbroken)
+                newMove.moving.Target = new int[] { y, xR };
+                if (xR < 8 && moveBoard.tiles[y, xR] == 0)
                 {
                     diagonalMoves.Add(newMove);
                 }
-                else if (xL >= 0 && leftUnbroken)
+                else if (xR <= 7)
                 {
                     if (CheckForKill(newMove))
                     {
                         diagonalMoves.Add(newMove);
                     }
-                    leftUnbroken = false;
+                    break;
                 }
+            }
+
+            xL = xR = origin[1];
+            //leftUnbroken = rightUnbroken = true;
+            for (int y = origin[0] - 1; y >= 0; y--) //Upper-Left diagonals
+            {
+                xL--;
+                newMove = new Move(origin, moveBoard.tiles[origin[0], origin[1]]);
+                newMove.moving.Target = new int[] { y, xL };
+                if (xL >= 0 && moveBoard.tiles[y, xL] == 0)
+                {
+                    diagonalMoves.Add(newMove);
+                }
+                else if (xL >= 0)
+                {
+                    if (CheckForKill(newMove))
+                    {
+                        diagonalMoves.Add(newMove);
+                    }
+                    break;
+                }
+            }
+            for (int y = origin[0] - 1; y >= 0; y--){ //Upper-Right diagonals
+                xR++;
                 newMove = new Move(origin, moveBoard.tiles[origin[0], origin[1]]);
                 newMove.moving.Target = new int[] { y, xR };
-                if (xR < 8 && moveBoard.tiles[y, xR] == 0 && rightUnbroken)
+                if (xR < 8 && moveBoard.tiles[y, xR] == 0)
                 {
                     diagonalMoves.Add(newMove);
                 }
-                else if (xR < 8 && rightUnbroken)
+                else if (xR <= 7)
                 {
                     if (CheckForKill(newMove))
                     {
                         diagonalMoves.Add(newMove);
                     }
-                    rightUnbroken = false;
+                    break;
                 }
             }
             return diagonalMoves;
         }
 
-        public List<Move> GetAbsoluteMoves(int[] origin)
+        public List<IMove> GetAbsoluteMoves(int[] origin)
         {
             String[] moves = null;
             int piece = moveBoard.tiles[origin[0], origin[1]];
-            List<Move> absMoves = new List<Move>();
+            List<IMove> absMoves = new List<IMove>();
             if (Math.Abs(piece) == 3)
             {
                 moves = new String[] { "2,1", "1,2", "2,-1", "1,-2", "-2,1", "-1,2", "-2,-1", "-1,-2" };
@@ -228,6 +232,7 @@ namespace Chess
             else if (Math.Abs(piece) == 6)
             {
                 moves = new String[] { "1,0", "-1,0", "0,1", "0,-1", "1,1", "1,-1", "-1,1", "-1,-1" };
+                absMoves.AddRange(GenerateCastling(piece / Math.Abs(piece)));
             }
             foreach (String s in moves)
             {
@@ -259,7 +264,7 @@ namespace Chess
             Move newMove;
 
             //Move one space
-            if (moveBoard.tiles[origin[0] - direction, origin[1]] == 0) 
+            if (moveBoard.tiles[origin[0] - direction, origin[1]] == 0)
             {
                 newMove = new Move(origin, piece);
                 newMove.moving.Target = new int[] { origin[0] - direction, origin[1] };
@@ -279,7 +284,7 @@ namespace Chess
                 }
             }
             //Kill piece right
-            if (origin[1] < 7 && moveBoard.tiles[origin[0] - direction, origin[1] + 1] * piece == -1) 
+            if (origin[1] < 7 && moveBoard.tiles[origin[0] - direction, origin[1] + 1] * piece == -1)
             {
                 newMove = new Move(origin, piece);
                 newMove.moving.Target = new int[] { origin[0] - direction, origin[1] + 1 };
@@ -290,7 +295,7 @@ namespace Chess
                 pawnMoves.Add(newMove);
             }
             //Kill piece left
-            else if (origin[1] > 0 && moveBoard.tiles[origin[0] - direction, origin[1] - 1] * piece == -1) 
+            if (origin[1] > 0 && moveBoard.tiles[origin[0] - direction, origin[1] - 1] * piece == -1)
             {
                 newMove = new Move(origin, piece);
                 newMove.moving.Target = new int[] { origin[0] - direction, origin[1] - 1 };
@@ -356,6 +361,42 @@ namespace Chess
             }*/
         }
 
+        
+        public List<IMove> GenerateCastling(int player)
+        {
+            List<IMove> castling = new List<IMove>();
+            Castling castle = null;
+            if (player == Board.aiColor)
+            {
+                int king = 6 * Board.aiColor;
+                if (moveBoard.aiLeftCastling && moveBoard.tiles[7, 1] == 0 && moveBoard.tiles[7, 2] == 0 && moveBoard.tiles[7, 3] == 0)
+                {
+                    castle = new Castling(king, 0);
+                    castling.Add(castle);
+                }
+                if (moveBoard.aiRightCastling && moveBoard.tiles[7, 6] == 0 && moveBoard.tiles[7, 5] == 0)
+                {
+                    castle = new Castling(king, 7);
+                    castling.Add(castle);
+                }
+            }
+            else
+            {
+                int king = 6 * -Board.aiColor;
+                if (moveBoard.aiLeftCastling && moveBoard.tiles[0, 1] == 0 && moveBoard.tiles[0, 2] == 0 && moveBoard.tiles[0, 3] == 0)
+                {
+                    castle = new Castling(king, 0);
+                    castling.Add(castle);
+                }
+                if (moveBoard.aiRightCastling && moveBoard.tiles[7, 6] == 0 && moveBoard.tiles[7, 5] == 0)
+                {
+                    castle = new Castling(king, 7);
+                    castling.Add(castle);
+                }
+            }
+            return castling;
+        }
+
         /*
         public void CheckForPromotion(Move move)
         {
@@ -375,6 +416,7 @@ namespace Chess
             if ((move.moving.Piece * moveBoard.tiles[move.moving.Target[0], move.moving.Target[1]]) < 0)
             {
                 move.killing = new TakenPiece(move.moving.Target, piece);
+                //Console.WriteLine("can take " + move.killing.Piece + " at " + move.killing.Position[0] + "," + move.killing.Position[1]);
                 //move.killing.Position = move.moving.Target;
                 //move.killing.Piece = move.moving.Piece;
                 return true;

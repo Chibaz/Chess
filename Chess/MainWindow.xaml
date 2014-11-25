@@ -12,7 +12,8 @@
             </MenuItem>
             <MenuItem Header="_AI Options" >
                 <MenuItem Header="_Do Move" Click="MenuItem_DoMove"/>
-                <MenuItem Header="_Depth" />
+                <MenuItem Header="_Evaluate" Click="MenuItem_Evaluate"/>
+                <MenuItem Header="_Depth" Click="MenuItem_Depth" />
                 <MenuItem Header="_Timer" />
             </MenuItem>
         </Menu>

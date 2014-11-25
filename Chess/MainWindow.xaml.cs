@@ -226,5 +226,15 @@ namespace Chess
             logic.GetBestMove();
             DrawBoard();
         }
+
+        private void MenuItem_Evaluate(object sender, RoutedEventArgs e)
+        {
+            Console.WriteLine("value of board " + logic.evaluate(Board.Game));
+        }
+
+        private void MenuItem_Depth(object sender, RoutedEventArgs e)
+        {
+            //logic.depth
+        }
     }
 }
