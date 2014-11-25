@@ -229,7 +229,7 @@ namespace Chess
 
         private void MenuItem_Evaluate(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("value of board " + logic.evaluate(Board.Game));
+            Console.WriteLine("value of board " + Evaluation.evaluate(Board.Game));
         }
 
         private void MenuItem_Depth(object sender, RoutedEventArgs e)

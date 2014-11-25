@@ -13,7 +13,7 @@ namespace Chess
         private IMove next;
         private int score, evals, total;
         private MoveGenerator mg;
-        public int depth = 3;
+        public int depth = 4;
         public Boolean endGame;
 
         public Logic()
@@ -48,15 +48,16 @@ namespace Chess
             //Console.WriteLine("number of moves from last board: " + newMoves.Count + " at depth " + rDepth + " for player + " + rPlayer);
             if (!newMoves.Any() || rDepth == 0)
             {
-                int e = evaluate(lastBoard);
-                if (bonus != 0)
+                int e = Evaluation.evaluate(lastBoard);
+                //e += Evaluation.evaluateBonus(new Move(new int[] { 0, 0 }, 0), rDepth);//, rDepth
+                /*if (bonus != 0)
                 {
                     Console.WriteLine("added " + bonus + " to evaluation");
                 }
-                Console.WriteLine("total is " + (e + bonus));
+                Console.WriteLine("total is " + (e + bonus));*/
                 evals++;
                 //Console.WriteLine("eval " + evals);
-                return e + bonus;
+                return e;// +bonus;
             }
             if (rPlayer == Board.aiColor) //Maximizing
             {
@@ -80,12 +81,7 @@ namespace Chess
                         }
                         Console.WriteLine();
                     }*/
-                    if (move is Move && ((Move)move).killing.Position != null)
-                    {
-                        newBonus += 100 * rDepth;
-                        Console.WriteLine("kill bonus");
-                        //Console.WriteLine("bonus of " + newBonus + " applied");
-                    }
+                    //newBonus = bonus + Evaluation.evaluateBonus(move, rDepth);
                     int v = doAlphaBeta(newBoard, rDepth - 1, alpha, beta, rPlayer * -1, null, newBonus); //Recursive call on possible methods
                     if (v > alpha)
                     {
@@ -123,14 +119,19 @@ namespace Chess
                             Console.Write(entry + " ");
                         }
                         Console.WriteLine();
-                    }*/
+                    }
                     if (move is Move && ((Move)move).killing.Position != null)
                     {
                         newBonus -= 100 * rDepth;
                         Console.WriteLine("kill penalty");
                         //Console.WriteLine("bonus of " + newBonus + " applied");
-                    }
-                    int v = doAlphaBeta(newBoard, rDepth - 1, alpha, beta, rPlayer * -1, null, bonus); //Recursive call on possible methods
+                    }*/
+                    /*if (Evaluation.evaluateBonus(move, rDepth) != 0)
+                    {
+                        newBonus = bonus - 2 * Evaluation.evaluateBonus(move, rDepth);
+                        Console.WriteLine("increased bonus from " + bonus + " to " + newBonus);
+                    }*/
+                    int v = doAlphaBeta(newBoard, rDepth - 1, alpha, beta, rPlayer * -1, null, newBonus); //Recursive call on possible method                    
                     if (v < beta)
                     {
                         beta = v;
@@ -143,106 +144,7 @@ namespace Chess
                 return beta;
             }
         }
-
-        
-
-        
-    /*
-    public int evaluate(Board b)
-    {
-        count++;
-        int score = 0;
-        score += evaluateLine(b, 0, 0, 0, 1, 0, 2);
-        score += evaluateLine(b, 1, 0, 1, 1, 1, 2);
-        score += evaluateLine(b, 2, 0, 2, 1, 2, 2);
-        score += evaluateLine(b, 0, 0, 1, 0, 2, 0);
-        score += evaluateLine(b, 0, 1, 1, 1, 2, 1);
-        score += evaluateLine(b, 0, 2, 1, 2, 2, 2);
-        score += evaluateLine(b, 0, 0, 1, 1, 2, 2);
-        score += evaluateLine(b, 0, 2, 1, 1, 2, 0);
-        //Console.WriteLine(b.toString());
-        //Console.WriteLine("evaluation: " + score);
-        //Console.ReadLine();
-        return score;
     }
-
-    public int evaluateLine(Board b, int c1, int r1, int c2, int r2, int c3, int r3)
-    {
-        int score = 0;
-        int[,] board = b.cloneBoard();
-
-        if (board[c1, r1] == computer)
-        {
-            score = 1;
-        }
-        else if (board[c1, r1] == player)
-        {
-            score = -1;
-        }
-
-        if (board[c2, r2] == computer)
-        {
-            if (score == 1)
-            {
-                score = 10;
-            }
-            else if (score == -1)
-            {
-                return 0;
-            }
-            else
-            {
-                score = 1;
-            }
-        }
-        else if (board[c2, r2] == player)
-        {
-            if (score == -1)
-            {
-                score = -10;
-            }
-            else if (score == 1)
-            {
-                return 0;
-            }
-            else
-            {
-                score = -1;
-            }
-        }
-
-        if (board[c3, r3] == computer)
-        {
-            if (score > 0)
-            {
-                score *= 20;
-            }
-            else if (score < 0)
-            {
-                return 0;
-            }
-            else
-            {
-                score = 1;
-            }
-        }
-        else if (board[c3, r3] == player)
-        {
-            if (score < 0)
-            {
-                score *= 10;
-            }
-            else if (score > 0)
-            {
-                return 0;
-            }
-            else
-            {
-                score = -1;
-            }
-        }
-        return score;
-    }*/
 }
 
 

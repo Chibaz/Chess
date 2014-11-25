@@ -284,7 +284,7 @@ namespace Chess
                 }
             }
             //Kill piece right
-            if (origin[1] < 7 && moveBoard.tiles[origin[0] - direction, origin[1] + 1] * piece == -1)
+            if (origin[1] < 7 && moveBoard.tiles[origin[0] - direction, origin[1] + 1] * piece < 0)
             {
                 newMove = new Move(origin, piece);
                 newMove.moving.Target = new int[] { origin[0] - direction, origin[1] + 1 };
@@ -295,7 +295,7 @@ namespace Chess
                 pawnMoves.Add(newMove);
             }
             //Kill piece left
-            if (origin[1] > 0 && moveBoard.tiles[origin[0] - direction, origin[1] - 1] * piece == -1)
+            if (origin[1] > 0 && moveBoard.tiles[origin[0] - direction, origin[1] - 1] * piece < 0)
             {
                 newMove = new Move(origin, piece);
                 newMove.moving.Target = new int[] { origin[0] - direction, origin[1] - 1 };
