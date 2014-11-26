@@ -381,13 +381,19 @@ namespace Chess
                 int king = 6 * player;
                 if (leftCastle && moveBoard.tiles[y, 0] == 2*player && moveBoard.tiles[y, 1] == 0 && moveBoard.tiles[y, 2] == 0 && moveBoard.tiles[y, 3] == 0 && moveBoard.tiles[y, 4] == 6)
                 {
-                    castle = new Castling(king, 0);
-                    castling.Add(castle);
+                    if (!Board.CheckForCheck(moveBoard, player, new int[] { y, 2 }) && !Board.CheckForCheck(moveBoard, player, new int[] { y, 3 }))
+                    {
+                        castle = new Castling(king, y);
+                        castling.Add(castle);
+                    }
                 }
                 if (rightCastle && moveBoard.tiles[y, 7] == 2*player && moveBoard.tiles[y, 6] == 0 && moveBoard.tiles[y, 5] == 0 && moveBoard.tiles[y, 4] == 6)
                 {
-                    castle = new Castling(king, 7);
-                    castling.Add(castle);
+                    if (!Board.CheckForCheck(moveBoard, player, new int[] { y, 5 }) && !Board.CheckForCheck(moveBoard, player, new int[] { y, 6 }))
+                    {
+                        castle = new Castling(king, y);
+                        castling.Add(castle);
+                    }
                 }
             /*}
             else

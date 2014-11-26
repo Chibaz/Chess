@@ -13,7 +13,7 @@ namespace Chess
         private IMove next;
         private int score, evals, total;
         private MoveGenerator mg;
-        public int depth = 4;
+        public int depth = 3;
         public Boolean endGame;
 
         public Logic()
@@ -49,6 +49,7 @@ namespace Chess
             if (!newMoves.Any() || rDepth == 0)
             {
                 int e = Evaluation.evaluate(lastBoard);
+                Console.WriteLine("eval: " + e + " bonus is " + bonus);
                 //e += Evaluation.evaluateBonus(new Move(new int[] { 0, 0 }, 0), rDepth);//, rDepth
                 /*if (bonus != 0)
                 {
@@ -57,7 +58,7 @@ namespace Chess
                 Console.WriteLine("total is " + (e + bonus));*/
                 evals++;
                 //Console.WriteLine("eval " + evals);
-                return e;// +bonus;
+                return e + bonus;
             }
             if (rPlayer == Board.aiColor) //Maximizing
             {
@@ -81,7 +82,7 @@ namespace Chess
                         }
                         Console.WriteLine();
                     }*/
-                    //newBonus = bonus + Evaluation.evaluateBonus(move, rDepth);
+                    newBonus = bonus + Evaluation.evaluateBonus(move, rDepth);
                     int v = doAlphaBeta(newBoard, rDepth - 1, alpha, beta, rPlayer * -1, null, newBonus); //Recursive call on possible methods
                     if (v > alpha)
                     {
@@ -128,9 +129,9 @@ namespace Chess
                     }*/
                     /*if (Evaluation.evaluateBonus(move, rDepth) != 0)
                     {
-                        newBonus = bonus - 2 * Evaluation.evaluateBonus(move, rDepth);
                         Console.WriteLine("increased bonus from " + bonus + " to " + newBonus);
                     }*/
+                    newBonus = bonus - Evaluation.evaluateBonus(move, rDepth);
                     int v = doAlphaBeta(newBoard, rDepth - 1, alpha, beta, rPlayer * -1, null, newBonus); //Recursive call on possible method                    
                     if (v < beta)
                     {

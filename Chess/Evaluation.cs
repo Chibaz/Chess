@@ -106,7 +106,7 @@ namespace Chess
                     Console.WriteLine("at depth " + depth + " applied bonus/penalty");
                     Console.WriteLine("for " + m.moving.Piece + " taking " + m.killing.Piece + "\n");
                      * */
-                    return ScoreTable.PieceValue(m.killing.Piece) * depth;
+                    return ScoreTable.PieceValue(m.killing.Piece)/10 * depth;
                 }
             }
                 return 0;
@@ -139,7 +139,7 @@ namespace Chess
             }
             else if (p == 4)
             {
-                return 300;
+                return 325;
             }
             else if (p == 5)
             {
@@ -209,17 +209,17 @@ namespace Chess
             {6, 6, 5, 6, 6, 5, 6, 6},
             {4, 5, 5, 5, 5, 5, 5, 4},
             {2, 3, 3, 5, 5, 3, 3, 2},
-            {0, -2, 0, 3, 3, 5, 0, 0}
+            {0, -2, 0, 5, 5, 3, 0, 0}
         };
 
         private int[,] knight =
         {
-            {-3, 1, 4, 5, 5, 4, 1, -3},
-            {1, 2, 6, 7, 7, 6, 2, 1},
-            {1, 4, 8, 8, 8, 7, 4, 1},
-            {-2, 5, 7, 7, 7, 7, 5, -1}, 
-            {0, 3, 4, 5, 5, 4, 3, 0},
-            {-3, 1, 2, 3, 3, 2, 1, -3},
+            {-2, 2, 7, 9, 9, 7, 2, -2},
+            {1, 4, 12, 13, 13, 12, 4, 1},
+            {5, 11, 18, 19, 19, 18, 11, 5},
+            {3, 10, 14, 14, 14, 14, 10, 3}, 
+            {0, 5, 8, 9, 9, 8, 5, 0},
+            {-3, 1, 3, 4, 4, 3, 1, -3},
             {-5, -3, -1, 0, 0, -1, -3, -5},
             {-7, -5, -4, -2, -2, -4, -5, -7}
 

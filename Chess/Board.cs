@@ -135,7 +135,7 @@ namespace Chess
         /*
          * Check if specified player is in check
          */
-        public static void CheckForCheck(Board board, int player, int[] king)
+        public static Boolean CheckForCheck(Board board, int player, int[] king)
         {
             MoveGenerator mg = new MoveGenerator();
             List<IMove> checkMoves = mg.GetAllMovesForPlayer(board, -player);
@@ -151,16 +151,19 @@ namespace Chess
                         {
                             //Console.WriteLine("ai in check");
                             board.aiCheck = true;
+                            return true;
                         }
                         else
                         {
                             //Console.WriteLine("player in check");
                             board.playerCheck = true;
+                            return true;
                         }
 
                     }
                 }
             }
+            return false;
             /*
             foreach (Move move in checkMovesAI)
             {
