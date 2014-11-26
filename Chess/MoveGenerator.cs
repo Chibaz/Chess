@@ -366,20 +366,30 @@ namespace Chess
         {
             List<IMove> castling = new List<IMove>();
             Castling castle = null;
+            int y;
+            Boolean leftCastle, rightCastle;
             if (player == Board.aiColor)
             {
-                int king = 6 * Board.aiColor;
-                if (moveBoard.aiLeftCastling && moveBoard.tiles[7, 1] == 0 && moveBoard.tiles[7, 2] == 0 && moveBoard.tiles[7, 3] == 0)
+                y = 7;
+                leftCastle = moveBoard.aiLeftCastling;
+                rightCastle = moveBoard.aiRightCastling;
+            }else{
+                y = 0;
+                leftCastle = moveBoard.playerLeftCastling;
+                rightCastle = moveBoard.playerRightCastling;
+            }
+                int king = 6 * player;
+                if (leftCastle && moveBoard.tiles[y, 0] == 2*player && moveBoard.tiles[y, 1] == 0 && moveBoard.tiles[y, 2] == 0 && moveBoard.tiles[y, 3] == 0 && moveBoard.tiles[y, 4] == 6)
                 {
                     castle = new Castling(king, 0);
                     castling.Add(castle);
                 }
-                if (moveBoard.aiRightCastling && moveBoard.tiles[7, 6] == 0 && moveBoard.tiles[7, 5] == 0)
+                if (rightCastle && moveBoard.tiles[y, 7] == 2*player && moveBoard.tiles[y, 6] == 0 && moveBoard.tiles[y, 5] == 0 && moveBoard.tiles[y, 4] == 6)
                 {
                     castle = new Castling(king, 7);
                     castling.Add(castle);
                 }
-            }
+            /*}
             else
             {
                 int king = 6 * -Board.aiColor;
@@ -393,7 +403,7 @@ namespace Chess
                     castle = new Castling(king, 7);
                     castling.Add(castle);
                 }
-            }
+            }*/
             return castling;
         }
 
