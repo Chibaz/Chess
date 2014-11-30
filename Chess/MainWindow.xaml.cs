@@ -1,17 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Media.Effects;
 
 namespace Chess
@@ -161,7 +152,7 @@ namespace Chess
                     
                 }*/
             }
-            else if (nextMove != null && (clicked[0] == nextMove.moving.Origin[0] && clicked[1] == nextMove.moving.Origin[1]))
+            else if (nextMove != null && (clicked[0] == nextMove.Moving.Origin[0] && clicked[1] == nextMove.Moving.Origin[1]))
             {
                 nextMove = null;
                 UIElement uie = s;
@@ -169,12 +160,12 @@ namespace Chess
             }
             else if (nextMove != null)
             {
-                //nextMove.killing.Position = clicked;
-                //nextMove.killing.Piece = tileClicked;
-                nextMove.moving.Target = clicked;
+                //nextMove.Killing.Position = clicked;
+                //nextMove.Killing.Piece = tileClicked;
+                nextMove.Moving.Target = clicked;
                 nextMove.Execute();
 
-                UIElement uie = (UIElement)FindName("c" + nextMove.moving.Origin[0] + nextMove.moving.Origin[1]);
+                UIElement uie = (UIElement)FindName("c" + nextMove.Moving.Origin[0] + nextMove.Moving.Origin[1]);
                 uie.Effect = null;
                 uie = s;
                 uie.Effect = null;
@@ -203,14 +194,14 @@ namespace Chess
 
         private void MenuItem_NewGame(object sender, RoutedEventArgs e)
         {
-            logic.endGame = false;
+            logic.EndGame = false;
             game.ResetGame();
             DrawBoard();
         }
 
         private void MenuItem_Switch(object sender, RoutedEventArgs e)
         {
-            logic.endGame = false;
+            logic.EndGame = false;
             Board.aiColor *= -1;
             game.ResetGame();
             DrawBoard();
@@ -229,7 +220,7 @@ namespace Chess
 
         private void MenuItem_Evaluate(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("value of board " + Evaluation.evaluate(Board.Game));
+            Console.WriteLine("value of board " + Evaluation.Evaluate(Board.Game));
         }
 
         private void MenuItem_Depth(object sender, RoutedEventArgs e)

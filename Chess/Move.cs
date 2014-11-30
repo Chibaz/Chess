@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Chess
+﻿namespace Chess
 {
     public interface IMove
     {
@@ -41,49 +35,49 @@ namespace Chess
 
     public class Move : IMove
     {
-        public MovingPiece moving;
-        public TakenPiece killing;
-        public Move next;
+        public MovingPiece Moving;
+        public TakenPiece Killing;
+        public Move Next;
 
         public Move(int[] origin, int piece)
         {
-            moving = new MovingPiece(origin, null, piece);
-            killing = new TakenPiece(null, 0);
+            Moving = new MovingPiece(origin, null, piece);
+            Killing = new TakenPiece(null, 0);
         }
 
         public void Execute()
         {
             Board.CheckForStuff(Board.Game, this);
-            if (killing.Position != null)
+            if (Killing.Position != null)
             {
-                Board.Game.tiles[killing.Position[0], killing.Position[1]] = 0;
+                Board.Game.tiles[Killing.Position[0], Killing.Position[1]] = 0;
             }
-            Board.Game.tiles[moving.Target[0], moving.Target[1]] = moving.Piece;
-            Board.Game.tiles[moving.Origin[0], moving.Origin[1]] = 0;
+            Board.Game.tiles[Moving.Target[0], Moving.Target[1]] = Moving.Piece;
+            Board.Game.tiles[Moving.Origin[0], Moving.Origin[1]] = 0;
             //Board.CheckForCheck(Board.Game);
-            Board.Game.CheckChecking(Board.Game/*, (moving.Piece / Math.Abs(moving.Piece))*-1*/);
+            Board.Game.CheckChecking(Board.Game/*, (Moving.Piece / Math.Abs(Moving.Piece))*-1*/);
         }
 
         public void ExecuteOnBoard(Board temp)
         {
             Board.CheckForStuff(temp, this);
-            if (killing.Position != null)
+            if (Killing.Position != null)
             {
-                temp.tiles[killing.Position[0], killing.Position[1]] = 0;
+                temp.tiles[Killing.Position[0], Killing.Position[1]] = 0;
             }
-            temp.tiles[moving.Target[0], moving.Target[1]] = moving.Piece;
-            temp.tiles[moving.Origin[0], moving.Origin[1]] = 0;
+            temp.tiles[Moving.Target[0], Moving.Target[1]] = Moving.Piece;
+            temp.tiles[Moving.Origin[0], Moving.Origin[1]] = 0;
             //Board.CheckForCheck(temp);
-            Board.Game.CheckChecking(temp/*, (moving.Piece / Math.Abs(moving.Piece))*-1*/);
+            Board.Game.CheckChecking(temp/*, (Moving.Piece / Math.Abs(Moving.Piece))*-1*/);
         }
 
         public void Undo()
         {
-            Board.Game.tiles[moving.Origin[0], moving.Origin[1]] = moving.Piece;
-            Board.Game.tiles[moving.Target[0], moving.Target[1]] = 0;
-            if (killing.Position != null)
+            Board.Game.tiles[Moving.Origin[0], Moving.Origin[1]] = Moving.Piece;
+            Board.Game.tiles[Moving.Target[0], Moving.Target[1]] = 0;
+            if (Killing.Position != null)
             {
-                Board.Game.tiles[killing.Position[0], killing.Position[1]] = killing.Piece;
+                Board.Game.tiles[Killing.Position[0], Killing.Position[1]] = Killing.Piece;
             }
         }
 
