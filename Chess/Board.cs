@@ -20,14 +20,7 @@ namespace Chess
         private static Board _board;
         public static Board Game
         {
-            get
-            {
-                if (_board == null)
-                {
-                    _board = new Board();
-                }
-                return _board;
-            }
+            get { return _board ?? (_board = new Board()); }
         }
         public int[] EnPassant;
         public Boolean aiLeftCastling, aiRightCastling, playerLeftCastling, playerRightCastling;
@@ -151,12 +144,9 @@ namespace Chess
                     board.aiCheck = true;
                     return true;
                 }
-                else
-                {
-                    //Console.WriteLine("player in check");
-                    board.playerCheck = true;
-                    return true;
-                }
+                //Console.WriteLine("player in check");
+                board.playerCheck = true;
+                return true;
             }
             return false;
             /*

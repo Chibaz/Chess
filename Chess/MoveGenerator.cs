@@ -58,13 +58,13 @@ namespace Chess
 
         public List<IMove> GetStraightMoves(int[] origin)
         {
-            Move newMove = null;
+            Move newMove;
             var straightMoves = new List<IMove>();
-            for (int y = origin[0] + 1; y < 8; y++) //Vertical lower
+            for (var y = origin[0] + 1; y < 8; y++) //Vertical lower
             {
                 newMove = new Move(origin, _moveBoard.tiles[origin[0], origin[1]])
                 {
-                    Moving = {Target = new int[] {y, origin[1]}}
+                    Moving = {Target = new[] {y, origin[1]}}
                 };
                 if (_moveBoard.tiles[newMove.Moving.Target[0], newMove.Moving.Target[1]] == 0)
                 {
@@ -138,8 +138,8 @@ namespace Chess
 
         public List<IMove> GetDiagonalMoves(int[] origin)
         {
-            int xL, xR;
-            xL = xR = origin[1];
+            var xR = origin[1];
+            var xL = origin[1];
             Move newMove;
             var diagonalMoves = new List<IMove>();
             for (var y = origin[0] + 1; y < 8; y++) //Lower-Left diagonals
