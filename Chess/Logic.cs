@@ -10,13 +10,20 @@ namespace Chess
         private IMove _next;
         private int score, _evals, _total;
         private readonly MoveGenerator _mg;
-        public int Depth = 3;
+        private int Depth = 3;
         public Boolean EndGame;
 
         public Logic()
         {
             _mg = new MoveGenerator();
         }
+
+        public void setDepth(int Depth)
+        {
+            this.Depth = Depth;
+        }
+
+        public int getDepth() { return Depth; }
 
         public void GetBestMove()
         {

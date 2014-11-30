@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Effects;
+using System.Windows.Forms;
 
 namespace Chess
 {
@@ -209,7 +210,7 @@ namespace Chess
 
         private void MenuItem_ExitGame(object sender, RoutedEventArgs e)
         {
-            Application.Current.Shutdown();
+            System.Windows.Application.Current.Shutdown();
         }
 
         private void MenuItem_DoMove(object sender, RoutedEventArgs e)
@@ -225,7 +226,30 @@ namespace Chess
 
         private void MenuItem_Depth(object sender, RoutedEventArgs e)
         {
-            //logic.depth
+
+            logic.setDepth(int.Parse(ShowDialog("Choose number of ply. \nGame default is 3", "Choose number of ply", logic.getDepth())));
         }
+
+        public static string ShowDialog(string text, string caption, int textDefault)
+    {
+        Form prompt = new Form();
+        prompt.Width = 290;
+        prompt.Height = 150;
+        prompt.FormBorderStyle = FormBorderStyle.FixedDialog;
+        prompt.Text = caption;
+        prompt.StartPosition = FormStartPosition.CenterScreen;
+        String deftext = textDefault.ToString();
+        System.Windows.Forms.Label textLabel = new System.Windows.Forms.Label() { Left = 50, Top=20, Text=text, Width=200 };
+        System.Windows.Forms.TextBox textBox = new System.Windows.Forms.TextBox() { Left = 50, Top = 50, Width = 180, Text = deftext };
+        System.Windows.Forms.Button confirmation = new System.Windows.Forms.Button() { Text = "Ok", Left = 350, Width = 100, Top = 70 };
+        confirmation.Click += (sender, e) => { prompt.Close(); };
+        prompt.Controls.Add(textBox);
+        prompt.Controls.Add(confirmation);
+        prompt.Controls.Add(textLabel);
+        prompt.AcceptButton = confirmation;
+        prompt.ShowDialog();
+        return textBox.Text;
+    }
+
     }
 }

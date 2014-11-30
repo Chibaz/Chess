@@ -10,11 +10,10 @@
                 <MenuItem Header="_Switch" Click="MenuItem_Switch" />
                 <MenuItem Header="_Exit" Click="MenuItem_ExitGame"/>
             </MenuItem>
-            <MenuItem Header="_AI Options" >
+            <MenuItem Header="_AI Options">
                 <MenuItem Header="_Do Move" Click="MenuItem_DoMove"/>
                 <MenuItem Header="_Evaluate" Click="MenuItem_Evaluate"/>
                 <MenuItem Header="_Depth" Click="MenuItem_Depth" />
-                <MenuItem Header="_Timer" />
             </MenuItem>
         </Menu>
     
