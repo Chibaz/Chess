@@ -240,7 +240,7 @@ namespace Chess
         prompt.StartPosition = FormStartPosition.CenterScreen;
         String deftext = textDefault.ToString();
         System.Windows.Forms.Label textLabel = new System.Windows.Forms.Label() { Left = 50, Top=20, Text=text, Width=200 };
-        System.Windows.Forms.TextBox textBox = new System.Windows.Forms.TextBox() { Left = 50, Top = 50, Width = 180, Text = deftext };
+        System.Windows.Forms.TextBox textBox = new System.Windows.Forms.TextBox() { Left = 50, Top = 55, Width = 180, Text = deftext };
         System.Windows.Forms.Button confirmation = new System.Windows.Forms.Button() { Text = "Ok", Left = 350, Width = 100, Top = 70 };
         confirmation.Click += (sender, e) => { prompt.Close(); };
         prompt.Controls.Add(textBox);
