@@ -1,34 +1,50 @@
 ﻿using System;
+using Chess;
 
 namespace Chess
 {
     internal class Evaluation
     {
         private static int[,] _eBoard;
-        private static int _aiPieces, _playerPieces;
+        public static Boolean _endgame;
+        private static int _losing;
 
         public static int Evaluate(Board toEvaluate
             /*, int depth, int lastAI, int lastPlayer, out int wPieces, out int bPieces*/)
         {
             _eBoard = toEvaluate.tiles;
-            _aiPieces = _playerPieces = 0;
+            var aiPieces = CalculatePieceScore(Board.aiColor);
+            //Console.WriteLine("ai piece score is " + aiPieces + " endgame? " + (aiPieces < 600));
+            var playerPieces = CalculatePieceScore(-Board.aiColor);
+            //Console.WriteLine("player piece score is " + playerPieces + " endgame? " + (playerPieces < 600));
+            if (aiPieces <= 600 || playerPieces <= 600)
+            {
+                _endgame = true;
+                if (aiPieces < playerPieces)
+                {
+                    _losing = Board.aiColor;
+                    //Console.WriteLine("ai is currently losing");
+                }
+                else if (aiPieces > playerPieces)
+                {
+                    _losing = -Board.aiColor;
+                    //Console.WriteLine("player is currently losing");
+                }
+                else
+                {
+                    _losing = 0;
+                }
+            }
+            else if (!_endgame && (aiPieces <= 1600 || playerPieces <= 1600))
+            {
+                _endgame = true;
+                //Console.WriteLine("endgame enabled");
+                _losing = 0;
+            }
             var aiScore = EvaluateSide(Board.aiColor);
             var playerScore = EvaluateSide(-Board.aiColor);
-
-            /*
-            if (_aiPieces < lastAI)
-            {
-                aiScore -= 100 * depth; 
-            }
-            if (_playerPieces < lastPlayer)
-            {
-                aiScore += 100 * depth;
-            }
-            wPieces = _aiPieces;
-            bPieces = _playerPieces;
-            */
-            aiScore += _aiPieces;
-            playerScore += _playerPieces;
+            aiScore += aiPieces;
+            playerScore += playerPieces;
             var total = aiScore - playerScore;
             return total;
         }
@@ -44,7 +60,7 @@ namespace Chess
             {
                 sTable = new ScorePlayer();
             }
-            var pieces = 0;
+            //var pieces = 0;
             var score = 0; 
             for (var row = 0; row < _eBoard.GetLength(0); row++)
             {
@@ -56,40 +72,84 @@ namespace Chess
                     {
                         case 1:
                             score += sTable.Pawn[row, col];
-                            pieces += 100;
+                            //pieces += 100;
                             break;
                         case 2:
-                            score += sTable.Rook[row, col];
-                            pieces += 500;
+                            if (_losing == 0)
+                            {
+                                score += sTable.Rook[row, col];
+                            }
+                            //pieces += 500;
                             break;
                         case 3:
-                            score += sTable.Knight[row, col];
-                            pieces += 300;
+                            if (_losing == 0)
+                            {
+                                score += sTable.Knight[row, col];
+                            }
+                            //pieces += 300;
                             break;
                         case 4:
-                            score += sTable.Bishop[row, col];
-                            pieces += 325;
+                            if (_losing == 0)
+                            {
+                                score += sTable.Bishop[row, col];
+                            }
+                            //pieces += 325;
                             break;
                         case 5:
-                            score += sTable.Queen[row, col];
-                            pieces += 900;
+                            if (_losing == 0)
+                            {
+                                score += sTable.Queen[row, col];
+                            }
+                            //pieces += 900;
                             break;
                         case 6:
-                            score += sTable.King[row, col];
+                            var kingScore = sTable.King[row, col];
+                            if (_losing == player)
+                            {
+                                kingScore *= 8;
+                            }
+                            score += kingScore;
                             score += 10000;
                             break;
                     }
                 }
             }
-            if (player == Board.aiColor)
-            {
-                _aiPieces = pieces;
-            }
-            else
-            {
-                _playerPieces = pieces;
-            }
+            //playerPieces = pieces;
             return score;
+        }
+
+        public static int CalculatePieceScore(int player)
+        {
+            var pieces = 0;
+            for (var row = 0; row < _eBoard.GetLength(0); row++)
+            {
+                for (var col = 0; col < _eBoard.GetLength(0); col++)
+                {
+                    var piece = _eBoard[row, col];
+                    //if (piece * player > 0) continue;
+                    //pieces = ScoreTable.PieceValue(piece*player);
+                    
+                    switch (piece*player)
+                    {
+                        case 1:
+                            pieces += 100;
+                            break;
+                        case 2:
+                            pieces += 500;
+                            break;
+                        case 3:
+                            pieces += 300;
+                            break;
+                        case 4:
+                            pieces += 325;
+                            break;
+                        case 5:
+                            pieces += 900;
+                            break;
+                    }
+                }
+            }
+            return pieces;
         }
 
         public static int EvaluateBonus(IMove move, int depth)
@@ -222,6 +282,18 @@ namespace Chess
             {0, 0, 0, 0, 0, 0, 15, 0}
         };
 
+        private readonly int[,] _endKing =
+        {
+            {-3, -3, -3, -3, -3, -3, -3, -3},
+            {-3, -2, -2, -2, -2, -2, -2, -3},
+            {-3, -2, -1, -1, -1, -1, -2, -3},
+            {-3, -2, -1, 0, 0, -1, -2, -3},
+            {-3, -2, -1, 0, 0, -1, -2, -3},
+            {-3, -2, -1, -1, -1, -1, -2, -3},
+            {-3, -2, -2, -2, -2, -2, -2, -3},
+            {-3, -3, -3, -3, -3, -3, -3, -3}
+        };
+
         public override int[,] Pawn
         {
             get { return _pawn; }
@@ -249,7 +321,11 @@ namespace Chess
 
         public override int[,] King
         {
-            get { return _king; }
+            get
+            {
+                return Evaluation._endgame ? _endKing : _king;
+            }
+        }
         }
     }
 
@@ -327,7 +403,17 @@ namespace Chess
             {0, 0, 0, 0, 0, 0, 0, 0}
         };
 
-        
+        private readonly int[,] _endKing =
+        {
+            {-3, -3, -3, -3, -3, -3, -3, -3},
+            {-3, -2, -2, -2, -2, -2, -2, -3},
+            {-3, -2, -1, -1, -1, -1, -2, -3},
+            {-3, -2, -1, 0, 0, -1, -2, -3},
+            {-3, -2, -1, 0, 0, -1, -2, -3},
+            {-3, -2, -1, -1, -1, -1, -2, -3},
+            {-3, -2, -2, -2, -2, -2, -2, -3},
+            {-3, -3, -3, -3, -3, -3, -3, -3}
+        };
 
         public override int[,] Pawn
         {
@@ -356,7 +442,9 @@ namespace Chess
 
         public override int[,] King
         {
-            get { return _king; }
+            get
+            {
+                                return Evaluation._endgame ? _endKing : _king;
+            }
         }
     }
-}
